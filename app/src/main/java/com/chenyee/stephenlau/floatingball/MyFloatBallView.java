@@ -1,8 +1,7 @@
-package com.wangxiandeng.floatball;
+package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
 import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;

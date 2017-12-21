@@ -1,4 +1,4 @@
-package com.wangxiandeng.floatball;
+package com.chenyee.stephenlau.floatingball;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,7 +11,6 @@ import android.view.WindowManager.LayoutParams;
 
 /**
  * 改成了单例
- * Created by wangxiandeng on 2016/11/25.
  */
 
 public class FloatBallManager {

@@ -6,5 +6,6 @@
 
     <string name="tip"/>
     <string name="action_settings"/>
+    <string name="accessibility">开启悬浮球辅助功能</string>
 
 </resources>

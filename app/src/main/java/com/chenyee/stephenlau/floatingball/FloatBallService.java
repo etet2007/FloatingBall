@@ -1,22 +1,11 @@
-package com.wangxiandeng.floatball;
+package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
-import android.accessibilityservice.AccessibilityServiceInfo;
-import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.RelativeLayout;
-
-import static com.wangxiandeng.floatball.MyFloatBallView.TAG;
 
 
 /**
