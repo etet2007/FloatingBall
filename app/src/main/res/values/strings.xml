@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FloatingBall</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="tip"/>
+    <string name="action_settings"/>
+</resources>

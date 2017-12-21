@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.chenyee.stephenlau.floatingball.MainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+
+    <ImageView
+        android:id="@+id/logo_imageview"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@drawable/icon_float"/>
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/start_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Opacity"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="20dp"
+        />
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:id="@+id/opacity_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dsb_min="0"
+        app:dsb_max="255"
+        app:dsb_value="125"
+        app:dsb_progressColor="@color/colorPrimaryDark"
+        app:dsb_indicatorColor="@color/colorPrimaryDark"
+        />
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Size"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="20dp"
+        />
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:id="@+id/size_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dsb_min="1"
+        app:dsb_max="255"
+        app:dsb_value="125"
+        app:dsb_progressColor="@color/colorPrimaryDark"
+        app:dsb_indicatorColor="@color/colorPrimaryDark"
+        />
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Use background?"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="10dp"
+        />
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/background_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/choosePic_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="choose backgrond pic"
+        android:layout_marginTop="20dp"
+        />
+    <TextView
+        android:id="@+id/tips_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:lineSpacingExtra="2dp"
+        android:text="@string/tip"
+        android:textColor="#333333"
+        android:textSize="12sp"/>
+
+
+</android.support.constraint.ConstraintLayout>
