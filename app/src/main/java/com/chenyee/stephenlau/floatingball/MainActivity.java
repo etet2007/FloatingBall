@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     //    RecyclerView mMainRecyclerView;
 //控件
-    private ImageView logoImageView;
+    private FloatingActionButton fab;
     private SwitchCompat ballSwitch;
     private DiscreteSeekBar opacitySeekBar;
     private DiscreteSeekBar sizeSeekBar;
@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity
 //        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.logo_fab);
+        fab.setUseCompatPadding(false);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity
 
         opacitySeekBar = (DiscreteSeekBar) findViewById(R.id.opacity_seekbar);
         opacitySeekBar = (DiscreteSeekBar) findViewById(R.id.opacity_seekbar);
-        logoImageView = (ImageView) findViewById(R.id.logo_imageview);
         ballSwitch = (SwitchCompat) findViewById(R.id.start_switch);
         sizeSeekBar = (DiscreteSeekBar) findViewById(R.id.size_seekbar);
         choosePicButton = (Button) findViewById(R.id.choosePic_button);
@@ -111,13 +111,13 @@ public class MainActivity extends AppCompatActivity
 
         if(isOpenBall) {
             ballSwitch.setChecked(true);
-            logoImageView.getBackground().setAlpha(255);
+            fab.setImageAlpha(255);
             opacitySeekBar.setEnabled(true);
             sizeSeekBar.setEnabled(true);
             choosePicButton.setEnabled(true);
             backgroundSwitch.setEnabled(true);
         }else{
-            logoImageView.getBackground().setAlpha(125);
+            fab.setImageAlpha(125);
             ballSwitch.setChecked(false);
             opacitySeekBar.setEnabled(false);
             sizeSeekBar.setEnabled(false);
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity
             backgroundSwitch.setEnabled(false);
         }
 
-        logoImageView.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ballSwitch.toggle();
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
+        //申请权限
         if (Build.VERSION.SDK_INT >= 23) {
             //Setting :The Settings provider contains global system-level device preferences.
             //Checks if the specified context can draw on top of other apps. As of API level 23,
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity
         intent.putExtras(data);
         startService(intent);
 
-        logoImageView.getBackground().setAlpha(255);
+        fab.setImageAlpha(255);
         opacitySeekBar.setEnabled(true);
         sizeSeekBar.setEnabled(true);
         choosePicButton.setEnabled(true);
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity
         intent.putExtras(data);
         startService(intent);
 
-        logoImageView.getBackground().setAlpha(125);
+        fab.setImageAlpha(125);
         opacitySeekBar.setEnabled(false);
         sizeSeekBar.setEnabled(false);
         choosePicButton.setEnabled(false);
