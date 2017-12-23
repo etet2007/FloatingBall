@@ -37,9 +37,7 @@
                 android:resource="@xml/accessibilityservice"/>
         </service>
 
-        <activity android:name=".Setting.SettingActivity">
 
-        </activity>
     </application>
 
 </manifest>
