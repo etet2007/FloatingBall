@@ -13,9 +13,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SwitchCompat;
@@ -39,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     //    RecyclerView mMainRecyclerView;
-//控件
+    //控件
     private FloatingActionButton fab;
     private SwitchCompat ballSwitch;
     private DiscreteSeekBar opacitySeekBar;
@@ -56,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private final int mREQUEST_external_storage = 1;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -66,33 +65,67 @@ public class MainActivity extends AppCompatActivity
         opacity=prefs.getInt("opacity",125);
         ballSize=prefs.getInt("size",25);
 
-//        mMainRecyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
-//        mMainRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        initViews();
 
+        //申请权限 DrawOverlays
+        requestDrawOverlaysPermission();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+        Bundle data = new Bundle();
+        data.putInt("type", FloatBallService.TYPE_SAVE);
+        intent.putExtras(data);
+        startService(intent);
+    }
+
+    private void requestDrawOverlaysPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            //Setting :The Settings provider contains global system-level device preferences.
+            //Checks if the specified context can draw on top of other apps. As of API level 23,
+            // an app cannot draw on top of other apps unless it declares the SYSTEM_ALERT_WINDOW permission
+            // in its manifest, and the user specifically grants the app this capability.
+            // To prompt the user to grant this approval, the app must send an intent with the action
+            // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivityForResult(intent, 1);
+                Toast.makeText(this, "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void initViews() {
         // Set up the toolbar. 工具栏。
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();//上面Set完这里Get，不就是Toolbar
-//        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
-
+        // Set up the FloatingActionButton
         fab = (FloatingActionButton) findViewById(R.id.logo_fab);
         fab.setUseCompatPadding(false);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                ballSwitch.toggle();
+//                Snackbar.make(v, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        // Set up the navigation drawer.左侧滑出的菜单。
 
+        // Set up the navigation drawer.左侧滑出的菜单。
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -103,6 +136,7 @@ public class MainActivity extends AppCompatActivity
         choosePicButton = (Button) findViewById(R.id.choosePic_button);
         backgroundSwitch = (SwitchCompat) findViewById(R.id.background_switch);
 
+        //根据数据进行初始化
         opacitySeekBar.setProgress(opacity);
         sizeSeekBar.setProgress(ballSize);
 
@@ -114,7 +148,7 @@ public class MainActivity extends AppCompatActivity
             choosePicButton.setEnabled(true);
             backgroundSwitch.setEnabled(true);
         }else{
-            fab.setImageAlpha(125);
+            fab.setImageAlpha(40);
             ballSwitch.setChecked(false);
             opacitySeekBar.setEnabled(false);
             sizeSeekBar.setEnabled(false);
@@ -122,19 +156,12 @@ public class MainActivity extends AppCompatActivity
             backgroundSwitch.setEnabled(false);
         }
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ballSwitch.toggle();
-            }
-        });
 
         ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                Log.d("lqt", "onCheckedChanged: ");
                 if(isChecked){
-                    startFloatBall();
+                    addFloatBall();
                 }else{
                     removeFloatBall();
                 }
@@ -193,8 +220,6 @@ public class MainActivity extends AppCompatActivity
                 startService(intent);
             }
         });
-
-
         choosePicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,34 +227,17 @@ public class MainActivity extends AppCompatActivity
                 requestStoragePermission();
 
                 Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, IMAGE);//onActivityResult
             }
         });
-
-        //申请权限
-        if (Build.VERSION.SDK_INT >= 23) {
-            //Setting :The Settings provider contains global system-level device preferences.
-            //Checks if the specified context can draw on top of other apps. As of API level 23,
-            // an app cannot draw on top of other apps unless it declares the SYSTEM_ALERT_WINDOW permission
-            // in its manifest, and the user specifically grants the app this capability.
-            // To prompt the user to grant this approval, the app must send an intent with the action
-            // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
-            if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivityForResult(intent, 1);
-                Toast.makeText(this, "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
-            }
-        }
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        //获取图片路径
+        //选取图片的回调
         if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
 
@@ -280,7 +288,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void startFloatBall() {
+    private void addFloatBall() {
         //为了可以执行返回等操作。
         checkAccessibility();
 
@@ -305,7 +313,7 @@ public class MainActivity extends AppCompatActivity
         intent.putExtras(data);
         startService(intent);
 
-        fab.setImageAlpha(125);
+        fab.setImageAlpha(40);
         opacitySeekBar.setEnabled(false);
         sizeSeekBar.setEnabled(false);
         choosePicButton.setEnabled(false);
@@ -313,15 +321,7 @@ public class MainActivity extends AppCompatActivity
 
         isOpenBall=false;
     }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
-        Bundle data = new Bundle();
-        data.putInt("type", FloatBallService.TYPE_SAVE);
-        intent.putExtras(data);
-        startService(intent);
-    }
+
 
     private void checkAccessibility() {
         // 判断辅助功能是否开启

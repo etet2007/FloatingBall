@@ -39,8 +39,8 @@
         app:dsb_min="0"
         app:dsb_max="255"
         app:dsb_value="125"
-        app:dsb_progressColor="@color/colorPrimaryDark"
-        app:dsb_indicatorColor="@color/colorPrimaryDark"
+        app:dsb_progressColor="@color/colorAccent"
+        app:dsb_indicatorColor="@color/colorAccent"
         />
     <android.support.v7.widget.AppCompatTextView
         android:layout_width="match_parent"
@@ -57,8 +57,8 @@
         app:dsb_min="1"
         app:dsb_max="255"
         app:dsb_value="125"
-        app:dsb_progressColor="@color/colorPrimaryDark"
-        app:dsb_indicatorColor="@color/colorPrimaryDark"
+        app:dsb_progressColor="@color/colorAccent"
+        app:dsb_indicatorColor="@color/colorAccent"
         />
     <android.support.v7.widget.AppCompatTextView
         android:layout_width="match_parent"
