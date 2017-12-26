@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences prefs;
     private int opacity;
     private int ballSize;
-    private boolean isOpenBall;
+    private boolean hasAddedBall;
     //调用系统相册-选择图片
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
 
         //获取悬浮球参数
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        isOpenBall=prefs.getBoolean("isOpenBall",false);
+        hasAddedBall =prefs.getBoolean("hasAddedBall",false);
         opacity=prefs.getInt("opacity",125);
         ballSize=prefs.getInt("size",25);
 
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         opacitySeekBar.setProgress(opacity);
         sizeSeekBar.setProgress(ballSize);
 
-        if(isOpenBall) {
+        if(hasAddedBall) {
             ballSwitch.setChecked(true);
             fab.setImageAlpha(255);
             opacitySeekBar.setEnabled(true);
@@ -177,6 +177,12 @@ public class MainActivity extends AppCompatActivity
                 data.putInt("opacity", value);
                 intent.putExtras(data);
                 startService(intent);
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("opacity",value);
+                editor.apply();
+
+
             }
 
             @Override
@@ -303,7 +309,7 @@ public class MainActivity extends AppCompatActivity
         sizeSeekBar.setEnabled(true);
         choosePicButton.setEnabled(true);
         backgroundSwitch.setEnabled(true);
-        isOpenBall=true;
+        hasAddedBall =true;
     }
 
     private void removeFloatBall() {
@@ -319,7 +325,7 @@ public class MainActivity extends AppCompatActivity
         choosePicButton.setEnabled(false);
         backgroundSwitch.setEnabled(false);
 
-        isOpenBall=false;
+        hasAddedBall =false;
     }
 
 

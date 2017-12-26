@@ -24,7 +24,7 @@ public class FloatBallService extends AccessibilityService {
     public static final int TYPE_IMAGE =4;
     public static final int TYPE_SAVE =5;
     public static final int TYPE_USEBACKGROUND =6;
-
+    public static final int TYPE_UPDATE_DATA =7;
 
     private FloatBallManager mFloatBallManager;
     @Override
@@ -69,7 +69,6 @@ public class FloatBallService extends AccessibilityService {
 // Do not call this method directly.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         if(intent != null ) {
             //mFloatBallManager的判断是因为生命周期有时候有问题
             if(mFloatBallManager==null)
@@ -99,7 +98,9 @@ public class FloatBallService extends AccessibilityService {
                 if(type==TYPE_USEBACKGROUND){
                     mFloatBallManager.setUseBackground(data.getBoolean("useBackground"));
                 }
+                if(type==TYPE_UPDATE_DATA){
 
+                }
             }
         }
 

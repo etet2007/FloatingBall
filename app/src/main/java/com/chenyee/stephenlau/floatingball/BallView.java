@@ -32,7 +32,7 @@ import java.io.IOException;
  * Created by stephenlau on 2017/12/5.
  */
 
-public class MyFloatBallView extends View {
+public class BallView extends View {
     public static final String TAG="lqt";
 
     private final int ballMoveDistance = 18;
@@ -134,7 +134,7 @@ public class MyFloatBallView extends View {
     }
 
 
-    public MyFloatBallView(Context context) {
+    public BallView(Context context) {
         super(context);
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -328,7 +328,7 @@ public class MyFloatBallView extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
                 WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-                windowManager.removeView(MyFloatBallView.this);
+                windowManager.removeView(BallView.this);
             }
 
             @Override
@@ -390,7 +390,7 @@ public class MyFloatBallView extends View {
                     mLayoutParams.x = (int) (event.getRawX() - mLastTouchEventX);
                     mLayoutParams.y = (int) (event.getRawY() - mOffsetToParentY);
 
-                    mWindowManager.updateViewLayout(MyFloatBallView.this, mLayoutParams);
+                    mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:

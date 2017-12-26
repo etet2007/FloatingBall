@@ -10,27 +10,28 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 /**
- * 改成了单例
+ * 单例
  */
 
 public class FloatBallManager {
     private static FloatBallManager mFloatBallManager=new FloatBallManager();
-
     private FloatBallManager(){}
-
     public static FloatBallManager getInstance() {
         return mFloatBallManager;
     }
+
     //View
-    private MyFloatBallView mBallView;
+    private BallView mBallView;
     //WindowManager
     private WindowManager mWindowManager;
+
     private SharedPreferences defaultSharedPreferences;
     private boolean isOpenBall;
     private boolean useBackground;
+
     public void addBallView(Context context) {
         if (mBallView == null) {
-            mBallView = new MyFloatBallView(context);
+            mBallView = new BallView(context);
 
             WindowManager windowManager = getWindowManager(context);
 
@@ -55,6 +56,7 @@ public class FloatBallManager {
 
             windowManager.addView(mBallView, params);
 
+
             mBallView.setOpacity(defaultSharedPreferences.getInt("opacity",125));
 
             mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
@@ -71,7 +73,6 @@ public class FloatBallManager {
 //            String path = Environment.getExternalStorageDirectory().toString();
 
             mBallView.refreshAddAnimator();
-
 
             isOpenBall=true;
         }
@@ -93,6 +94,8 @@ public class FloatBallManager {
         }
         return mWindowManager;
     }
+
+
     public  void setOpacity(int opacity) {
         if (mBallView != null) {
             mBallView.setOpacity(opacity);
