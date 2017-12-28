@@ -156,7 +156,6 @@ public class BallView extends View {
 
 
     public void makeBitmapRead() {
-
         //app内部目录。
         String path = getContext().getFilesDir().toString();
         bitmapRead = BitmapFactory.decodeFile(path+"/ballBackground.png");

@@ -5,9 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+
+import static com.chenyee.stephenlau.floatingball.BallView.TAG;
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_USE_BACKGROUND;
 
 /**
  * 单例
@@ -52,25 +56,26 @@ public class FloatBallManager {
             params.format = PixelFormat.RGBA_8888;
             params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                     | LayoutParams.FLAG_NOT_FOCUSABLE|LayoutParams.FLAG_LAYOUT_IN_SCREEN|LayoutParams.FLAG_LAYOUT_INSET_DECOR; //FLAG_LAYOUT_IN_SCREEN
+            //把引用传进去
             mBallView.setLayoutParams(params);
 
             windowManager.addView(mBallView, params);
 
+            updateData();
 
-            mBallView.setOpacity(defaultSharedPreferences.getInt("opacity",125));
+//            mBallView.setOpacity(defaultSharedPreferences.getInt("opacity",125));
 
-            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
+//            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
 
             mBallView.makeBitmapRead();
 
-            mBallView.createBitmapCropFromBitmapRead();
+//            mBallView.createBitmapCropFromBitmapRead();
+
             //Call this when something has changed which has invalidated the layout of this view.
             mBallView.requestLayout();
 
-            useBackground = defaultSharedPreferences.getBoolean("useBackground", false);
-            setUseBackground(useBackground);
-            //外部目录 好处是用户可见。
-//            String path = Environment.getExternalStorageDirectory().toString();
+//            useBackground = defaultSharedPreferences.getBoolean("useBackground", false);
+//            setUseBackground(useBackground);
 
             mBallView.refreshAddAnimator();
 
@@ -135,9 +140,9 @@ public class FloatBallManager {
         editor.putInt("paramsX",params.x);
         editor.putInt("paramsY",params.y);
 
-        editor.putInt("opacity",mBallView.getOpacity());
-        editor.putInt("size", (int) mBallView.getBallRadius());
-        editor.putBoolean("useBackground", useBackground);
+//        editor.putInt("opacity",mBallView.getOpacity());
+//        editor.putInt("size", (int) mBallView.getBallRadius());
+//        editor.putBoolean("useBackground", useBackground);
         editor.apply();
     }
 
@@ -146,7 +151,24 @@ public class FloatBallManager {
             this.useBackground=useBackground;
             mBallView.useBackground = useBackground;
             mBallView.invalidate();
+        }
+    }
 
+    public void updateData() {
+        if (mBallView != null) {
+            //Opacity
+            mBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_OPACITY,125));
+            //Size
+            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
+
+            mBallView.createBitmapCropFromBitmapRead();
+
+            //Use background
+            mBallView.useBackground =defaultSharedPreferences.getBoolean(KEY_USE_BACKGROUND ,false);
+
+            mBallView.requestLayout();
+
+            mBallView.invalidate();
         }
     }
 }

@@ -33,6 +33,10 @@ import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_OPACITY;
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_SIZE;
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_USE_BACKGROUND;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -54,7 +58,6 @@ public class MainActivity extends AppCompatActivity
     private final int mREQUEST_external_storage = 1;
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -118,7 +121,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -171,18 +173,12 @@ public class MainActivity extends AppCompatActivity
         opacitySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                Intent intent = new Intent(MainActivity.this, FloatBallService.class);
-                Bundle data = new Bundle();
-                data.putInt("type", FloatBallService.TYPE_OPACITY);
-                data.putInt("opacity", value);
-                intent.putExtras(data);
-                startService(intent);
 
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt("opacity",value);
+                editor.putInt(KEY_OPACITY,value);
                 editor.apply();
 
-
+                sendUpdateIntentToService();
             }
 
             @Override
@@ -197,12 +193,12 @@ public class MainActivity extends AppCompatActivity
         sizeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                Intent intent = new Intent(MainActivity.this, FloatBallService.class);
-                Bundle data = new Bundle();
-                data.putInt("type", FloatBallService.TYPE_SIZE);
-                data.putInt("size", value);
-                intent.putExtras(data);
-                startService(intent);
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt(KEY_SIZE,value);
+                editor.apply();
+
+                sendUpdateIntentToService();
             }
 
             @Override
@@ -218,12 +214,12 @@ public class MainActivity extends AppCompatActivity
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent intent = new Intent(MainActivity.this, FloatBallService.class);
-                Bundle data = new Bundle();
-                data.putInt("type", FloatBallService.TYPE_USEBACKGROUND);
-                data.putBoolean("useBackground", isChecked);
-                intent.putExtras(data);
-                startService(intent);
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean(KEY_USE_BACKGROUND,isChecked);
+                editor.apply();
+
+                sendUpdateIntentToService();
             }
         });
         choosePicButton.setOnClickListener(new View.OnClickListener() {
@@ -237,6 +233,14 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, IMAGE);//onActivityResult
             }
         });
+    }
+
+    private void sendUpdateIntentToService() {
+        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+        Bundle data = new Bundle();
+        data.putInt("type", FloatBallService.TYPE_UPDATE_DATA);
+        intent.putExtras(data);
+        startService(intent);
     }
 
     @Override

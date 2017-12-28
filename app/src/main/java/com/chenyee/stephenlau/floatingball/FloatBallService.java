@@ -27,6 +27,7 @@ public class FloatBallService extends AccessibilityService {
     public static final int TYPE_UPDATE_DATA =7;
 
     private FloatBallManager mFloatBallManager;
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -99,6 +100,7 @@ public class FloatBallService extends AccessibilityService {
                     mFloatBallManager.setUseBackground(data.getBoolean("useBackground"));
                 }
                 if(type==TYPE_UPDATE_DATA){
+                    mFloatBallManager.updateData();
 
                 }
             }
