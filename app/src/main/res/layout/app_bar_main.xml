@@ -64,7 +64,7 @@
         app:fabSize="normal"
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom|right|end"
-        app:srcCompat="@mipmap/ic_launcher_app"/>
+        app:srcCompat="@drawable/ic_floating_button"/>
 
     <!--<android.support.v7.widget.AppCompatImageView-->
         <!--android:id="@+id/logo_imageview"-->
