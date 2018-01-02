@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-                opacity = seekBar.getProgress();
+//                opacity = seekBar.getProgress();
             }
         });
         sizeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-                ballSize = seekBar.getProgress();
+//                ballSize = seekBar.getProgress();
             }
         });
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

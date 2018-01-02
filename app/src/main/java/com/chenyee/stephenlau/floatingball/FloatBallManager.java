@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 import static com.chenyee.stephenlau.floatingball.BallView.TAG;
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_SIZE;
 import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_USE_BACKGROUND;
 
 /**
@@ -33,6 +34,7 @@ public class FloatBallManager {
     private boolean isOpenBall;
     private boolean useBackground;
 
+    //创建BallView
     public void addBallView(Context context) {
         if (mBallView == null) {
             mBallView = new BallView(context);
@@ -67,12 +69,12 @@ public class FloatBallManager {
 
 //            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
 
-            mBallView.makeBitmapRead();
+//            mBallView.makeBitmapRead();
 
 //            mBallView.createBitmapCropFromBitmapRead();
 
             //Call this when something has changed which has invalidated the layout of this view.
-            mBallView.requestLayout();
+//            mBallView.requestLayout();
 
 //            useBackground = defaultSharedPreferences.getBoolean("useBackground", false);
 //            setUseBackground(useBackground);
@@ -101,7 +103,7 @@ public class FloatBallManager {
     }
 
 
-    public  void setOpacity(int opacity) {
+    public void setOpacity(int opacity) {
         if (mBallView != null) {
             mBallView.setOpacity(opacity);
             mBallView.invalidate();
@@ -133,16 +135,12 @@ public class FloatBallManager {
         }
 
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
-
         editor.putBoolean("isOpenBall",isOpenBall);
 
         LayoutParams params = mBallView.getLayoutParams();
         editor.putInt("paramsX",params.x);
         editor.putInt("paramsY",params.y);
 
-//        editor.putInt("opacity",mBallView.getOpacity());
-//        editor.putInt("size", (int) mBallView.getBallRadius());
-//        editor.putBoolean("useBackground", useBackground);
         editor.apply();
     }
 
@@ -159,7 +157,7 @@ public class FloatBallManager {
             //Opacity
             mBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_OPACITY,125));
             //Size
-            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
+            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt(KEY_SIZE,25));
 
             mBallView.createBitmapCropFromBitmapRead();
 

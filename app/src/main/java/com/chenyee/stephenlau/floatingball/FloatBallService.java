@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
+import static com.chenyee.stephenlau.floatingball.BallView.TAG;
+
 
 /**
  * Accessibility services should only be used to assist users with disabilities in using Android devices and apps.
@@ -43,11 +45,11 @@ public class FloatBallService extends AccessibilityService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
             if(event.getEventType()==AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
-                if (event.getPackageName().toString().contains("om.sohu.inputmethod.sogou")) {
-                    mFloatBallManager.setOpacity(0);
-                }else{
-                    mFloatBallManager.setOpacity(255);
-                }
+//                if (event.getPackageName().toString().contains("om.sohu.inputmethod.sogou")) {
+//                    mFloatBallManager.setOpacity(0);
+//                }else{
+//                    mFloatBallManager.setOpacity(255);
+//                }
             }
         }
     }
@@ -85,7 +87,7 @@ public class FloatBallService extends AccessibilityService {
                     mFloatBallManager.removeBallView(this);//内部有mFloatBallManager.saveFloatBallData();
                 }
                 if(type==TYPE_OPACITY){
-                    mFloatBallManager.setOpacity(data.getInt("opacity"));
+//                    mFloatBallManager.setOpacity(data.getInt("opacity"));
                 }
                 if (type == TYPE_SIZE) {
                     mFloatBallManager.setSize(data.getInt("size"));
@@ -99,9 +101,10 @@ public class FloatBallService extends AccessibilityService {
                 if(type==TYPE_USEBACKGROUND){
                     mFloatBallManager.setUseBackground(data.getBoolean("useBackground"));
                 }
+
+
                 if(type==TYPE_UPDATE_DATA){
                     mFloatBallManager.updateData();
-
                 }
             }
         }
