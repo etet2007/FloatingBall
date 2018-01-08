@@ -1,11 +1,14 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.inputmethod.InputMethodManager;
 
 import static com.chenyee.stephenlau.floatingball.BallView.TAG;
 
@@ -35,26 +38,53 @@ public class FloatBallService extends AccessibilityService {
         super.onServiceConnected();
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
+
+
+
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        Log.d("lqt", "onAccessibilityEvent "+event);
-//        Log.d("lqt", "onAccessibilityEvent getSource "+event.getSource());
+//        Log.d("lqt", "onAccessibilityEvent "+event);
+
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
             if(event.getEventType()==AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
 //                if (event.getPackageName().toString().contains("om.sohu.inputmethod.sogou")) {
-//                    mFloatBallManager.setOpacity(0);
-//                }else{
-//                    mFloatBallManager.setOpacity(255);
+
 //                }
             }
         }
     }
 
+    private class IMMResult extends ResultReceiver {
+        public int result = -1;
+        public IMMResult() {
+            super(null);
+        }
 
+        @Override
+        public void onReceiveResult(int r, Bundle data) {
+            result = r;
+        }
+
+        // poll result value for up to 500 milliseconds
+        public int getResult() {
+            try {
+                int sleep = 0;
+                while (result == -1 && sleep < 500) {
+                    Thread.sleep(100);
+                    sleep += 100;
+                }
+            } catch (InterruptedException e) {
+                Log.e("IMMResult", e.getMessage());
+            }
+            return result;
+        }
+    }
 
     @Override
     public void onInterrupt() {
@@ -86,12 +116,12 @@ public class FloatBallService extends AccessibilityService {
                 if(type== TYPE_DEL){
                     mFloatBallManager.removeBallView(this);//内部有mFloatBallManager.saveFloatBallData();
                 }
-                if(type==TYPE_OPACITY){
+//                if(type==TYPE_OPACITY){
 //                    mFloatBallManager.setOpacity(data.getInt("opacity"));
-                }
-                if (type == TYPE_SIZE) {
-                    mFloatBallManager.setSize(data.getInt("size"));
-                }
+//                }
+//                if (type == TYPE_SIZE) {
+//                    mFloatBallManager.setSize(data.getInt("size"));
+//                }
                 if (type == TYPE_IMAGE) {
                     mFloatBallManager.setBackgroundPic(this,data.getString("imagePath"));
                 }
@@ -101,7 +131,6 @@ public class FloatBallService extends AccessibilityService {
                 if(type==TYPE_USEBACKGROUND){
                     mFloatBallManager.setUseBackground(data.getBoolean("useBackground"));
                 }
-
 
                 if(type==TYPE_UPDATE_DATA){
                     mFloatBallManager.updateData();

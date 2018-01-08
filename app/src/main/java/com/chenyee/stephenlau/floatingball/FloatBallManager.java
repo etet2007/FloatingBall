@@ -5,14 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
-import static com.chenyee.stephenlau.floatingball.BallView.TAG;
-import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_SIZE;
-import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_USE_BACKGROUND;
+
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
+
 
 /**
  * 单例
@@ -135,11 +134,11 @@ public class FloatBallManager {
         }
 
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
-        editor.putBoolean("isOpenBall",isOpenBall);
+        editor.putBoolean(KEY_HAS_Added_Ball,isOpenBall);
 
         LayoutParams params = mBallView.getLayoutParams();
-        editor.putInt("paramsX",params.x);
-        editor.putInt("paramsY",params.y);
+        editor.putInt(KEY_PARAM_X,params.x);
+        editor.putInt(KEY_PARAM_Y,params.y);
 
         editor.apply();
     }

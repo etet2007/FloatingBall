@@ -33,9 +33,8 @@ import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
-import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_OPACITY;
-import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_SIZE;
-import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.KEY_USE_BACKGROUND;
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,9 +49,12 @@ public class MainActivity extends AppCompatActivity
     private SwitchCompat backgroundSwitch;
     //显示参数
     SharedPreferences prefs;
-    private int opacity;
-    private int ballSize;
-    private boolean hasAddedBall;
+
+//    private int opacity;
+//    private int ballSize;
+
+//    private boolean hasAddedBall;
+    
     //调用系统相册-选择图片
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
@@ -62,11 +64,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //获取悬浮球参数
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        hasAddedBall =prefs.getBoolean("hasAddedBall",false);
-        opacity=prefs.getInt("opacity",125);
-        ballSize=prefs.getInt("size",25);
+
 
         initViews();
 
@@ -138,13 +136,21 @@ public class MainActivity extends AppCompatActivity
         choosePicButton = (Button) findViewById(R.id.choosePic_button);
         backgroundSwitch = (SwitchCompat) findViewById(R.id.background_switch);
 
+        //获取悬浮球参数
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean hasAddedBall = prefs.getBoolean(KEY_HAS_Added_Ball, false);
+        int opacity = prefs.getInt(KEY_OPACITY, 125);
+        int ballSize = prefs.getInt(KEY_SIZE, 25);
+        boolean useBackground = prefs.getBoolean(KEY_USE_BACKGROUND, false);
+
         //根据数据进行初始化
         opacitySeekBar.setProgress(opacity);
         sizeSeekBar.setProgress(ballSize);
+        backgroundSwitch.setChecked(useBackground);
 
         if(hasAddedBall) {
-            ballSwitch.setChecked(true);
             fab.setImageAlpha(255);
+            ballSwitch.setChecked(true);
             opacitySeekBar.setEnabled(true);
             sizeSeekBar.setEnabled(true);
             choosePicButton.setEnabled(true);
@@ -157,7 +163,6 @@ public class MainActivity extends AppCompatActivity
             choosePicButton.setEnabled(false);
             backgroundSwitch.setEnabled(false);
         }
-
 
         ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -173,7 +178,6 @@ public class MainActivity extends AppCompatActivity
         opacitySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt(KEY_OPACITY,value);
                 editor.apply();
@@ -187,13 +191,11 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-//                opacity = seekBar.getProgress();
             }
         });
         sizeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt(KEY_SIZE,value);
                 editor.apply();
@@ -208,7 +210,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-//                ballSize = seekBar.getProgress();
             }
         });
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -313,7 +314,7 @@ public class MainActivity extends AppCompatActivity
         sizeSeekBar.setEnabled(true);
         choosePicButton.setEnabled(true);
         backgroundSwitch.setEnabled(true);
-        hasAddedBall =true;
+//        hasAddedBall =true;
     }
 
     private void removeFloatBall() {
@@ -329,7 +330,7 @@ public class MainActivity extends AppCompatActivity
         choosePicButton.setEnabled(false);
         backgroundSwitch.setEnabled(false);
 
-        hasAddedBall =false;
+//        hasAddedBall =false;
     }
 
 
