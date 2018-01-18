@@ -14,7 +14,7 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
 
 /**
- * 单例
+ * 单例FloatBallManager
  */
 
 public class FloatBallManager {
@@ -65,7 +65,6 @@ public class FloatBallManager {
             updateData();
 
 //            mBallView.setOpacity(defaultSharedPreferences.getInt("opacity",125));
-
 //            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
 
 //            mBallView.makeBitmapRead();
@@ -150,7 +149,7 @@ public class FloatBallManager {
             mBallView.invalidate();
         }
     }
-
+// 根据SharedPreferences中的数据更新BallView的显示参数
     public void updateData() {
         if (mBallView != null) {
             //Opacity

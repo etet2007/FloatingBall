@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SwitchCompat;
@@ -52,7 +53,6 @@ public class MainActivity extends AppCompatActivity
 
 //    private int opacity;
 //    private int ballSize;
-
 //    private boolean hasAddedBall;
     
     //调用系统相册-选择图片
@@ -63,11 +63,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
+        //初始化view
         initViews();
-
         //申请权限 DrawOverlays
         requestDrawOverlaysPermission();
     }
@@ -76,11 +73,11 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
-        Bundle data = new Bundle();
-        data.putInt("type", FloatBallService.TYPE_SAVE);
-        intent.putExtras(data);
-        startService(intent);
+//        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+//        Bundle data = new Bundle();
+//        data.putInt("type", FloatBallService.TYPE_SAVE);
+//        intent.putExtras(data);
+//        startService(intent);
     }
 
     private void requestDrawOverlaysPermission() {
@@ -104,9 +101,10 @@ public class MainActivity extends AppCompatActivity
         // Set up the toolbar. 工具栏。
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar ab = getSupportActionBar();//上面Set完这里Get，不就是Toolbar
+        ActionBar ab = getSupportActionBar();//上面Set完这里Get，就是Toolbar
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
+
         // Set up the FloatingActionButton
         fab = (FloatingActionButton) findViewById(R.id.logo_fab);
         fab.setUseCompatPadding(false);
@@ -114,8 +112,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 ballSwitch.toggle();
-//                Snackbar.make(v, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
             }
         });
 
@@ -148,30 +144,22 @@ public class MainActivity extends AppCompatActivity
         sizeSeekBar.setProgress(ballSize);
         backgroundSwitch.setChecked(useBackground);
 
-        if(hasAddedBall) {
-            fab.setImageAlpha(255);
-            ballSwitch.setChecked(true);
-            opacitySeekBar.setEnabled(true);
-            sizeSeekBar.setEnabled(true);
-            choosePicButton.setEnabled(true);
-            backgroundSwitch.setEnabled(true);
-        }else{
-            fab.setImageAlpha(40);
-            ballSwitch.setChecked(false);
-            opacitySeekBar.setEnabled(false);
-            sizeSeekBar.setEnabled(false);
-            choosePicButton.setEnabled(false);
-            backgroundSwitch.setEnabled(false);
-        }
+        //hasAddedBall代表两种状态
+        updateViewsState(hasAddedBall);
 
         ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     addFloatBall();
+                    Snackbar.make(buttonView, "Add floating ball.", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
                 }else{
                     removeFloatBall();
+                    Snackbar.make(buttonView, "Remove floating ball.", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
                 }
+                updateViewsState(isChecked);
             }
         });
 
@@ -215,7 +203,6 @@ public class MainActivity extends AppCompatActivity
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean(KEY_USE_BACKGROUND,isChecked);
                 editor.apply();
@@ -234,6 +221,24 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, IMAGE);//onActivityResult
             }
         });
+    }
+
+    private void updateViewsState(boolean hasAddedBall) {
+        if(hasAddedBall) {
+            fab.setImageAlpha(255);
+            ballSwitch.setChecked(true);
+            opacitySeekBar.setEnabled(true);
+            sizeSeekBar.setEnabled(true);
+            choosePicButton.setEnabled(true);
+            backgroundSwitch.setEnabled(true);
+        }else{
+            fab.setImageAlpha(40);
+            ballSwitch.setChecked(false);
+            opacitySeekBar.setEnabled(false);
+            sizeSeekBar.setEnabled(false);
+            choosePicButton.setEnabled(false);
+            backgroundSwitch.setEnabled(false);
+        }
     }
 
     private void sendUpdateIntentToService() {
@@ -255,7 +260,8 @@ public class MainActivity extends AppCompatActivity
             String[] filePathColumns = {MediaStore.Images.Media.DATA};
             Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
 
-            c.moveToFirst();
+            if (c == null)
+                return;
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
             Log.d("lqt", "onActivityResult: "+imagePath);
@@ -277,7 +283,6 @@ public class MainActivity extends AppCompatActivity
         if(requestCode==mREQUEST_external_storage){
 //判断是否成功
 //            成功继续打开图片？
-
         }
     }
 
@@ -300,7 +305,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addFloatBall() {
-        //为了可以执行返回等操作。
         checkAccessibility();
 
         Intent intent = new Intent(MainActivity.this, FloatBallService.class);
@@ -308,13 +312,6 @@ public class MainActivity extends AppCompatActivity
         data.putInt("type", FloatBallService.TYPE_ADD);
         intent.putExtras(data);
         startService(intent);
-
-        fab.setImageAlpha(255);
-        opacitySeekBar.setEnabled(true);
-        sizeSeekBar.setEnabled(true);
-        choosePicButton.setEnabled(true);
-        backgroundSwitch.setEnabled(true);
-//        hasAddedBall =true;
     }
 
     private void removeFloatBall() {
@@ -323,14 +320,6 @@ public class MainActivity extends AppCompatActivity
         data.putInt("type", FloatBallService.TYPE_DEL);
         intent.putExtras(data);
         startService(intent);
-
-        fab.setImageAlpha(40);
-        opacitySeekBar.setEnabled(false);
-        sizeSeekBar.setEnabled(false);
-        choosePicButton.setEnabled(false);
-        backgroundSwitch.setEnabled(false);
-
-//        hasAddedBall =false;
     }
 
 

@@ -11,6 +11,4 @@ public class SharedPreferencesUtil {
     public static final String KEY_HAS_Added_Ball = "hasAddedBall";
     public static final String KEY_PARAM_X ="paramsX";
     public static final String KEY_PARAM_Y ="paramsY";
-
-
 }

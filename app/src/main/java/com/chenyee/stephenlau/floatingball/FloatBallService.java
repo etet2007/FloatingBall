@@ -1,16 +1,12 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.inputmethod.InputMethodManager;
-
-import static com.chenyee.stephenlau.floatingball.BallView.TAG;
 
 
 /**
@@ -28,7 +24,7 @@ public class FloatBallService extends AccessibilityService {
     public static final int TYPE_SIZE =3;
     public static final int TYPE_IMAGE =4;
     public static final int TYPE_SAVE =5;
-    public static final int TYPE_USEBACKGROUND =6;
+    public static final int TYPE_USE_BACKGROUND =6;
     public static final int TYPE_UPDATE_DATA =7;
 
     private FloatBallManager mFloatBallManager;
@@ -39,16 +35,11 @@ public class FloatBallService extends AccessibilityService {
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
 
-
-
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
 //        Log.d("lqt", "onAccessibilityEvent "+event);
-
-
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
@@ -128,7 +119,7 @@ public class FloatBallService extends AccessibilityService {
                 if(type == TYPE_SAVE){
                     mFloatBallManager.saveFloatBallData();
                 }
-                if(type==TYPE_USEBACKGROUND){
+                if(type== TYPE_USE_BACKGROUND){
                     mFloatBallManager.setUseBackground(data.getBoolean("useBackground"));
                 }
 
