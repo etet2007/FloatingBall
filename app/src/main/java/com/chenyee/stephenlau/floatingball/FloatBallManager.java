@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.WindowManager;
@@ -53,7 +54,11 @@ public class FloatBallManager {
             params.width = LayoutParams.WRAP_CONTENT;
             params.height = LayoutParams.WRAP_CONTENT;
             params.gravity = Gravity.START | Gravity.TOP;
-            params.type = LayoutParams.TYPE_PHONE;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //Android 8.0
+            }else {
+                params.type = LayoutParams.TYPE_SYSTEM_ALERT; //Android 8.0
+            }
             params.format = PixelFormat.RGBA_8888;
             params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                     | LayoutParams.FLAG_NOT_FOCUSABLE|LayoutParams.FLAG_LAYOUT_IN_SCREEN|LayoutParams.FLAG_LAYOUT_INSET_DECOR; //FLAG_LAYOUT_IN_SCREEN

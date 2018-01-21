@@ -16,7 +16,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Vibrator;
-import android.support.v4.view.GestureDetectorCompat;
+
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -90,7 +90,7 @@ public class BallView extends View {
 
     private GESTURE_STATE lastGestureSTATE = GESTURE_STATE.NONE;
 
-    private GestureDetectorCompat mDetector;
+    private GestureDetector mDetector;
     private AccessibilityService mService;
 
     private WindowManager mWindowManager;
@@ -138,7 +138,8 @@ public class BallView extends View {
         super(context);
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        mDetector=new GestureDetectorCompat(context,new MyGestureListener());
+
+        mDetector=new GestureDetector(context,new MyGestureListener());
         mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
         mBackgroundPaint.setColor(Color.GRAY);
