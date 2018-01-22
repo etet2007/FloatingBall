@@ -136,6 +136,7 @@ public class BallView extends View {
 
     public BallView(Context context) {
         super(context);
+        
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 

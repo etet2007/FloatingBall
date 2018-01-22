@@ -6,6 +6,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -41,6 +42,7 @@ public class FloatBallManager {
 
             WindowManager windowManager = getWindowManager(context);
 
+
             Point size = new Point();
             windowManager.getDefaultDisplay().getSize(size);
             int screenWidth = size.x;
@@ -57,11 +59,13 @@ public class FloatBallManager {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //Android 8.0
             }else {
-                params.type = LayoutParams.TYPE_SYSTEM_ALERT; //Android 8.0
+                params.type = LayoutParams.TYPE_SYSTEM_ALERT;
             }
             params.format = PixelFormat.RGBA_8888;
             params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                     | LayoutParams.FLAG_NOT_FOCUSABLE|LayoutParams.FLAG_LAYOUT_IN_SCREEN|LayoutParams.FLAG_LAYOUT_INSET_DECOR; //FLAG_LAYOUT_IN_SCREEN
+
+
             //把引用传进去
             mBallView.setLayoutParams(params);
 
@@ -85,6 +89,7 @@ public class FloatBallManager {
             mBallView.refreshAddAnimator();
 
             isOpenBall=true;
+            saveFloatBallData();
         }
     }
 

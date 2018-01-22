@@ -1,12 +1,15 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.inputmethod.InputMethodManager;
 
 
 /**
@@ -17,6 +20,7 @@ import android.view.accessibility.AccessibilityEvent;
  */
 
 public class FloatBallService extends AccessibilityService {
+    public static final String TAG = "AccessibilityService";
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_DEL = 1;
@@ -32,14 +36,15 @@ public class FloatBallService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        Log.d(TAG, "onServiceConnected");
+
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
-
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-//        Log.d("lqt", "onAccessibilityEvent "+event);
+//        Log.d(TAG, "onAccessibilityEvent "+event);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
@@ -49,37 +54,33 @@ public class FloatBallService extends AccessibilityService {
 //                }
             }
         }
+//Not work
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//
+//        if (imm.isAcceptingText()) {
+//            Log.d(TAG, "Software Keyboard was shown");
+//        } else {
+//            Log.d(TAG, "Software Keyboard was not shown");
+//        }
+
+
+        SoftKeyboardController softKeyboardController= null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            softKeyboardController = getSoftKeyboardController();
+            int showMode =softKeyboardController.getShowMode();
+            Log.d(TAG, "ShowMode" + showMode);
+//            softKeyboardController.setShowMode(SHOW_MODE_AUTO);
+//            Log.d(TAG, "ShowMode" + showMode);
+
+        }
+
     }
 
-    private class IMMResult extends ResultReceiver {
-        public int result = -1;
-        public IMMResult() {
-            super(null);
-        }
 
-        @Override
-        public void onReceiveResult(int r, Bundle data) {
-            result = r;
-        }
-
-        // poll result value for up to 500 milliseconds
-        public int getResult() {
-            try {
-                int sleep = 0;
-                while (result == -1 && sleep < 500) {
-                    Thread.sleep(100);
-                    sleep += 100;
-                }
-            } catch (InterruptedException e) {
-                Log.e("IMMResult", e.getMessage());
-            }
-            return result;
-        }
-    }
 
     @Override
     public void onInterrupt() {
-        Log.d("lqt", "onInterrupt");
+        Log.d(TAG, "onInterrupt");
     }
 
     @Override
@@ -93,6 +94,8 @@ public class FloatBallService extends AccessibilityService {
 // Do not call this method directly.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onAccessibilityEvent onStartCommand");
+
         if(intent != null ) {
             //mFloatBallManager的判断是因为生命周期有时候有问题
             if(mFloatBallManager==null)

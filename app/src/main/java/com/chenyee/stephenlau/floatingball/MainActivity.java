@@ -40,6 +40,8 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String TAG = "MainActivity";
+
     //    RecyclerView mMainRecyclerView;
     //控件
     private FloatingActionButton fab;
@@ -51,10 +53,6 @@ public class MainActivity extends AppCompatActivity
     //显示参数
     SharedPreferences prefs;
 
-//    private int opacity;
-//    private int ballSize;
-//    private boolean hasAddedBall;
-    
     //调用系统相册-选择图片
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
@@ -135,6 +133,7 @@ public class MainActivity extends AppCompatActivity
         //获取悬浮球参数
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hasAddedBall = prefs.getBoolean(KEY_HAS_Added_Ball, false);
+        Log.d(TAG, "hasAddedBall: "+hasAddedBall);
         int opacity = prefs.getInt(KEY_OPACITY, 125);
         int ballSize = prefs.getInt(KEY_SIZE, 25);
         boolean useBackground = prefs.getBoolean(KEY_USE_BACKGROUND, false);
