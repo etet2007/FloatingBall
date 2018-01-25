@@ -17,12 +17,6 @@
     <!--android:layout_width="wrap_content"-->
     <!--android:layout_height="wrap_content">-->
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/start_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
-        />
 
 
     <android.support.v7.widget.AppCompatTextView
@@ -81,16 +75,7 @@
         android:text="choose backgrond pic"
         android:layout_marginTop="20dp"
         />
-    <TextView
-        android:id="@+id/tips_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:lineSpacingExtra="2dp"
-        android:text="@string/tip"
-        android:textColor="#333333"
-        android:textSize="25sp"/>
+
 <!--</android.support.v7.widget.RecyclerView>-->
 
 </android.support.v7.widget.LinearLayoutCompat>
