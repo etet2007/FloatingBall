@@ -4,14 +4,16 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:fitsSystemWindows="true"
+
 	>
-	​
-	<android.support.design.widget.AppBarLayout
+	​<android.support.design.widget.AppBarLayout
 		android:id="@+id/materialup.appbar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-		>
+
+	>
 		​
 		<android.support.design.widget.CollapsingToolbarLayout
 			android:id="@+id/main.collapsing"
@@ -20,8 +22,8 @@
 			app:expandedTitleMarginStart="48dp"
 			app:expandedTitleMarginEnd="64dp"
 			app:layout_scrollFlags="scroll"
+
 			>
-			​
 			<android.support.v7.widget.AppCompatImageView
 				android:id="@+id/materialup.profile_backdrop"
 				android:layout_width="match_parent"
@@ -40,7 +42,7 @@
 			android:layout_height="wrap_content"
 			android:minHeight="?attr/actionBarSize"
 			app:layout_scrollFlags="scroll|enterAlways|snap"
-			app:theme="@style/ThemeOverlay.AppCompat.Light"
+			app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
 			/>
 		​
 		<LinearLayout
@@ -65,37 +67,25 @@
 			/>
 			​
 		</LinearLayout>
-		​
-		<!--<android.support.design.widget.TabLayout-->
-			<!--android:id="@+id/materialup.tabs"-->
-			<!--android:layout_width="fill_parent"-->
-			<!--android:layout_height="?attr/actionBarSize"-->
-			<!--app:tabSelectedTextColor="?android:attr/textColorPrimaryInverse"-->
-			<!--app:tabIndicatorColor="?android:attr/textColorPrimaryInverse"-->
-			<!--app:tabIndicatorHeight="4dp"-->
-			<!--/>-->
+
 	</android.support.design.widget.AppBarLayout>
 	​
-	<!--<android.support.v4.view.ViewPager-->
-		<!--android:id="@+id/materialup.viewpager"-->
-		<!--android:layout_width="match_parent"-->
-		<!--android:layout_height="match_parent"-->
-		<!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-		<!--/>-->
-	​    <android.support.v4.widget.NestedScrollView
+	<android.support.v4.widget.NestedScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
+
 	<include
-		layout="@layout/list_item_card"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+			layout="@layout/list_item_card"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
+
+	</android.support.v4.widget.NestedScrollView>
 
 
-</android.support.v4.widget.NestedScrollView>
 	<android.support.design.widget.FloatingActionButton
 		android:id="@+id/logo_fab"
 		android:layout_height="wrap_content"
@@ -120,6 +110,4 @@
 		app:layout_scrollFlags="scroll"
 		app:layout_anchorGravity="top|center_horizontal"
 		/>
-
-
 </android.support.design.widget.CoordinatorLayout>

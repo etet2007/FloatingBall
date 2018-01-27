@@ -5,7 +5,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical">
 
-
 	<android.support.v7.widget.CardView
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		xmlns:android="http://schemas.android.com/apk/res/android"
@@ -61,8 +60,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				app:dsb_min="1"
-				app:dsb_max="255"
-				app:dsb_value="125"
+				app:dsb_max="80"
+				app:dsb_value="40"
 				app:dsb_progressColor="@color/colorAccent"
 				app:dsb_indicatorColor="@color/colorAccent"
 				/>
@@ -98,7 +97,7 @@
 			android:layout_height="wrap_content"
 			android:gravity="center_horizontal"
 			android:text="Use background?"
-			android:layout_marginTop="60dp"
+			android:layout_marginTop="30dp"
 			android:layout_marginBottom="10dp"
 			/>
 		<android.support.v7.widget.SwitchCompat

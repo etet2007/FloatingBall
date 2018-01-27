@@ -41,7 +41,6 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
-
     private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
 
     private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
@@ -52,7 +51,6 @@ public class MainActivity extends AppCompatActivity
 
     public static final String TAG = "MainActivity";
 
-    //    RecyclerView mMainRecyclerView;
     //控件
     private FloatingActionButton fab;
     private SwitchCompat ballSwitch;
@@ -72,10 +70,64 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initFrameViews();
         //初始化view
-        initViews();
+        initContentViews();
         //申请权限 DrawOverlays
         requestDrawOverlaysPermission();
+    }
+
+    private void initFrameViews() {
+        // Set up the toolbar. 工具栏。
+        Toolbar toolbar = (Toolbar) findViewById(R.id.materialup_toolbar);
+        setSupportActionBar(toolbar);//顺序会有影响
+        ActionBar ab = getSupportActionBar();
+        ab.setHomeButtonEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayShowTitleEnabled(false);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override public boolean onMenuItemClick(MenuItem item) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPO_URL));
+                startActivity(browserIntent);
+                return true;
+            }
+        });
+//        toolbar.setNavigationIcon(R.drawable.ic_menu_send);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                onBackPressed();
+//            }
+//        });
+
+        //Set up the appBarLayout.
+        AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.materialup_appbar);
+        appbarLayout.addOnOffsetChangedListener(this);
+        mMaxScrollSize = appbarLayout.getTotalScrollRange();
+
+        // Set up the FloatingActionButton.
+        fab = (FloatingActionButton) findViewById(R.id.logo_fab);
+        fab.setUseCompatPadding(false);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ballSwitch.toggle();
+            }
+        });
+
+        // Set up the ActionBarDrawerToggle.
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // Set up the navigation drawer.左侧滑出的菜单。
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
     }
 
     @Override
@@ -130,62 +182,8 @@ public class MainActivity extends AppCompatActivity
                     .start();
         }
     }
-    private void initViews() {
-
+    private void initContentViews() {
         mProfileImage = (ImageView) findViewById(R.id.materialup_profile_image);
-
-        // Set up the toolbar. 工具栏。
-        Toolbar toolbar = (Toolbar) findViewById(R.id.materialup_toolbar);
-
-        setSupportActionBar(toolbar);
-        ActionBar ab = getSupportActionBar();//上面Set完这里Get，就是Toolbar
-        ab.setHomeButtonEnabled(true);
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setDisplayShowTitleEnabled(false);
-
-//        toolbar.setNavigationIcon(R.drawable.ic_menu_white_48dp);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override public boolean onMenuItemClick(MenuItem item) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPO_URL));
-                startActivity(browserIntent);
-                return true;
-            }
-        });
-//        toolbar.setNavigationIcon(R.drawable.ic_menu_send);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                onBackPressed();
-//            }
-//        });
-
-        //AppBarLayout
-        AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.materialup_appbar);
-        appbarLayout.addOnOffsetChangedListener(this);
-        mMaxScrollSize = appbarLayout.getTotalScrollRange();
-
-        // Set up the FloatingActionButton
-        fab = (FloatingActionButton) findViewById(R.id.logo_fab);
-        fab.setUseCompatPadding(false);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ballSwitch.toggle();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-
-        toggle.syncState();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-
-        // Set up the navigation drawer.左侧滑出的菜单。
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         opacitySeekBar = (DiscreteSeekBar) findViewById(R.id.opacity_seekbar);
         opacitySeekBar = (DiscreteSeekBar) findViewById(R.id.opacity_seekbar);
         ballSwitch = (SwitchCompat) findViewById(R.id.start_switch);
@@ -234,11 +232,9 @@ public class MainActivity extends AppCompatActivity
 
                 sendUpdateIntentToService();
             }
-
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
             }
-
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
             }
@@ -324,6 +320,7 @@ public class MainActivity extends AppCompatActivity
 
             if (c == null)
                 return;
+            c.moveToFirst();
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
             Log.d("lqt", "onActivityResult: "+imagePath);
