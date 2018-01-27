@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -30,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -38,7 +40,15 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
+
+    private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
+
+    private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
+    private boolean mIsAvatarShown = true;
+
+    private ImageView mProfileImage;
+    private int mMaxScrollSize;
 
     public static final String TAG = "MainActivity";
 
@@ -61,6 +71,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //初始化view
         initViews();
         //申请权限 DrawOverlays
@@ -95,13 +106,63 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        if (mMaxScrollSize == 0)
+            mMaxScrollSize = appBarLayout.getTotalScrollRange();
+
+        int percentage = (Math.abs(i)) * 100 / mMaxScrollSize;
+
+        if (percentage >= PERCENTAGE_TO_ANIMATE_AVATAR && mIsAvatarShown) {
+            mIsAvatarShown = false;
+
+            mProfileImage.animate()
+                    .scaleY(0).scaleX(0)
+                    .setDuration(200)
+                    .start();
+        }
+
+        if (percentage <= PERCENTAGE_TO_ANIMATE_AVATAR && !mIsAvatarShown) {
+            mIsAvatarShown = true;
+
+            mProfileImage.animate()
+                    .scaleY(1).scaleX(1)
+                    .start();
+        }
+    }
     private void initViews() {
+
+        mProfileImage = (ImageView) findViewById(R.id.materialup_profile_image);
+
         // Set up the toolbar. 工具栏。
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.materialup_toolbar);
+
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();//上面Set完这里Get，就是Toolbar
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+        ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayShowTitleEnabled(false);
+
+//        toolbar.setNavigationIcon(R.drawable.ic_menu_white_48dp);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override public boolean onMenuItemClick(MenuItem item) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPO_URL));
+                startActivity(browserIntent);
+                return true;
+            }
+        });
+//        toolbar.setNavigationIcon(R.drawable.ic_menu_send);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                onBackPressed();
+//            }
+//        });
+
+        //AppBarLayout
+        AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.materialup_appbar);
+        appbarLayout.addOnOffsetChangedListener(this);
+        mMaxScrollSize = appbarLayout.getTotalScrollRange();
 
         // Set up the FloatingActionButton
         fab = (FloatingActionButton) findViewById(R.id.logo_fab);
@@ -117,7 +178,9 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
+
         toggle.syncState();
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
 
         // Set up the navigation drawer.左侧滑出的菜单。
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);

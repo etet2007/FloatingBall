@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!--<item-->
-        <!--android:id="@+id/action_settings"-->
-        <!--android:icon="@drawable/ic_menu_camera"-->
-        <!--android:orderInCategory="100"-->
-        <!--android:title="@string/action_settings"-->
-        <!--app:showAsAction="always"/>-->
+    <item
+        android:id="@+id/menu.github"
+        android:icon="@drawable/ic_github_circle_white_24dp"
+        app:showAsAction="always"
+        android:title="Github!" />
 </menu>

@@ -32,14 +32,15 @@
 				/>
 		</android.support.design.widget.CollapsingToolbarLayout>
 		​​
+
 		<android.support.v7.widget.Toolbar
 			android:id="@+id/materialup.toolbar"
+			style="@style/ToolBarWithNavigationBack"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:minHeight="?attr/actionBarSize"
-			app:theme="@style/ThemeOverlay.AppCompat.Light"
 			app:layout_scrollFlags="scroll|enterAlways|snap"
-			style="@style/ToolBarWithNavigationBack"
+			app:theme="@style/ThemeOverlay.AppCompat.Light"
 			/>
 		​
 		<LinearLayout
@@ -47,9 +48,8 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal"
-			android:paddingTop="8dp"
+			android:paddingTop="2dp"
 			android:gravity="center"
-			app:layout_scrollFlags="scroll|enterAlways|snap"
 			>
 			​
 			<TextView
@@ -57,33 +57,47 @@
 				android:layout_height="wrap_content"
 				android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
 				android:text="Start: "
-				/>
+			/>
 			<android.support.v7.widget.SwitchCompat
 				android:id="@+id/start_switch"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				/>
+			/>
 			​
 		</LinearLayout>
 		​
-		<android.support.design.widget.TabLayout
-			android:id="@+id/materialup.tabs"
-			android:layout_width="fill_parent"
-			android:layout_height="?attr/actionBarSize"
-			app:tabSelectedTextColor="?android:attr/textColorPrimaryInverse"
-			app:tabIndicatorColor="?android:attr/textColorPrimaryInverse"
-			app:tabIndicatorHeight="4dp"
-			/>
+		<!--<android.support.design.widget.TabLayout-->
+			<!--android:id="@+id/materialup.tabs"-->
+			<!--android:layout_width="fill_parent"-->
+			<!--android:layout_height="?attr/actionBarSize"-->
+			<!--app:tabSelectedTextColor="?android:attr/textColorPrimaryInverse"-->
+			<!--app:tabIndicatorColor="?android:attr/textColorPrimaryInverse"-->
+			<!--app:tabIndicatorHeight="4dp"-->
+			<!--/>-->
 	</android.support.design.widget.AppBarLayout>
 	​
-	<android.support.v4.view.ViewPager
-		android:id="@+id/materialup.viewpager"
+	<!--<android.support.v4.view.ViewPager-->
+		<!--android:id="@+id/materialup.viewpager"-->
+		<!--android:layout_width="match_parent"-->
+		<!--android:layout_height="match_parent"-->
+		<!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+		<!--/>-->
+	​    <android.support.v4.widget.NestedScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	app:layout_behavior="@string/appbar_scrolling_view_behavior"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<include
+		layout="@layout/list_item_card"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior"
-		/>
-	​
+		android:layout_height="match_parent"/>
+
+
+</android.support.v4.widget.NestedScrollView>
 	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/logo_fab"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
 		android:elevation="8dp"
