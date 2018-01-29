@@ -18,6 +18,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +43,8 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
     private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
+    private static final String GITHUB_REPO_RELEASE_URL = "https://github.com/etet2007/FloatingBall";
+
 
     private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
     private boolean mIsAvatarShown = true;
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //初始化toolbar等
         initFrameViews();
         //初始化view
         initContentViews();
@@ -429,20 +433,22 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+//
+//        if (id == R.id.nav_camera) {
+//            // Handle the camera action
+//        } else if (id == R.id.nav_gallery) {
+//
+//        } else if (id == R.id.nav_slideshow) {
+//
+//        } else if (id == R.id.nav_manage) {
+//
+//        } else
+         if (id == R.id.nav_share) {
+             Intent textIntent = new Intent(Intent.ACTION_SEND);
+             textIntent.setType("text/plain");
+             textIntent.putExtra(Intent.EXTRA_TEXT, GITHUB_REPO_URL);
+             startActivity(Intent.createChooser(textIntent, "分享"));
+             }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

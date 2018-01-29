@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
-                android:src="@drawable/appbar_background"/>
+                android:src="@drawable/material_flat_2"/>
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
