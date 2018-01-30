@@ -253,49 +253,52 @@ public class BallView extends View {
         });
     }
 
-    public void refreshAddAnimator() {
-        Keyframe kf0 = Keyframe.ofFloat(0f, 0);
-        Keyframe kf1 = Keyframe.ofFloat(1f, ballRadius);
-        PropertyValuesHolder ballRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1);
-        Keyframe kf2 = Keyframe.ofFloat(0f, 0);
-        Keyframe kf3 = Keyframe.ofFloat(1f, ballRadius+15);
-        PropertyValuesHolder backgroundRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("mBackgroundRadius", kf2,kf3);
-
-        onAddAnimate = ObjectAnimator.ofPropertyValuesHolder(this, ballRadiusValuesHolder,backgroundRadiusValuesHolder);
-        onAddAnimate.setDuration(400);
-        onAddAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                invalidate();
-            }});
-        onAddAnimate.start();
-
-//        另外一种动画，感觉不好
-//        ValueAnimator.AnimatorUpdateListener update=new ValueAnimator.AnimatorUpdateListener() {
+    public void performAddAnimator() {
+        //可以设置更加细致的动画，这里只是修改圆的半径大小，背景图没处理，适用性低。
+//        Keyframe kf0 = Keyframe.ofFloat(0f, 0);
+//        Keyframe kf1 = Keyframe.ofFloat(1f, ballRadius);
+//        PropertyValuesHolder ballRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1);
+//        Keyframe kf2 = Keyframe.ofFloat(0f, 0);
+//        Keyframe kf3 = Keyframe.ofFloat(1f, ballRadius+15);
+//        PropertyValuesHolder backgroundRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("mBackgroundRadius", kf2,kf3);
+//
+//        onAddAnimate = ObjectAnimator.ofPropertyValuesHolder(this, ballRadiusValuesHolder,backgroundRadiusValuesHolder);
+//        onAddAnimate.setDuration(400);
+//        onAddAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 //                        @Override
 //            public void onAnimationUpdate(ValueAnimator animation) {
 //                invalidate();
-//            }
-//        };
-//        ObjectAnimator animator1=ObjectAnimator.ofFloat(this, "ballRadius", 0F,ballRadius);
-//        ObjectAnimator animator2=ObjectAnimator.ofFloat(this, "mBackgroundRadius", ballRadius,ballRadius+15);
-//        mBackgroundRadius=0;
-//        animator1.addUpdateListener(update);
-//        animator1.setDuration(300);
-//        animator2.setDuration(100);
-//        animator2.addUpdateListener(update);
-//        AnimatorSet set = new AnimatorSet();
-//        set.play(animator2).after(animator1);
-//        set.start();
-//        set.addListener(new Animator.AnimatorListener() {
+//            }});
+//        onAddAnimate.start();
+
+        //View自带的动画。
+        setScaleX(0);
+        setScaleY(0);
+        animate()
+                .scaleY(1).scaleX(1)
+                .setDuration(200)
+                .start();
+    }
+
+    public void performRemoveAnimator() {
+//        Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
+//        Keyframe kf1 = Keyframe.ofFloat(1f, 0);
+//        PropertyValuesHolder ballRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1);
+//        Keyframe kf2 = Keyframe.ofFloat(0f, mBackgroundRadius);
+//        Keyframe kf3 = Keyframe.ofFloat(1f, 0);
+//        PropertyValuesHolder backgroundRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("mBackgroundRadius", kf2,kf3);
+//
+//
+//        onRemoveAnimate = ObjectAnimator.ofPropertyValuesHolder(this, ballRadiusValuesHolder,backgroundRadiusValuesHolder);
+//        onRemoveAnimate.addListener(new Animator.AnimatorListener() {
 //            @Override
 //            public void onAnimationStart(Animator animation) {
-//
 //            }
 //
 //            @Override
 //            public void onAnimationEnd(Animator animation) {
-//
+//                WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+//                windowManager.removeView(BallView.this);
 //            }
 //
 //            @Override
@@ -308,48 +311,20 @@ public class BallView extends View {
 //
 //            }
 //        });
+//        onRemoveAnimate.setDuration(400);
+//        onRemoveAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                invalidate();
+//            }
+//        });
+//        onRemoveAnimate.start();
 
-    }
-
-    public void refreshRemoveAnimator() {
-        Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
-        Keyframe kf1 = Keyframe.ofFloat(1f, 0);
-        PropertyValuesHolder ballRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1);
-        Keyframe kf2 = Keyframe.ofFloat(0f, mBackgroundRadius);
-        Keyframe kf3 = Keyframe.ofFloat(1f, 0);
-        PropertyValuesHolder backgroundRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("mBackgroundRadius", kf2,kf3);
-
-
-        onRemoveAnimate = ObjectAnimator.ofPropertyValuesHolder(this, ballRadiusValuesHolder,backgroundRadiusValuesHolder);
-        onRemoveAnimate.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-                windowManager.removeView(BallView.this);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        onRemoveAnimate.setDuration(400);
-        onRemoveAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                invalidate();
-            }
-        });
-        onRemoveAnimate.start();
+        //View自带的动画。
+        animate()
+                .scaleY(0).scaleX(0)
+                .setDuration(200)
+                .start();
     }
 
     @Override
@@ -361,7 +336,6 @@ public class BallView extends View {
         canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallPaint);
         if(useBackground)
         canvas.drawBitmap(bitmapCrop,-bitmapCrop.getWidth()/2+ballCenterX,-bitmapCrop.getHeight()/2+ballCenterY,mBallPaint);
-
     }
 
     @Override

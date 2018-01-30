@@ -1,15 +1,11 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.util.Log;
-import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.inputmethod.InputMethodManager;
 
 
 /**
@@ -127,7 +123,7 @@ public class FloatBallService extends AccessibilityService {
                 }
 
                 if(type==TYPE_UPDATE_DATA){
-                    mFloatBallManager.updateData();
+                    mFloatBallManager.updateBallViewData();
                 }
             }
         }

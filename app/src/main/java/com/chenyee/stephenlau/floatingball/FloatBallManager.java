@@ -6,7 +6,6 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -70,7 +69,7 @@ public class FloatBallManager {
 
             windowManager.addView(mBallView, params);
 
-            updateData();
+            updateBallViewData();
 
 //            mBallView.setOpacity(defaultSharedPreferences.getInt("opacity",125));
 //            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
@@ -85,7 +84,7 @@ public class FloatBallManager {
 //            useBackground = defaultSharedPreferences.getBoolean("useBackground", false);
 //            setUseBackground(useBackground);
 
-            mBallView.refreshAddAnimator();
+            mBallView.performAddAnimator();
 
             isOpenBall=true;
             saveFloatBallData();
@@ -94,8 +93,9 @@ public class FloatBallManager {
 
     public void removeBallView(final Context context) {
         if (mBallView != null) {
-            mBallView.refreshRemoveAnimator();
             isOpenBall=false;
+
+            mBallView.performRemoveAnimator();
 
             saveFloatBallData();
             mBallView = null;
@@ -125,7 +125,6 @@ public class FloatBallManager {
 
             mBallView.invalidate();
         }
-
     }
     public  void setBackgroundPic(Context context,String imagePath){
         if (mBallView != null) {
@@ -159,7 +158,7 @@ public class FloatBallManager {
         }
     }
 // 根据SharedPreferences中的数据更新BallView的显示参数
-    public void updateData() {
+    public void updateBallViewData() {
         if (mBallView != null) {
             //Opacity
             mBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_OPACITY,125));
