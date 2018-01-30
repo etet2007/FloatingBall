@@ -5,6 +5,13 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
-    <string name="accessibility">开启悬浮球辅助功能</string>
+    <string name="accessibility">Floating ball accessibility.</string>
+    <string name="on_off">On/Off:</string>
+    <string name="opacity">Opacity</string>
+    <string name="size">Size</string>
+    <string name="use_background_picture">Use background picture?</string>
+    <string name="choose_picture">Choose picture</string>
+    <string name="communicate">Communicate</string>
+    <string name="share">Share the release link</string>
 
 </resources>

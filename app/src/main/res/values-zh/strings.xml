@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">悬浮球</string>
+
+    <string name="navigation_drawer_open">打开导航抽屉</string>
+    <string name="navigation_drawer_close">关闭导航抽屉</string>
+
+
+    <string name="accessibility">开启悬浮球辅助功能</string>
+    <string name="on_off">开/关:</string>
+    <string name="opacity">透明度</string>
+    <string name="size">大小</string>
+    <string name="use_background_picture">是否使用背景图片</string>
+    <string name="choose_picture">选择图片</string>
+    <string name="communicate">交流</string>
+    <string name="share">分享下载地址</string>
+</resources>

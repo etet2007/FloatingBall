@@ -34,6 +34,7 @@ public class FloatBallManager {
     private boolean isOpenBall;
     private boolean useBackground;
 
+    int moveUpDistance=130;
     //创建BallView
     public void addBallView(Context context) {
         if (mBallView == null) {
@@ -141,7 +142,7 @@ public class FloatBallManager {
         }
 
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
-        editor.putBoolean(KEY_HAS_Added_Ball,isOpenBall);
+        editor.putBoolean(KEY_HAS_ADDED_BALL,isOpenBall);
 
         LayoutParams params = mBallView.getLayoutParams();
         editor.putInt(KEY_PARAM_X,params.x);
@@ -173,6 +174,18 @@ public class FloatBallManager {
             mBallView.requestLayout();
 
             mBallView.invalidate();
+        }
+    }
+
+    public void moveBallViewUp() {
+        if(mBallView!=null){
+            mBallView.performUpAnimator(130);
+        }
+    }
+
+    public void moveBallViewDown() {
+        if(mBallView!=null){
+            mBallView.performDownAnimator(130);
         }
     }
 }

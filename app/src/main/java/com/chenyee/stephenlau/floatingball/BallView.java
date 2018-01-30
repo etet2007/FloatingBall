@@ -1,7 +1,6 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
-import android.animation.Animator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -34,8 +33,8 @@ import java.io.IOException;
 
 public class BallView extends View {
     public static final String TAG="lqt";
+    private final int gestureMoveDistance = 18;
 
-    private final int ballMoveDistance = 18;
     private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private boolean isFirstEvent=false;
@@ -87,6 +86,13 @@ public class BallView extends View {
     private float mLastTouchEventX;
     private float mOffsetToParentY;
     private WindowManager.LayoutParams mLayoutParams;
+    private int mLayoutParamsY;
+    private int getMLayoutParamsY(){
+        return mLayoutParams.y;
+    }
+    private void setMLayoutParamsY(int y){
+        mLayoutParams.y=y;
+    }
 
     private GESTURE_STATE lastGestureSTATE = GESTURE_STATE.NONE;
 
@@ -327,7 +333,37 @@ public class BallView extends View {
                 .start();
     }
 
-    @Override
+
+    public void performUpAnimator(int moveUpDistance) {
+        ObjectAnimator animation = ObjectAnimator.ofInt (this, "mLayoutParamsY", getMLayoutParamsY(), getMLayoutParamsY()- moveUpDistance); // see this max value coming back here, we animale towards that value
+        animation.setDuration (200); //in milliseconds
+        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+
+            }
+        });
+        animation.start();
+//        mLayoutParams.y = mLayoutParams.y-120;
+//        mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+    }
+
+
+    public void performDownAnimator(int moveUpDistance) {
+        ObjectAnimator animation = ObjectAnimator.ofInt (this, "mLayoutParamsY", getMLayoutParamsY(), getMLayoutParamsY()+moveUpDistance); // see this max value coming back here, we animale towards that value
+        animation.setDuration (200); //in milliseconds
+        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+            }
+        });
+        animation.start();
+//        mLayoutParams.y = mLayoutParams.y+120;
+//        mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+    }
+        @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -473,18 +509,18 @@ public class BallView extends View {
         switch (currentGestureSTATE){
             case UP:
                 ballCenterX=0;
-                ballCenterY=-ballMoveDistance;
+                ballCenterY=-gestureMoveDistance;
                 break;
             case DOWN:
-                ballCenterY= ballMoveDistance;
+                ballCenterY= gestureMoveDistance;
                 ballCenterX=0;
                 break;
             case LEFT:
-                ballCenterX=-ballMoveDistance;
+                ballCenterX=-gestureMoveDistance;
                 ballCenterY=0;
                 break;
             case RIGHT:
-                ballCenterX= ballMoveDistance;
+                ballCenterX= gestureMoveDistance;
                 ballCenterY=0;
                 break;
             case NONE:

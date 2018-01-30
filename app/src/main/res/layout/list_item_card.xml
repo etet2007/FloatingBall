@@ -31,7 +31,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:gravity="center_horizontal"
-				android:text="Opacity"
+				android:text="@string/opacity"
 				android:layout_marginBottom="20dp"
 				/>
 			<org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
@@ -48,7 +48,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:gravity="center_horizontal"
-				android:text="Size"
+				android:text="@string/size"
 				android:layout_marginBottom="20dp"
 				/>
 			<org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
@@ -88,7 +88,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center_horizontal"
-			android:text="Use background picture?"
+			android:text="@string/use_background_picture"
 			android:layout_marginBottom="10dp"
 			/>
 		<android.support.v7.widget.SwitchCompat
@@ -100,7 +100,7 @@
 			android:id="@+id/choosePic_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Choose picture"
+			android:text="@string/choose_picture"
 			android:layout_marginTop="20dp"
 			/>
 		</android.support.v7.widget.LinearLayoutCompat>
@@ -117,12 +117,12 @@
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		xmlns:tools="http://schemas.android.com/tools"
 		android:layout_width="match_parent"
-		android:layout_height="500dp"
+		android:layout_height="wrap_content"
 		android:orientation="vertical"
 		android:gravity="center_horizontal"
 		android:layout_margin="10dp">
-
 		</android.support.v7.widget.LinearLayoutCompat>
+
 	</android.support.v7.widget.CardView>
 </android.support.v7.widget.LinearLayoutCompat>
 

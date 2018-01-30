@@ -1,11 +1,18 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.inputmethod.InputMethodManager;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 
 /**
@@ -29,6 +36,7 @@ public class FloatBallService extends AccessibilityService {
 
     private FloatBallManager mFloatBallManager;
 
+    private boolean hasSoftKeyboardShow=false;
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -42,36 +50,59 @@ public class FloatBallService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
 //        Log.d(TAG, "onAccessibilityEvent "+event);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-
-            if(event.getEventType()==AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
-//                if (event.getPackageName().toString().contains("om.sohu.inputmethod.sogou")) {
-
-//                }
-            }
-        }
-//Not work
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//
-//        if (imm.isAcceptingText()) {
-//            Log.d(TAG, "Software Keyboard was shown");
-//        } else {
-//            Log.d(TAG, "Software Keyboard was not shown");
-//        }
-
-
-        SoftKeyboardController softKeyboardController= null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            softKeyboardController = getSoftKeyboardController();
-            int showMode =softKeyboardController.getShowMode();
-            Log.d(TAG, "ShowMode" + showMode);
-//            softKeyboardController.setShowMode(SHOW_MODE_AUTO);
-//            Log.d(TAG, "ShowMode" + showMode);
-
-        }
-
+        inputMethodSate(getApplicationContext());
     }
 
+    /**
+     * 软键盘状态判断
+     * @param context
+     */
+    public void inputMethodSate(Context context) {
+        //得到默认输入法包名
+        String defaultInputName = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        defaultInputName = defaultInputName.substring(0, defaultInputName.indexOf("/"));
+        boolean isInputing = false;
+        if(android.os.Build.VERSION.SDK_INT > 20) {
+            try{
+                InputMethodManager imm = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                Class clazz = imm.getClass();
+                Method method = clazz.getMethod("getInputMethodWindowVisibleHeight", null);
+                method.setAccessible(true);
+                int height = (Integer) method.invoke(imm, null);
+                Log.d("LOG", "height == "+height);
+                if(height > 100) {
+                    isInputing = true;
+                }
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+
+            for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
+                    if(appProcess.processName.equals(defaultInputName)) {
+                        isInputing = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(isInputing) {
+            Log.d(TAG, "软键盘显示中");
+            if (!hasSoftKeyboardShow)
+                mFloatBallManager.moveBallViewUp();
+            hasSoftKeyboardShow=true;
+        }else {
+            Log.d(TAG, "软键盘隐藏中");
+            if(hasSoftKeyboardShow)
+                mFloatBallManager.moveBallViewDown();
+            hasSoftKeyboardShow=false;
+
+        }
+    }
 
 
     @Override
