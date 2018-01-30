@@ -121,6 +121,23 @@
 		android:orientation="vertical"
 		android:gravity="center_horizontal"
 		android:layout_margin="10dp">
+		<android.support.v7.widget.AppCompatTextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:text="@string/upDistance"
+			android:layout_marginBottom="20dp"
+			/>
+		<org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+			android:id="@+id/upDistance_seekbar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:dsb_min="0"
+			app:dsb_max="500"
+			app:dsb_value="130"
+			app:dsb_progressColor="@color/colorAccent"
+			app:dsb_indicatorColor="@color/colorAccent"
+			/>
 		</android.support.v7.widget.LinearLayoutCompat>
 
 	</android.support.v7.widget.CardView>

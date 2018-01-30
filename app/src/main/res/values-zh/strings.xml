@@ -11,7 +11,12 @@
     <string name="opacity">透明度</string>
     <string name="size">大小</string>
     <string name="use_background_picture">是否使用背景图片</string>
-    <string name="choose_picture">选择图片</string>
+        <string name="choose_picture">选择图片</string>
+    <string name="upDistance">上移距离</string>
+
+    <string name="openAccessibility">请开启悬浮球辅助功能</string>
+
+
     <string name="communicate">交流</string>
     <string name="share">分享下载地址</string>
 </resources>

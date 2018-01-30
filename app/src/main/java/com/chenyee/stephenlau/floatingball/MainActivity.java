@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity
     private DiscreteSeekBar sizeSeekBar;
     private Button choosePicButton;
     private SwitchCompat backgroundSwitch;
+    private DiscreteSeekBar upDistanceSeekBar;
+
     //显示参数
     SharedPreferences prefs;
 
@@ -187,13 +189,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void initContentViews() {
-        mProfileImage = (ImageView) findViewById(R.id.materialup_profile_image);
-        opacitySeekBar = (DiscreteSeekBar) findViewById(R.id.opacity_seekbar);
-        opacitySeekBar = (DiscreteSeekBar) findViewById(R.id.opacity_seekbar);
-        ballSwitch = (SwitchCompat) findViewById(R.id.start_switch);
-        sizeSeekBar = (DiscreteSeekBar) findViewById(R.id.size_seekbar);
-        choosePicButton = (Button) findViewById(R.id.choosePic_button);
-        backgroundSwitch = (SwitchCompat) findViewById(R.id.background_switch);
+        mProfileImage =  findViewById(R.id.materialup_profile_image);
+        opacitySeekBar =  findViewById(R.id.opacity_seekbar);
+        opacitySeekBar =  findViewById(R.id.opacity_seekbar);
+        ballSwitch =  findViewById(R.id.start_switch);
+        sizeSeekBar = findViewById(R.id.size_seekbar);
+        choosePicButton = findViewById(R.id.choosePic_button);
+        backgroundSwitch =  findViewById(R.id.background_switch);
+        upDistanceSeekBar = findViewById(R.id.upDistance_seekbar);
 
         //获取悬浮球参数
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -262,6 +265,27 @@ public class MainActivity extends AppCompatActivity
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
             }
         });
+
+        upDistanceSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt(KEY_MOVE_UP_DISTANCE,value);
+                editor.apply();
+
+                sendUpdateIntentToService();
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+        });
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -293,6 +317,7 @@ public class MainActivity extends AppCompatActivity
             sizeSeekBar.setEnabled(true);
             choosePicButton.setEnabled(true);
             backgroundSwitch.setEnabled(true);
+            upDistanceSeekBar.setEnabled(true);
         }else{
             fab.setImageAlpha(40);
             ballSwitch.setChecked(false);
@@ -300,6 +325,7 @@ public class MainActivity extends AppCompatActivity
             sizeSeekBar.setEnabled(false);
             choosePicButton.setEnabled(false);
             backgroundSwitch.setEnabled(false);
+            upDistanceSeekBar.setEnabled(false);
         }
     }
 
@@ -391,7 +417,7 @@ public class MainActivity extends AppCompatActivity
         if (!AccessibilityUtil.isAccessibilitySettingsOn(this)) {
             // 引导至辅助功能设置页面
             startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-            Toast.makeText(this, "请先开启FloatBall辅助功能", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,getResources().getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -62,7 +62,7 @@ public class FloatBallService extends AccessibilityService {
         String defaultInputName = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
         defaultInputName = defaultInputName.substring(0, defaultInputName.indexOf("/"));
         boolean isInputing = false;
-        if(android.os.Build.VERSION.SDK_INT > 20) {
+        if(android.os.Build.VERSION.SDK_INT > 20) {//这代码太牛了
             try{
                 InputMethodManager imm = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 Class clazz = imm.getClass();
@@ -76,7 +76,7 @@ public class FloatBallService extends AccessibilityService {
             }catch(Exception e) {
                 e.printStackTrace();
             }
-        }else {
+        }else {//应该不work
             ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
             List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
 

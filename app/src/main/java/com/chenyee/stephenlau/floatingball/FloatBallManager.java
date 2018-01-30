@@ -171,21 +171,21 @@ public class FloatBallManager {
             //Use background
             mBallView.useBackground =defaultSharedPreferences.getBoolean(KEY_USE_BACKGROUND ,false);
 
+            moveUpDistance = defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_MOVE_UP_DISTANCE, 130);
             mBallView.requestLayout();
-
             mBallView.invalidate();
         }
     }
 
     public void moveBallViewUp() {
         if(mBallView!=null){
-            mBallView.performUpAnimator(130);
+            mBallView.performUpAnimator(moveUpDistance);
         }
     }
 
     public void moveBallViewDown() {
         if(mBallView!=null){
-            mBallView.performDownAnimator(130);
+            mBallView.performDownAnimator(moveUpDistance);
         }
     }
 }
