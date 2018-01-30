@@ -3,24 +3,17 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:theme="@style/CardViewTextTheme"
+
 	android:orientation="vertical">
 
 	<android.support.v7.widget.CardView
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/card_view1"
-		android:layout_gravity="center"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginRight="8dp"
-		android:layout_marginLeft="8dp"
-		android:layout_marginBottom="4dp"
-		android:layout_marginTop="4dp"
-		app:cardCornerRadius="6dp"
-		android:clickable="true"
-		android:foreground="?android:attr/selectableItemBackground"
+		style="@style/CardViewStyle"
 		>
-		>
+
 		<android.support.v7.widget.LinearLayoutCompat
 			xmlns:android="http://schemas.android.com/apk/res/android"
 			xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -72,17 +65,11 @@
 		</android.support.v7.widget.LinearLayoutCompat>
 
 	</android.support.v7.widget.CardView>
+
 	<android.support.v7.widget.CardView
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_gravity="center"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginRight="8dp"
-		android:layout_marginLeft="8dp"
-		android:layout_marginBottom="4dp"
-		android:layout_marginTop="4dp"
-		app:cardCornerRadius="4dp"
+		style="@style/CardViewStyle"
 		>
 		<android.support.v7.widget.LinearLayoutCompat
 			xmlns:android="http://schemas.android.com/apk/res/android"
@@ -101,7 +88,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center_horizontal"
-			android:text="Use background?"
+			android:text="Use background picture?"
 			android:layout_marginBottom="10dp"
 			/>
 		<android.support.v7.widget.SwitchCompat
@@ -113,13 +100,30 @@
 			android:id="@+id/choosePic_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="choose backgrond pic"
+			android:text="Choose picture"
 			android:layout_marginTop="20dp"
 			/>
 		</android.support.v7.widget.LinearLayoutCompat>
-
 	</android.support.v7.widget.CardView>
 
+
+	<android.support.v7.widget.CardView
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		style="@style/CardViewStyle"
+		>
+	<android.support.v7.widget.LinearLayoutCompat
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="500dp"
+		android:orientation="vertical"
+		android:gravity="center_horizontal"
+		android:layout_margin="10dp">
+
+		</android.support.v7.widget.LinearLayoutCompat>
+	</android.support.v7.widget.CardView>
 </android.support.v7.widget.LinearLayoutCompat>
 
 

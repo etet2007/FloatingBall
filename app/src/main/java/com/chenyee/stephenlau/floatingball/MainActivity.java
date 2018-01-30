@@ -43,10 +43,10 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
     private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
-    private static final String GITHUB_REPO_RELEASE_URL = "https://github.com/etet2007/FloatingBall";
+    private static final String GITHUB_REPO_RELEASE_URL = "https://github.com/etet2007/FloatingBall/releases";
 
 
-    private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
+    private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 40;
     private boolean mIsAvatarShown = true;
 
     private ImageView mProfileImage;
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
+
 //        toolbar.setNavigationIcon(R.drawable.ic_menu_send);
 //        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -446,8 +447,8 @@ public class MainActivity extends AppCompatActivity
          if (id == R.id.nav_share) {
              Intent textIntent = new Intent(Intent.ACTION_SEND);
              textIntent.setType("text/plain");
-             textIntent.putExtra(Intent.EXTRA_TEXT, GITHUB_REPO_URL);
-             startActivity(Intent.createChooser(textIntent, "分享"));
+             textIntent.putExtra(Intent.EXTRA_TEXT, GITHUB_REPO_RELEASE_URL);
+             startActivity(Intent.createChooser(textIntent, "shared"));
              }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
