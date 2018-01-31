@@ -32,14 +32,21 @@
         <item name="cardCornerRadius">10dp</item>
         <item name="android:clickable">true</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
-<item name="cardElevation">5dp</item>
+    <item name="cardElevation">5dp</item>
     </style>
     <style name="CardViewTextTheme">
         <item name="android:textSize">18dp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/primary_text</item>
         <item name="android:textAllCaps">false</item>
     </style>
+    <!--<item name="android:textStyle">bold</item>-->
+
+
+    <!--<style name="discreteSeekBarStyle"-->
+        <!--&gt;-->
+        <!--<item name="app:dsb_progressColor">@color/primary_text</item>-->
+        <!--<item name="app:dsb_indicatorColor">@color/colorAccent</item>-->
+    <!--</style>-->
     <!--<style name="ToolBarWithNavigationBack">-->
         <!--<item name="navigationIcon">@drawable/abc_ic_ab_back_material</item>-->
     <!--</style>-->
