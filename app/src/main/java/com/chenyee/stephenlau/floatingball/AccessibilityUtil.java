@@ -1,12 +1,16 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.util.List;
+
 public class AccessibilityUtil {
-    public static final String TAG = "lqt";
+    public static final String TAG = "AccessibilityUtil";
     /**
      * 单击返回功能
      * @param service
@@ -29,7 +33,15 @@ public class AccessibilityUtil {
      * @param service
      */
     public static void doPullUp(AccessibilityService service) {
-        service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+//        boolean success=service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+
+//        if(!success){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
+
+            intent.addCategory(Intent.CATEGORY_HOME); //"android.intent.category.HOME"
+            service.startActivity(intent);
+//        }
     }
 
     /**
@@ -38,6 +50,22 @@ public class AccessibilityUtil {
      */
     public static void doLeftOrRight(AccessibilityService service) {
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+
+
+        //test code
+        ActivityManager activityManager = (ActivityManager) service.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            String log = appProcess.processName;
+
+            Log.d(TAG, log);
+//            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
+//                if(appProcess.processName.equals(defaultInputName)) {
+//                    break;
+//                }
+//            }
+        }
     }
 
     public static boolean isAccessibilitySettingsOn(Context context) {
