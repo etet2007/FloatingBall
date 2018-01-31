@@ -18,6 +18,7 @@
 
     <string name="communicate">Communicate</string>
     <string name="share">Share the release link</string>
+    <string name="title_activity_permission">PermissionActivity</string>
 
 
 </resources>

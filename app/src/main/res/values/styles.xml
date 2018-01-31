@@ -1,4 +1,4 @@
-<resources >
+<resources>
 
     <!-- Application theme.-->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -20,10 +20,9 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 
-
     <style name="CardViewStyle" parent="CardView">
-    <item name="android:layout_width">match_parent</item>
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_marginLeft">8dp</item>
@@ -32,8 +31,9 @@
         <item name="cardCornerRadius">10dp</item>
         <item name="android:clickable">true</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
-    <item name="cardElevation">5dp</item>
+        <item name="cardElevation">5dp</item>
     </style>
+
     <style name="CardViewTextTheme">
         <item name="android:textSize">18dp</item>
         <item name="android:textColor">@color/primary_text</item>
@@ -43,12 +43,12 @@
 
 
     <!--<style name="discreteSeekBarStyle"-->
-        <!--&gt;-->
-        <!--<item name="app:dsb_progressColor">@color/primary_text</item>-->
-        <!--<item name="app:dsb_indicatorColor">@color/colorAccent</item>-->
+    <!--&gt;-->
+    <!--<item name="app:dsb_progressColor">@color/primary_text</item>-->
+    <!--<item name="app:dsb_indicatorColor">@color/colorAccent</item>-->
     <!--</style>-->
     <!--<style name="ToolBarWithNavigationBack">-->
-        <!--<item name="navigationIcon">@drawable/abc_ic_ab_back_material</item>-->
+    <!--<item name="navigationIcon">@drawable/abc_ic_ab_back_material</item>-->
     <!--</style>-->
 
 </resources>

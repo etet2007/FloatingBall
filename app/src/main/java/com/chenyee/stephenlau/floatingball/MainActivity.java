@@ -2,6 +2,8 @@ package com.chenyee.stephenlau.floatingball;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AppOpsManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -36,6 +38,11 @@ import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
+
 import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
 
@@ -69,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
 
+    private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 1101;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +86,30 @@ public class MainActivity extends AppCompatActivity
         initFrameViews();
         //初始化view
         initContentViews();
-        //申请权限 DrawOverlays
+
+
+
+        //申请DrawOverlays权限
         requestDrawOverlaysPermission();
+
+        //申请Apps with usage access权限
+//        if (!hasPermission()) {
+//                //若用户未开启权限，则引导用户开启“Apps with usage access”权限
+//                startActivityForResult(
+//                        new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
+//                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
+//            }
+    }
+
+    private boolean hasPermission() {
+        AppOpsManager appOps = (AppOpsManager)
+                getSystemService(Context.APP_OPS_SERVICE);
+        int mode = 0;
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(), getPackageName());
+        }
+        return mode == AppOpsManager.MODE_ALLOWED;
     }
 
     private void initFrameViews() {
@@ -364,6 +394,8 @@ public class MainActivity extends AppCompatActivity
 
             c.close();
         }
+
+
     }
 
     @Override
