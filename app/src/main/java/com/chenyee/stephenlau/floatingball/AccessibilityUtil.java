@@ -53,13 +53,13 @@ public class AccessibilityUtil {
 
 
         //test code
-        ActivityManager activityManager = (ActivityManager) service.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-
-        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            String log = appProcess.processName;
-
-            Log.d(TAG, log);
+//        ActivityManager activityManager = (ActivityManager) service.getSystemService(Context.ACTIVITY_SERVICE);
+//        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+//
+//        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+//            String log = appProcess.processName;
+//
+//            Log.d(TAG, log);
 //            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
 //                if(appProcess.processName.equals(defaultInputName)) {
 //                    break;
