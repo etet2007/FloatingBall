@@ -137,12 +137,7 @@ public class FloatBallService extends AccessibilityService {
                 if(type== TYPE_DEL){
                     mFloatBallManager.removeBallView(this);//内部有mFloatBallManager.saveFloatBallData();
                 }
-//                if(type==TYPE_OPACITY){
-//                    mFloatBallManager.setOpacity(data.getInt("opacity"));
-//                }
-//                if (type == TYPE_SIZE) {
-//                    mFloatBallManager.setSize(data.getInt("size"));
-//                }
+
                 if (type == TYPE_IMAGE) {
                     mFloatBallManager.setBackgroundPic(this,data.getString("imagePath"));
                 }

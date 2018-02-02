@@ -18,11 +18,11 @@
 
     <string name="communicate">Communicate</string>
     <string name="share">Share the release link</string>
-    <string name="title_activity_permission">PermissionActivity</string>
+    <!--<string name="title_activity_permission">PermissionActivity</string>-->
     <string name="drawoverlays_permission">DrawOverlays Permission</string>
     <string name="request_accessibility">Request accessibility</string>
 
-    <string name="compose_shortcut_short_label1">1</string>
+    <!--<string name="compose_shortcut_short_label1">1</string>-->
 
 
 </resources>

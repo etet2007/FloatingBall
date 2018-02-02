@@ -97,6 +97,7 @@ public class FloatBallManager {
             isOpenBall=false;
 
             mBallView.performRemoveAnimator();
+            mWindowManager.removeView(mBallView);
 
             saveFloatBallData();
             mBallView = null;

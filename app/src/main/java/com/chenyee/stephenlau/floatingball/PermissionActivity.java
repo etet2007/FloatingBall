@@ -29,6 +29,8 @@ public class PermissionActivity extends AppCompatActivity {
         drawOverlaysButton = findViewById(R.id.drawOverlays_button);
         accessibilityButton = findViewById(R.id.accessibility_button);
 
+
+
         drawOverlaysButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +51,9 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+
+
         if (Build.VERSION.SDK_INT >= 23) {
             if (Settings.canDrawOverlays(this)) {
 //                drawOverlaysButton.setClickable(false);
