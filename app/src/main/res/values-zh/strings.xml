@@ -19,4 +19,7 @@
 
     <string name="communicate">交流</string>
     <string name="share">分享下载地址</string>
+
+    <string name="request_accessibility">打开辅助功能</string>
+    <string name="drawoverlays_permission">允许出现在其他应用上</string>
 </resources>

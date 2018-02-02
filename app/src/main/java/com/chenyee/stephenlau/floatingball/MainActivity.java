@@ -38,10 +38,6 @@ import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 
 import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
@@ -86,8 +82,6 @@ public class MainActivity extends AppCompatActivity
         initFrameViews();
         //初始化view
         initContentViews();
-
-
 
         //申请DrawOverlays权限
         requestDrawOverlaysPermission();
@@ -426,7 +420,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addFloatBall() {
-        checkAccessibility();
+        requestAccessibility();
 
         Intent intent = new Intent(MainActivity.this, FloatBallService.class);
         Bundle data = new Bundle();
@@ -444,7 +438,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void checkAccessibility() {
+    private void requestAccessibility() {
         // 判断辅助功能是否开启
         if (!AccessibilityUtil.isAccessibilitySettingsOn(this)) {
             // 引导至辅助功能设置页面

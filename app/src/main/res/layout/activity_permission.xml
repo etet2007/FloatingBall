@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.LinearLayoutCompat
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<RelativeLayout
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.chenyee.stephenlau.floatingball.PermissionActivity"
-    >
-<android.support.v7.widget.AppCompatImageView
-    android:id="@+id/logo_image_view"
-    android:layout_width="96dp"
-    android:layout_height="96dp"
-    android:src="@drawable/ic_floating_button"
-    android:layout_gravity="center_horizontal"
-    />
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    </android.support.v7.widget.LinearLayoutCompat>
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/logo_image_view"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/ic_launcher_app"/>
+
+        <Button
+            android:id="@+id/drawOverlays_button"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="50dp"
+            android:layout_marginBottom="100dp"
+            android:singleLine="false"
+            android:text="@string/drawoverlays_permission"/>
+
+        <Button
+            android:id="@+id/accessibility_button"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="100dp"
+            android:text="@string/request_accessibility"/>
+</RelativeLayout>
