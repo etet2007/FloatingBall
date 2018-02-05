@@ -39,6 +39,9 @@ import android.widget.Toast;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
 
@@ -51,19 +54,21 @@ public class MainActivity extends AppCompatActivity
     private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 40;
     private boolean mIsAvatarShown = true;
 
-    private ImageView mProfileImage;
     private int mMaxScrollSize;
 
     public static final String TAG = "MainActivity";
 
     //控件
-    private FloatingActionButton fab;
-    private SwitchCompat ballSwitch;
-    private DiscreteSeekBar opacitySeekBar;
-    private DiscreteSeekBar sizeSeekBar;
-    private Button choosePicButton;
-    private SwitchCompat backgroundSwitch;
-    private DiscreteSeekBar upDistanceSeekBar;
+    @BindView(R.id.logo_fab) FloatingActionButton fab;
+    @BindView(R.id.start_switch) SwitchCompat ballSwitch;
+    @BindView(R.id.opacity_seekbar) DiscreteSeekBar opacitySeekBar;
+    @BindView(R.id.size_seekbar) DiscreteSeekBar sizeSeekBar;
+    @BindView(R.id.choosePic_button) Button choosePicButton;
+    @BindView(R.id.background_switch) SwitchCompat backgroundSwitch;
+    @BindView(R.id.upDistance_seekbar) DiscreteSeekBar upDistanceSeekBar;
+    @BindView(R.id.use_gray_background_switch) SwitchCompat useGrayBackgroundSwitch;
+    @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
+
 
     //显示参数
     SharedPreferences prefs;
@@ -77,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         //初始化toolbar等
         initFrameViews();
@@ -137,7 +143,6 @@ public class MainActivity extends AppCompatActivity
         mMaxScrollSize = appbarLayout.getTotalScrollRange();
 
         // Set up the FloatingActionButton.
-        fab = (FloatingActionButton) findViewById(R.id.logo_fab);
         fab.setUseCompatPadding(false);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,19 +161,11 @@ public class MainActivity extends AppCompatActivity
         // Set up the navigation drawer.左侧滑出的菜单。
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-//        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
-//        Bundle data = new Bundle();
-//        data.putInt("type", FloatBallService.TYPE_SAVE);
-//        intent.putExtras(data);
-//        startService(intent);
     }
 
     private void requestDrawOverlaysPermission() {
@@ -213,15 +210,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void initContentViews() {
-        mProfileImage =  findViewById(R.id.materialup_profile_image);
-        opacitySeekBar =  findViewById(R.id.opacity_seekbar);
-        opacitySeekBar =  findViewById(R.id.opacity_seekbar);
-        ballSwitch =  findViewById(R.id.start_switch);
-        sizeSeekBar = findViewById(R.id.size_seekbar);
-        choosePicButton = findViewById(R.id.choosePic_button);
-        backgroundSwitch =  findViewById(R.id.background_switch);
-        upDistanceSeekBar = findViewById(R.id.upDistance_seekbar);
-
         //获取悬浮球参数
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hasAddedBall = prefs.getBoolean(KEY_HAS_ADDED_BALL, false);
@@ -329,6 +317,16 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, IMAGE);//onActivityResult
+            }
+        });
+        useGrayBackgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean(KEY_USE_GRAY_BACKGROUND,isChecked);
+                editor.apply();
+
+                sendUpdateIntentToService();
             }
         });
     }

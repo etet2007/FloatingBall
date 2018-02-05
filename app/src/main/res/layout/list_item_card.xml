@@ -61,7 +61,21 @@
 				app:dsb_progressColor="@color/colorAccent"
 				app:dsb_indicatorColor="@color/colorAccent"
 				/>
-
+			<!--<android.support.v7.widget.AppCompatTextView-->
+				<!--android:layout_width="match_parent"-->
+				<!--android:layout_height="wrap_content"-->
+				<!--android:gravity="center_horizontal"-->
+				<!--android:text="是否显示灰色背景？"-->
+				<!--android:layout_marginBottom="10dp"-->
+				<!--/>-->
+			<android.support.v7.widget.SwitchCompat
+				android:text="是否显示灰色背景"
+				android:id="@+id/use_gray_background_switch"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:switchPadding="20dp"
+				android:layout_marginTop="20dp"
+				/>
 		</android.support.v7.widget.LinearLayoutCompat>
 
 	</android.support.v7.widget.CardView>
@@ -84,17 +98,19 @@
 			app:layout_behavior="@string/appbar_scrolling_view_behavior"
 			tools:context="com.chenyee.stephenlau.floatingball.MainActivity"
 			tools:showIn="@layout/app_bar_main">
-		<android.support.v7.widget.AppCompatTextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:gravity="center_horizontal"
-			android:text="@string/use_background_picture"
-			android:layout_marginBottom="10dp"
-			/>
+		<!--<android.support.v7.widget.AppCompatTextView-->
+			<!--android:layout_width="match_parent"-->
+			<!--android:layout_height="wrap_content"-->
+			<!--android:gravity="center_horizontal"-->
+			<!--android:text="@string/use_background_picture"-->
+			<!--android:layout_marginBottom="10dp"-->
+			<!--/>-->
 		<android.support.v7.widget.SwitchCompat
+			android:text="@string/use_background_picture"
 			android:id="@+id/background_switch"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			app:switchPadding="20dp"
 			/>
 		<android.support.v7.widget.AppCompatButton
 			android:id="@+id/choosePic_button"
@@ -141,6 +157,28 @@
 		</android.support.v7.widget.LinearLayoutCompat>
 
 	</android.support.v7.widget.CardView>
+
+
+
+	<android.support.v7.widget.CardView
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		style="@style/CardViewStyle"
+		>
+		<android.support.v7.widget.LinearLayoutCompat
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			xmlns:app="http://schemas.android.com/apk/res-auto"
+			xmlns:tools="http://schemas.android.com/tools"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:gravity="center_horizontal"
+			android:layout_margin="10dp">
+
+
+		</android.support.v7.widget.LinearLayoutCompat>
+	</android.support.v7.widget.CardView>
+
 </android.support.v7.widget.LinearLayoutCompat>
 
 

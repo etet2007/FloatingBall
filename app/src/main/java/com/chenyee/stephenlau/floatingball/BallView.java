@@ -59,6 +59,8 @@ public class BallView extends View {
     private boolean isScrolling=false;
 
     public boolean useBackground=false;
+    public boolean useGrayBackground=false;
+
     private float ballRadius=25;
     private float mBackgroundRadius=ballRadius+15;
 
@@ -73,7 +75,7 @@ public class BallView extends View {
         measuredWidth= (int) (mBackgroundRadius*2+20);
         measuredHeight=measuredWidth;
 
-        refreshTouchAnimator();        //大小变了，动画的参数也需要改变。
+        calcTouchAnimator();        //大小变了，动画的参数也需要改变。
     }
     private GESTURE_STATE currentGestureSTATE;
 
@@ -156,7 +158,7 @@ public class BallView extends View {
         mBallPaint.setAlpha(150);
 
         //生成动画，多余。
-        refreshTouchAnimator();
+        calcTouchAnimator();
 
         //生成BitmapRead
         makeBitmapRead();
@@ -231,7 +233,8 @@ public class BallView extends View {
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
     }
 
-    public void refreshTouchAnimator() {
+    public void calcTouchAnimator() {
+//        onTouchAnimate
         Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
         Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius+6);
         Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius+7);
@@ -245,6 +248,7 @@ public class BallView extends View {
             }
         });
 
+//        unTouchAnimate
         Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius+7);
         Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius+7);
         Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
@@ -327,10 +331,10 @@ public class BallView extends View {
 //        onRemoveAnimate.start();
 
         //View自带的动画。
-        animate()
-                .scaleY(0).scaleX(0)
-                .setDuration(200)
-                .start();
+//        animate()
+//                .scaleY(0).scaleX(0)
+//                .setDuration(200)
+//                .start();
     }
 
 
@@ -345,8 +349,13 @@ public class BallView extends View {
             }
         });
         animation.start();
-//        mLayoutParams.y = mLayoutParams.y-120;
-//        mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+
+        animate()
+                .scaleY(0).scaleX(0)
+                .setDuration(200)
+                .start();
+
+
     }
 
 
@@ -368,10 +377,16 @@ public class BallView extends View {
         super.onDraw(canvas);
 
         canvas.translate(measuredWidth/2,measuredHeight/2);
-        canvas.drawCircle(0, 0, mBackgroundRadius, mBackgroundPaint);
+
+        //draw gray background
+        if(useGrayBackground)
+            canvas.drawCircle(0, 0, mBackgroundRadius, mBackgroundPaint);
+        //draw ball
         canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallPaint);
+
+        //draw imageBackground
         if(useBackground)
-        canvas.drawBitmap(bitmapCrop,-bitmapCrop.getWidth()/2+ballCenterX,-bitmapCrop.getHeight()/2+ballCenterY,mBallPaint);
+            canvas.drawBitmap(bitmapCrop,-bitmapCrop.getWidth()/2+ballCenterX,-bitmapCrop.getHeight()/2+ballCenterY,mBallPaint);
     }
 
     @Override

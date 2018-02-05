@@ -112,22 +112,23 @@ public class FloatBallManager {
     }
 
 
-    public void setOpacity(int opacity) {
-        if (mBallView != null) {
-            mBallView.setOpacity(opacity);
-            mBallView.invalidate();
-        }
-    }
-    public  void setSize(int size) {
-        if (mBallView != null) {
-            mBallView.changeFloatBallSizeWithRadius(size);
+//    public void setOpacity(int opacity) {
+//        if (mBallView != null) {
+//            mBallView.setOpacity(opacity);
+//            mBallView.invalidate();
+//        }
+//    }
 
-            mBallView.createBitmapCropFromBitmapRead();
-            mBallView.requestLayout();
-
-            mBallView.invalidate();
-        }
-    }
+//    public  void setSize(int size) {
+//        if (mBallView != null) {
+//            mBallView.changeFloatBallSizeWithRadius(size);
+//
+//            mBallView.createBitmapCropFromBitmapRead();
+//            mBallView.requestLayout();
+//
+//            mBallView.invalidate();
+//        }
+//    }
     public  void setBackgroundPic(Context context,String imagePath){
         if (mBallView != null) {
 
@@ -169,6 +170,8 @@ public class FloatBallManager {
 
             mBallView.createBitmapCropFromBitmapRead();
 
+            //Use gray background
+            mBallView.useGrayBackground = defaultSharedPreferences.getBoolean(KEY_USE_GRAY_BACKGROUND, false);
             //Use background
             mBallView.useBackground =defaultSharedPreferences.getBoolean(KEY_USE_BACKGROUND ,false);
 
