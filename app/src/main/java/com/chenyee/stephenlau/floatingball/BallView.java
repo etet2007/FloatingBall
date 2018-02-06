@@ -32,7 +32,7 @@ import java.io.IOException;
  */
 
 public class BallView extends View {
-    public static final String TAG="lqt";
+    public static final String TAG="BallView";
     private final int gestureMoveDistance = 18;
 
     private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -331,10 +331,10 @@ public class BallView extends View {
 //        onRemoveAnimate.start();
 
         //View自带的动画。
-//        animate()
-//                .scaleY(0).scaleX(0)
-//                .setDuration(200)
-//                .start();
+        animate()
+                .scaleY(0).scaleX(0)
+                .setDuration(200)
+                .start();
     }
 
 
@@ -350,11 +350,12 @@ public class BallView extends View {
         });
         animation.start();
 
-        animate()
-                .scaleY(0).scaleX(0)
-                .setDuration(200)
-                .start();
-
+//        animate().translationYBy(-130)
+//                .setDuration(200)
+//                .start();
+//        animate().translationYBy(130)
+//                .setDuration(200)
+//                .start();
 
     }
 
@@ -369,8 +370,7 @@ public class BallView extends View {
             }
         });
         animation.start();
-//        mLayoutParams.y = mLayoutParams.y+120;
-//        mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+
     }
         @Override
     protected void onDraw(Canvas canvas) {
@@ -458,7 +458,8 @@ public class BallView extends View {
     }
 
 
-    private class MyGestureListener implements GestureDetector.OnGestureListener {
+
+    private class MyGestureListener implements GestureDetector.OnGestureListener ,GestureDetector.OnDoubleTapListener{
         @Override
         public boolean onDown(MotionEvent e) {
             return false;
@@ -472,7 +473,7 @@ public class BallView extends View {
         //单击
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            AccessibilityUtil.doBack(mService);
+//            Log.d(TAG, "onSingleTapUp: ");
             return false;
         }
 
@@ -509,6 +510,7 @@ public class BallView extends View {
             return false;
         }
 
+
         @Override
         public void onLongPress(MotionEvent e) {
             mVibrator.vibrate(mPattern, -1);
@@ -517,6 +519,26 @@ public class BallView extends View {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return false;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.d(TAG, "onSingleTapConfirmed: "+e);
+            AccessibilityUtil.doBack(mService);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.d(TAG, "onDoubleTap: "+e);
+
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+//            Log.d(TAG, "onDoubleTapEvent: "+e);
             return false;
         }
     }

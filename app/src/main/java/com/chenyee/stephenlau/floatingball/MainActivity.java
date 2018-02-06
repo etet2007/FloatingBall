@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.use_gray_background_switch) SwitchCompat useGrayBackgroundSwitch;
     @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
 
-
     //显示参数
     SharedPreferences prefs;
 

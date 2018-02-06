@@ -58,7 +58,6 @@ public class AccessibilityUtil {
     public static void doLeftOrRight(AccessibilityService service) {
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
 
-
         //getTopApp package name
 //        getTopApp(service);
 
