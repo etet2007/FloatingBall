@@ -71,7 +71,7 @@ public class BallView extends View {
     private boolean isLongPress=false;
 
     public boolean useBackground=false;
-    public boolean useGrayBackground=false;
+    public boolean useGrayBackground=true;
 
     //改变球的半径，同时需要改变view的宽高
     public void changeFloatBallSizeWithRadius(int ballRadius){
@@ -539,7 +539,8 @@ public class BallView extends View {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             Log.d(TAG, "onDoubleTap: "+e);
-            AccessibilityUtil.doHome(mService);
+            LockScreenUtil.lockScreen(mService);
+//            AccessibilityUtil.doHome(mService);
 
             return false;
         }

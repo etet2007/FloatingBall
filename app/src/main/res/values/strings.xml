@@ -22,6 +22,7 @@
     <string name="drawoverlays_permission">DrawOverlays Permission</string>
     <string name="request_accessibility">Request accessibility</string>
     <string name="double_click_title">Double click</string>
+    <string name="use_gray_background">Use gray background?</string>
 
     <!--<string name="compose_shortcut_short_label1">1</string>-->
 

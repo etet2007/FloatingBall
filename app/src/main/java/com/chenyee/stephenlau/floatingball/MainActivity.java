@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity
         int opacity = prefs.getInt(KEY_OPACITY, 125);
         int ballSize = prefs.getInt(KEY_SIZE, 25);
         boolean useBackground = prefs.getBoolean(KEY_USE_BACKGROUND, false);
-        boolean useGrayBackground = prefs.getBoolean(KEY_USE_GRAY_BACKGROUND, false);
+        boolean useGrayBackground = prefs.getBoolean(KEY_USE_GRAY_BACKGROUND, true);
 
 
         //根据数据进行初始化
@@ -360,6 +360,7 @@ public class MainActivity extends AppCompatActivity
             choosePicButton.setEnabled(true);
             backgroundSwitch.setEnabled(true);
             upDistanceSeekBar.setEnabled(true);
+            useGrayBackgroundSwitch.setEnabled(true);
         }else{
             fab.setImageAlpha(40);
             ballSwitch.setChecked(false);
@@ -368,6 +369,7 @@ public class MainActivity extends AppCompatActivity
             choosePicButton.setEnabled(false);
             backgroundSwitch.setEnabled(false);
             upDistanceSeekBar.setEnabled(false);
+            useGrayBackgroundSwitch.setEnabled(false);
         }
     }
 

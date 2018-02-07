@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FloatingBall.iml" filepath="$PROJECT_DIR$/FloatingBall.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://D:\Workspace\MyAndroidProject\FloatingBall\app\app.iml" filepath="D:\Workspace\MyAndroidProject\FloatingBall\app\app.iml" />
     </modules>
   </component>
 </project>
