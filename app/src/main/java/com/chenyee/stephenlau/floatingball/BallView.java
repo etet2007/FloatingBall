@@ -33,11 +33,19 @@ import java.io.IOException;
 
 public class BallView extends View {
     public static final String TAG="BallView";
-    private final int gestureMoveDistance = 18;
 
     private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private boolean isFirstEvent=false;
+    private Paint mBallEmptyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    //球半径
+    private float ballRadius=25;
+    //背景球半径
+    private float mBackgroundRadius=ballRadius+15;
+
+    //FloatBallView宽高
+    private int measuredWidth= (int) (mBackgroundRadius*2+20);
+    private int measuredHeight=measuredWidth;
+
 
     public float getBallCenterY() {
         return ballCenterY;
@@ -56,18 +64,16 @@ public class BallView extends View {
         this.ballCenterX = ballCenterX;
     }
 
+    //标志
+    private boolean isFirstEvent=false;
+
     private boolean isScrolling=false;
+    private boolean isLongPress=false;
 
     public boolean useBackground=false;
     public boolean useGrayBackground=false;
 
-    private float ballRadius=25;
-    private float mBackgroundRadius=ballRadius+15;
-
-    //MyFloatBallView宽高
-    private int measuredWidth= (int) (mBackgroundRadius*2+20);
-    private int measuredHeight=measuredWidth;
-
+    //改变球的半径，同时需要改变view的宽高
     public void changeFloatBallSizeWithRadius(int ballRadius){
         this.ballRadius=ballRadius;
         this.mBackgroundRadius=ballRadius+15;
@@ -75,19 +81,21 @@ public class BallView extends View {
         measuredWidth= (int) (mBackgroundRadius*2+20);
         measuredHeight=measuredWidth;
 
-        calcTouchAnimator();        //大小变了，动画的参数也需要改变。
+        //大小变了，动画的参数也需要改变。
+        calcTouchAnimator();
     }
+    //手势的状态，官方不推荐使用enum
     private GESTURE_STATE currentGestureSTATE;
-
+    private GESTURE_STATE lastGestureSTATE = GESTURE_STATE.NONE;
 
     public enum GESTURE_STATE {
         UP, DOWN, LEFT, RIGHT,NONE
     }
 
-    private boolean isLongPress=false;
     private float mLastTouchEventX;
     private float mOffsetToParentY;
     private WindowManager.LayoutParams mLayoutParams;
+
     private int mLayoutParamsY;
     private int getMLayoutParamsY(){
         return mLayoutParams.y;
@@ -96,16 +104,17 @@ public class BallView extends View {
         mLayoutParams.y=y;
     }
 
-    private GESTURE_STATE lastGestureSTATE = GESTURE_STATE.NONE;
 
     private GestureDetector mDetector;
     private AccessibilityService mService;
 
     private WindowManager mWindowManager;
+    //接触时动画
     private ObjectAnimator onTouchAnimate;
     private ObjectAnimator unTouchAnimate;
-    private ObjectAnimator onAddAnimate;
-    private ObjectAnimator onRemoveAnimate;
+
+//    private ObjectAnimator onAddAnimate;
+//    private ObjectAnimator onRemoveAnimate;
 
     //Vibrator
     private Vibrator mVibrator;
@@ -157,8 +166,11 @@ public class BallView extends View {
         mBallPaint.setColor(Color.WHITE);
         mBallPaint.setAlpha(150);
 
+        PorterDuff.Mode mode = PorterDuff.Mode.CLEAR;
+        mBallEmptyPaint.setXfermode(new PorterDuffXfermode(mode));
+
         //生成动画，多余。
-        calcTouchAnimator();
+//        calcTouchAnimator();
 
         //生成BitmapRead
         makeBitmapRead();
@@ -175,12 +187,9 @@ public class BallView extends View {
             Resources res=getResources();
             bitmapRead = BitmapFactory.decodeResource(res, R.drawable.joe_big);
         }
-
     }
 
     public void setBitmapRead(String imagePath) {
-
-
         bitmapRead=BitmapFactory.decodeFile(imagePath);
 
         if(bitmapRead==null){
@@ -207,10 +216,7 @@ public class BallView extends View {
                 e.printStackTrace();
             }
         }
-
     }
-
-
 
     public void createBitmapCropFromBitmapRead() {
         if(bitmapRead==null||ballRadius<=0){
@@ -219,9 +225,9 @@ public class BallView extends View {
 
         int width=(int)ballRadius*2;
         int height=(int)ballRadius*2;
-
+//        bitmapRead为读取的原图，进行缩放为scaledBitmap
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapRead, width, height, true);
-
+        //进行裁切后的bitmapCrop
         bitmapCrop = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmapCrop);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -349,14 +355,13 @@ public class BallView extends View {
             }
         });
         animation.start();
-
+        //可以测试一下
 //        animate().translationYBy(-130)
 //                .setDuration(200)
 //                .start();
 //        animate().translationYBy(130)
 //                .setDuration(200)
 //                .start();
-
     }
 
 
@@ -370,9 +375,9 @@ public class BallView extends View {
             }
         });
         animation.start();
-
     }
-        @Override
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -381,6 +386,9 @@ public class BallView extends View {
         //draw gray background
         if(useGrayBackground)
             canvas.drawCircle(0, 0, mBackgroundRadius, mBackgroundPaint);
+
+        //clear ball
+        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallEmptyPaint);
         //draw ball
         canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallPaint);
 
@@ -441,16 +449,16 @@ public class BallView extends View {
     private void doGesture() {
         switch (currentGestureSTATE) {
             case UP:
-                AccessibilityUtil.doPullUp(mService);
+                AccessibilityUtil.doHome(mService);
                 break;
             case DOWN:
-                AccessibilityUtil.doPullDown(mService);
+                AccessibilityUtil.doNotification(mService);
                 break;
             case LEFT:
-                AccessibilityUtil.doLeftOrRight(mService);
+                AccessibilityUtil.doRecents(mService);
                 break;
             case RIGHT:
-                AccessibilityUtil.doLeftOrRight(mService);
+                AccessibilityUtil.doRecents(mService);
                 break;
             case NONE:
                 break;
@@ -473,7 +481,6 @@ public class BallView extends View {
         //单击
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-//            Log.d(TAG, "onSingleTapUp: ");
             return false;
         }
 
@@ -532,6 +539,7 @@ public class BallView extends View {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             Log.d(TAG, "onDoubleTap: "+e);
+            AccessibilityUtil.doHome(mService);
 
             return false;
         }
@@ -543,6 +551,7 @@ public class BallView extends View {
         }
     }
     private void moveFloatBall() {
+        int gestureMoveDistance = 18;
         switch (currentGestureSTATE){
             case UP:
                 ballCenterX=0;

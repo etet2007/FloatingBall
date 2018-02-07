@@ -31,7 +31,7 @@ public class AccessibilityUtil {
      * 下拉打开通知栏
      * @param service
      */
-    public static void doPullDown(AccessibilityService service) {
+    public static void doNotification(AccessibilityService service) {
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);
     }
 
@@ -39,7 +39,7 @@ public class AccessibilityUtil {
      * 上拉返回桌面
      * @param service
      */
-    public static void doPullUp(AccessibilityService service) {
+    public static void doHome(AccessibilityService service) {
 //        boolean success=service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 
 //        if(!success){
@@ -55,7 +55,7 @@ public class AccessibilityUtil {
      * 左右滑动打开多任务
      * @param service
      */
-    public static void doLeftOrRight(AccessibilityService service) {
+    public static void doRecents(AccessibilityService service) {
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
 
         //getTopApp package name

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +36,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.use_gray_background_switch) SwitchCompat useGrayBackgroundSwitch;
     @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
 
+    @BindView(R.id.double_click)RelativeLayout doubleClickLayout;
     //显示参数
     SharedPreferences prefs;
 
@@ -98,6 +102,21 @@ public class MainActivity extends AppCompatActivity
 //                        new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
 //                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
 //            }
+
+        doubleClickLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(R.string.double_click_title)
+                        .setItems(R.array.double_click, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // The 'which' argument contains the index position
+                                // of the selected item
+                            }
+                        });
+                builder.create().show();
+            }
+        });
     }
 
     private boolean hasPermission() {
@@ -216,12 +235,14 @@ public class MainActivity extends AppCompatActivity
         int opacity = prefs.getInt(KEY_OPACITY, 125);
         int ballSize = prefs.getInt(KEY_SIZE, 25);
         boolean useBackground = prefs.getBoolean(KEY_USE_BACKGROUND, false);
+        boolean useGrayBackground = prefs.getBoolean(KEY_USE_GRAY_BACKGROUND, false);
+
 
         //根据数据进行初始化
         opacitySeekBar.setProgress(opacity);
         sizeSeekBar.setProgress(ballSize);
         backgroundSwitch.setChecked(useBackground);
-
+        useGrayBackgroundSwitch.setChecked(useGrayBackground);
         //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
 

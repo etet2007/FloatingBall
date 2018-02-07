@@ -100,7 +100,6 @@ public class FloatBallService extends AccessibilityService {
             if(hasSoftKeyboardShow)
                 mFloatBallManager.moveBallViewDown();
             hasSoftKeyboardShow=false;
-
         }
     }
 

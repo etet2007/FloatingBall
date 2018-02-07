@@ -16,4 +16,9 @@ public class SharedPreferencesUtil {
     public static final String KEY_MOVE_UP_DISTANCE ="moveUpDistance";
 
 
+    public static final int NULL =0;
+    public static final int LOCK_SCREEN =1;
+    public static final int HOME =2;
+
+    public static final int VALUE3 =3;
 }
