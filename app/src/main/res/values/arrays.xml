@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="double_click">
-    <item>锁屏</item>
-    <item>无</item>
+        <item>@string/none</item>
+        <item>@string/home</item>
+        <item>@string/lockScreen</item>
     </string-array>
 </resources>

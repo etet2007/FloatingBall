@@ -155,31 +155,6 @@ public class FloatBallService extends AccessibilityService {
 
         return super.onStartCommand(intent, flags, startId);
     }
-/*
-public enum CropType {
-        CIRCLE(1), RECTANGLE(2);
 
-        private int mValue;
-
-        CropType(int value) {
-            this.mValue = value;
-        }
-
-        public int value() {
-            return mValue;
-        }
-
-        public static CropType valueOf(int value) {
-            switch (value) {
-                case CropImageBorderView.CIRCLE:
-                    return CIRCLE;
-                case CropImageBorderView.RECTANGLE:
-                    return RECTANGLE;
-                default:
-                    return null;
-            }
-        }
-    }
- */
 
 }

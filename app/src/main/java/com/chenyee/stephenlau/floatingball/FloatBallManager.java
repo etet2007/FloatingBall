@@ -171,9 +171,17 @@ public class FloatBallManager {
             mBallView.createBitmapCropFromBitmapRead();
 
             //Use gray background
-            mBallView.useGrayBackground = defaultSharedPreferences.getBoolean(KEY_USE_GRAY_BACKGROUND, false);
+            mBallView.useGrayBackground = defaultSharedPreferences.getBoolean(KEY_USE_GRAY_BACKGROUND, true);
             //Use background
             mBallView.useBackground =defaultSharedPreferences.getBoolean(KEY_USE_BACKGROUND ,false);
+
+            //Double click event
+            int doubleClickEvent =defaultSharedPreferences.getInt(KEY_DOUBLE_CLICK_EVENT ,0);
+            mBallView.doubleClickEvent=doubleClickEvent;
+            if(doubleClickEvent!=NONE)
+                mBallView.setUseDoubleTapOrNot(true);
+            else
+                mBallView.setUseDoubleTapOrNot(false);
 
             moveUpDistance = defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_MOVE_UP_DISTANCE, 130);
             mBallView.requestLayout();

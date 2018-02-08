@@ -27,6 +27,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.HOME;
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.LOCK_SCREEN;
+import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.NONE;
+
 /**
  * Created by stephenlau on 2017/12/5.
  */
@@ -45,6 +49,9 @@ public class BallView extends View {
     //FloatBallView宽高
     private int measuredWidth= (int) (mBackgroundRadius*2+20);
     private int measuredHeight=measuredWidth;
+
+    //function
+    public int doubleClickEvent;
 
 
     public float getBallCenterY() {
@@ -157,7 +164,8 @@ public class BallView extends View {
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-        mDetector=new GestureDetector(context,new MyGestureListener());
+        mDetector =new GestureDetector(context,new SingleTapGestureListener());
+
         mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
         mBackgroundPaint.setColor(Color.GRAY);
@@ -403,9 +411,20 @@ public class BallView extends View {
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
+    public void setUseDoubleTapOrNot(boolean use){
+
+        if(use){
+            mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
+            Log.d(TAG, "setUseDoubleTapOrNot: "+use);
+        }else{
+            mDetector.setOnDoubleTapListener(null);
+            Log.d(TAG, "setUseDoubleTapOrNot: "+use);
+        }
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.mDetector.onTouchEvent(event);
+        mDetector.onTouchEvent(event);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -466,8 +485,31 @@ public class BallView extends View {
     }
 
 
+    private class DoubleTapGestureListener implements GestureDetector.OnDoubleTapListener{
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.d(TAG, "onSingleTapConfirmed: "+e);
+            AccessibilityUtil.doBack(mService);
+            return false;
+        }
 
-    private class MyGestureListener implements GestureDetector.OnGestureListener ,GestureDetector.OnDoubleTapListener{
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.d(TAG, "onDoubleTap: "+e);
+            if(doubleClickEvent==HOME){
+                AccessibilityUtil.doHome(mService);
+            }else if(doubleClickEvent==LOCK_SCREEN)
+                LockScreenUtil.lockScreen(mService);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+//            Log.d(TAG, "onDoubleTapEvent: "+e);
+            return false;
+        }
+    }
+    private class SingleTapGestureListener implements GestureDetector.OnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
             return false;
@@ -481,6 +523,8 @@ public class BallView extends View {
         //单击
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
+            if(doubleClickEvent==NONE)
+                AccessibilityUtil.doBack(mService);
             return false;
         }
 
@@ -529,27 +573,7 @@ public class BallView extends View {
             return false;
         }
 
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.d(TAG, "onSingleTapConfirmed: "+e);
-            AccessibilityUtil.doBack(mService);
-            return false;
-        }
 
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            Log.d(TAG, "onDoubleTap: "+e);
-            LockScreenUtil.lockScreen(mService);
-//            AccessibilityUtil.doHome(mService);
-
-            return false;
-        }
-
-        @Override
-        public boolean onDoubleTapEvent(MotionEvent e) {
-//            Log.d(TAG, "onDoubleTapEvent: "+e);
-            return false;
-        }
     }
     private void moveFloatBall() {
         int gestureMoveDistance = 18;

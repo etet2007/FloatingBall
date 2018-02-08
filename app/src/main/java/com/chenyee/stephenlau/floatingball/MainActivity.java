@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -20,8 +21,10 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
 
     @BindView(R.id.double_click)RelativeLayout doubleClickLayout;
+    @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
     //显示参数
     SharedPreferences prefs;
 
@@ -106,15 +110,25 @@ public class MainActivity extends AppCompatActivity
         doubleClickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(R.string.double_click_title)
                         .setItems(R.array.double_click, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // The 'which' argument contains the index position
                                 // of the selected item
+
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putInt(KEY_DOUBLE_CLICK_EVENT,which);
+                                editor.apply();
+
+                                sendUpdateIntentToService();
+
+                                Resources res =getResources();
+                                String[] double_click = res.getStringArray(R.array.double_click);
+                                doubleClickTextView.setText(double_click[which]);
                             }
                         });
-                builder.create().show();
+                builder.show();
             }
         });
     }
@@ -236,13 +250,17 @@ public class MainActivity extends AppCompatActivity
         int ballSize = prefs.getInt(KEY_SIZE, 25);
         boolean useBackground = prefs.getBoolean(KEY_USE_BACKGROUND, false);
         boolean useGrayBackground = prefs.getBoolean(KEY_USE_GRAY_BACKGROUND, true);
-
+        int doubleClickEvent = prefs.getInt(KEY_DOUBLE_CLICK_EVENT, 0);
 
         //根据数据进行初始化
         opacitySeekBar.setProgress(opacity);
         sizeSeekBar.setProgress(ballSize);
         backgroundSwitch.setChecked(useBackground);
         useGrayBackgroundSwitch.setChecked(useGrayBackground);
+
+        Resources res =getResources();
+        String[] double_click = res.getStringArray(R.array.double_click);
+        doubleClickTextView.setText(double_click[doubleClickEvent]);
         //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
 
@@ -397,7 +415,6 @@ public class MainActivity extends AppCompatActivity
             c.moveToFirst();
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
-            Log.d("lqt", "onActivityResult: "+imagePath);
 
             Intent intent = new Intent(MainActivity.this, FloatBallService.class);
             Bundle bundle = new Bundle();
@@ -416,8 +433,8 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode==mREQUEST_external_storage){
-//判断是否成功
-//            成功继续打开图片？
+            //判断是否成功
+            //            成功继续打开图片？
         }
     }
 
