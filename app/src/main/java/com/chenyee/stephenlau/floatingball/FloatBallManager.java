@@ -19,6 +19,7 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
  */
 
 public class FloatBallManager {
+    //单例
     private static FloatBallManager mFloatBallManager=new FloatBallManager();
     private FloatBallManager(){}
     public static FloatBallManager getInstance() {
@@ -64,27 +65,12 @@ public class FloatBallManager {
             params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                     | LayoutParams.FLAG_NOT_FOCUSABLE|LayoutParams.FLAG_LAYOUT_IN_SCREEN|LayoutParams.FLAG_LAYOUT_INSET_DECOR; //FLAG_LAYOUT_IN_SCREEN
 
-
             //把引用传进去
             mBallView.setLayoutParams(params);
-
+            //使用windowManager把ballView加进去
             windowManager.addView(mBallView, params);
 
             updateBallViewData();
-
-//            mBallView.setOpacity(defaultSharedPreferences.getInt("opacity",125));
-//            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt("size",25));
-
-//            mBallView.makeBitmapRead();
-
-//            mBallView.createBitmapCropFromBitmapRead();
-
-            //Call this when something has changed which has invalidated the layout of this view.
-//            mBallView.requestLayout();
-
-//            useBackground = defaultSharedPreferences.getBoolean("useBackground", false);
-//            setUseBackground(useBackground);
-
             mBallView.performAddAnimator();
 
             isOpenBall=true;
@@ -160,7 +146,7 @@ public class FloatBallManager {
             mBallView.invalidate();
         }
     }
-// 根据SharedPreferences中的数据更新BallView的显示参数
+    // 根据SharedPreferences中的数据更新BallView的显示参数
     public void updateBallViewData() {
         if (mBallView != null) {
             //Opacity
@@ -184,6 +170,7 @@ public class FloatBallManager {
                 mBallView.setUseDoubleTapOrNot(false);
 
             moveUpDistance = defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_MOVE_UP_DISTANCE, 130);
+
             mBallView.requestLayout();
             mBallView.invalidate();
         }

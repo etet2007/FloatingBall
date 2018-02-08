@@ -233,14 +233,14 @@ public class BallView extends View {
 
         int width=(int)ballRadius*2;
         int height=(int)ballRadius*2;
-//        bitmapRead为读取的原图，进行缩放为scaledBitmap
+//        bitmapRead为读取的原图，缩放为scaledBitmap
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapRead, width, height, true);
         //进行裁切后的bitmapCrop
         bitmapCrop = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmapCrop);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-//      免得再算一次  canvas.drawCircle(width/2, height/2, ballRadius, paint);
+//      canvas.drawCircle(width/2, height/2, ballRadius, paint);
         canvas.drawCircle(ballRadius, ballRadius, ballRadius, paint);
         paint.reset();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
@@ -388,7 +388,6 @@ public class BallView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
         canvas.translate(measuredWidth/2,measuredHeight/2);
 
         //draw gray background
@@ -412,7 +411,6 @@ public class BallView extends View {
     }
 
     public void setUseDoubleTapOrNot(boolean use){
-
         if(use){
             mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
             Log.d(TAG, "setUseDoubleTapOrNot: "+use);
@@ -550,8 +548,7 @@ public class BallView extends View {
                 currentGestureSTATE = GESTURE_STATE.DOWN;
             } else  if (angle > -Math.PI*3/4 && angle < -Math.PI/4) {
                 currentGestureSTATE = GESTURE_STATE.UP;
-            }
-              else{
+            } else{
                 currentGestureSTATE = GESTURE_STATE.LEFT;
             }
             if(currentGestureSTATE != lastGestureSTATE){

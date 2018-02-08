@@ -23,6 +23,7 @@ public class PermissionActivity extends AppCompatActivity {
     @BindView(R.id.drawOverlays_button) Button drawOverlaysButton;
     @BindView(R.id.accessibility_button) Button accessibilityButton;
     @BindView(R.id.lockScreen_button) Button lockScreenButton;
+    @BindView(R.id.logo_image_view) AppCompatImageView logoImageView;
     private boolean hasDrawPermission=false;
     private boolean hasAccessibilityPermission=false;
     private boolean hasLockScreenPermission=false;
@@ -33,7 +34,6 @@ public class PermissionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_permission);
         ButterKnife.bind(this);
 
-        AppCompatImageView logoImageView = findViewById(R.id.logo_image_view);
         logoImageView.animate().translationYBy(250).setDuration(3000).start();
 
         drawOverlaysButton.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +60,6 @@ public class PermissionActivity extends AppCompatActivity {
                 intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
                 intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, R.string.app_name);
                 startActivity(intent);
-
             }
         });
     }
@@ -71,17 +70,15 @@ public class PermissionActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (Settings.canDrawOverlays(this)) {
-//                drawOverlaysButton.setClickable(false);
                 drawOverlaysButton.setEnabled(false);
                 hasDrawPermission=true;
             }
-        }else {
+        }else {//SDK_INT < 23 没方法
             drawOverlaysButton.setEnabled(false);
             hasDrawPermission=true;
         }
 
         if (AccessibilityUtil.isAccessibilitySettingsOn(this)) {
-//            accessibilityButton.setClickable(false);
             accessibilityButton.setEnabled(false);
             hasAccessibilityPermission=true;
         }

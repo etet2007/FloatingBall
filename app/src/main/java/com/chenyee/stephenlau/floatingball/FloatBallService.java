@@ -27,8 +27,8 @@ public class FloatBallService extends AccessibilityService {
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_DEL = 1;
-    public static final int TYPE_OPACITY =2;
-    public static final int TYPE_SIZE =3;
+//    public static final int TYPE_OPACITY =2;
+//    public static final int TYPE_SIZE =3;
     public static final int TYPE_IMAGE =4;
     public static final int TYPE_SAVE =5;
     public static final int TYPE_USE_BACKGROUND =6;
@@ -41,7 +41,6 @@ public class FloatBallService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected");
-
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
     }
@@ -49,7 +48,6 @@ public class FloatBallService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
 //        Log.d(TAG, "onAccessibilityEvent "+event);
-
         inputMethodSate(getApplicationContext());
     }
 

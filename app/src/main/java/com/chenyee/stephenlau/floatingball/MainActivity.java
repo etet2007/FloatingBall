@@ -53,16 +53,13 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
+    public static final String TAG = "MainActivity";
     private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
     private static final String GITHUB_REPO_RELEASE_URL = "https://github.com/etet2007/FloatingBall/releases";
-
-
+    //头像
     private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 40;
     private boolean mIsAvatarShown = true;
-
     private int mMaxScrollSize;
-
-    public static final String TAG = "MainActivity";
 
     //控件
     @BindView(R.id.logo_fab) FloatingActionButton fab;
@@ -77,14 +74,13 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.double_click)RelativeLayout doubleClickLayout;
     @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
-    //显示参数
+    //参数
     SharedPreferences prefs;
 
     //调用系统相册-选择图片
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
 
-    private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 1101;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +91,8 @@ public class MainActivity extends AppCompatActivity
         initFrameViews();
         //初始化view
         initContentViews();
-
+        //初始化功能选择view
+        initFunctionViews();
         //申请DrawOverlays权限
         requestDrawOverlaysPermission();
 
@@ -106,7 +103,9 @@ public class MainActivity extends AppCompatActivity
 //                        new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
 //                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
 //            }
+    }
 
+    private void initFunctionViews() {
         doubleClickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,6 +240,7 @@ public class MainActivity extends AppCompatActivity
                     .start();
         }
     }
+
     private void initContentViews() {
         //获取悬浮球参数
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -261,9 +261,10 @@ public class MainActivity extends AppCompatActivity
         Resources res =getResources();
         String[] double_click = res.getStringArray(R.array.double_click);
         doubleClickTextView.setText(double_click[doubleClickEvent]);
+
         //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
-
+        //悬浮球的开关
         ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -286,7 +287,6 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt(KEY_OPACITY,value);
                 editor.apply();
-
                 sendUpdateIntentToService();
             }
             @Override
@@ -302,7 +302,6 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt(KEY_SIZE,value);
                 editor.apply();
-
                 sendUpdateIntentToService();
             }
 
@@ -322,7 +321,6 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt(KEY_MOVE_UP_DISTANCE,value);
                 editor.apply();
-
                 sendUpdateIntentToService();
             }
 
@@ -342,7 +340,6 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean(KEY_USE_BACKGROUND,isChecked);
                 editor.apply();
-
                 sendUpdateIntentToService();
             }
         });
@@ -363,7 +360,6 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean(KEY_USE_GRAY_BACKGROUND,isChecked);
                 editor.apply();
-
                 sendUpdateIntentToService();
             }
         });
@@ -522,16 +518,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-//
-//        if (id == R.id.nav_camera) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else
+
          if (id == R.id.nav_share) {
              Intent textIntent = new Intent(Intent.ACTION_SEND);
              textIntent.setType("text/plain");
