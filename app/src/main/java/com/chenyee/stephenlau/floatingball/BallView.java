@@ -160,7 +160,8 @@ public class BallView extends View {
 
     public BallView(Context context) {
         super(context);
-        
+        performAddAnimator();
+
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
@@ -181,11 +182,11 @@ public class BallView extends View {
 //        calcTouchAnimator();
 
         //生成BitmapRead
-        makeBitmapRead();
+        getBitmapRead();
     }
 
 
-    public void makeBitmapRead() {
+    public void getBitmapRead() {
         //app内部目录。
         String path = getContext().getFilesDir().toString();
         bitmapRead = BitmapFactory.decodeFile(path+"/ballBackground.png");
@@ -197,21 +198,20 @@ public class BallView extends View {
         }
     }
 
-    public void setBitmapRead(String imagePath) {
+    public void copyBackgroundImage(String imagePath) {
         bitmapRead=BitmapFactory.decodeFile(imagePath);
-
         if(bitmapRead==null){
             Toast.makeText(getContext(), "Error", Toast.LENGTH_LONG).show();
             return;
         }
-        //copy
+        //copy source image
         String path = getContext().getFilesDir().toString();
         File file = new File(path, "ballBackground.png");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
             boolean isSucceed=bitmapRead.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            Log.d(TAG, "makeBitmapRead: isSecceed:"+isSucceed);
+            Log.d(TAG, "getBitmapRead: isSecceed:"+isSucceed);
             // PNG is a lossless format, the compression factor (100) is ignored
         } catch (Exception e) {
             e.printStackTrace();
@@ -348,6 +348,16 @@ public class BallView extends View {
         animate()
                 .scaleY(0).scaleX(0)
                 .setDuration(200)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+                        if (windowManager != null) {
+                            windowManager.removeView(BallView.this);
+                        }
+
+                    }
+                })
                 .start();
     }
 
@@ -507,6 +517,7 @@ public class BallView extends View {
             return false;
         }
     }
+
     private class SingleTapGestureListener implements GestureDetector.OnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {

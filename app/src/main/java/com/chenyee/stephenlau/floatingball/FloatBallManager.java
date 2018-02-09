@@ -15,9 +15,9 @@ import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
 
 
 /**
- * 单例FloatBallManager
+ * 管理FloatBall的类。
+ * 单例
  */
-
 public class FloatBallManager {
     //单例
     private static FloatBallManager mFloatBallManager=new FloatBallManager();
@@ -26,16 +26,16 @@ public class FloatBallManager {
         return mFloatBallManager;
     }
 
-    //View
+    //BallView
     private BallView mBallView;
     //WindowManager
     private WindowManager mWindowManager;
 
     private SharedPreferences defaultSharedPreferences;
-    private boolean isOpenBall;
-    private boolean useBackground;
+    private boolean isOpenedBall;
 
-    int moveUpDistance=130;
+    private int moveUpDistance=130;
+
     //创建BallView
     public void addBallView(Context context) {
         if (mBallView == null) {
@@ -48,8 +48,9 @@ public class FloatBallManager {
             int screenWidth = size.x;
             int screenHeight = size.y;
 
+            //Use ShardPreferences to init layout parameters.
             defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-            //初始化布局参数
+
             LayoutParams params = new LayoutParams();
             params.x=defaultSharedPreferences.getInt("paramsX",screenWidth / 2);
             params.y=defaultSharedPreferences.getInt("paramsY",screenHeight / 2);
@@ -57,7 +58,7 @@ public class FloatBallManager {
             params.height = LayoutParams.WRAP_CONTENT;
             params.gravity = Gravity.START | Gravity.TOP;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //Android 8.0
+                params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
             }else {
                 params.type = LayoutParams.TYPE_SYSTEM_ALERT;
             }
@@ -70,24 +71,24 @@ public class FloatBallManager {
             //使用windowManager把ballView加进去
             windowManager.addView(mBallView, params);
 
-            updateBallViewData();
-            mBallView.performAddAnimator();
+            updateBallViewParameter();
+//            mBallView.performAddAnimator();
 
-            isOpenBall=true;
+            isOpenedBall =true;
             saveFloatBallData();
         }
     }
 
-    public void removeBallView(final Context context) {
-        if (mBallView != null) {
-            isOpenBall=false;
+    public void removeBallView() {
+        if (mBallView == null)
+            return;
 
-            mBallView.performRemoveAnimator();
-            mWindowManager.removeView(mBallView);
+        isOpenedBall =false;
 
-            saveFloatBallData();
-            mBallView = null;
-        }
+        mBallView.performRemoveAnimator();
+
+        saveFloatBallData();
+        mBallView = null;
     }
 
     private WindowManager getWindowManager(Context context) {
@@ -115,22 +116,28 @@ public class FloatBallManager {
 //            mBallView.invalidate();
 //        }
 //    }
-    public  void setBackgroundPic(Context context,String imagePath){
+
+    /**
+     *
+     * @param imagePath 外部图片地址
+     */
+    public void setBackgroundPic(String imagePath){
         if (mBallView != null) {
 
-            mBallView.setBitmapRead(imagePath);
-            mBallView.makeBitmapRead();
+            mBallView.copyBackgroundImage(imagePath);
+            mBallView.getBitmapRead();
             mBallView.createBitmapCropFromBitmapRead();
             mBallView.invalidate();
         }
     }
+
     public void saveFloatBallData(){
         if(defaultSharedPreferences==null || mBallView==null){
             return;
         }
 
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
-        editor.putBoolean(KEY_HAS_ADDED_BALL,isOpenBall);
+        editor.putBoolean(KEY_HAS_ADDED_BALL, isOpenedBall);
 
         LayoutParams params = mBallView.getLayoutParams();
         editor.putInt(KEY_PARAM_X,params.x);
@@ -141,13 +148,12 @@ public class FloatBallManager {
 
     public void setUseBackground(boolean useBackground) {
         if (mBallView != null) {
-            this.useBackground=useBackground;
             mBallView.useBackground = useBackground;
             mBallView.invalidate();
         }
     }
     // 根据SharedPreferences中的数据更新BallView的显示参数
-    public void updateBallViewData() {
+    public void updateBallViewParameter() {
         if (mBallView != null) {
             //Opacity
             mBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_OPACITY,125));
@@ -175,6 +181,7 @@ public class FloatBallManager {
             mBallView.invalidate();
         }
     }
+
 
     public void moveBallViewUp() {
         if(mBallView!=null){
