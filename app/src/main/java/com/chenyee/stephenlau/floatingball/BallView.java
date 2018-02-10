@@ -373,13 +373,7 @@ public class BallView extends View {
             }
         });
         animation.start();
-        //可以测试一下
-//        animate().translationYBy(-130)
-//                .setDuration(200)
-//                .start();
-//        animate().translationYBy(130)
-//                .setDuration(200)
-//                .start();
+
     }
 
 
@@ -432,14 +426,17 @@ public class BallView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        //使用Detector处理一部分手势。
         mDetector.onTouchEvent(event);
 
         switch (event.getAction()) {
+            //任何接触，球都放大。
             case MotionEvent.ACTION_DOWN:
                 //球放大动画
                 onTouchAnimate.start();
+            //处理移动模式
             case MotionEvent.ACTION_MOVE:
-                //移动模式中
+                //移动模式
                 if (isLongPress){
                     //getX()、getY()返回的则是触摸点相对于View的位置。
                     //getRawX()、getRawY()返回的是触摸点相对于屏幕的位置
@@ -458,6 +455,7 @@ public class BallView extends View {
             case MotionEvent.ACTION_UP:
                 //球缩小动画
                 unTouchAnimate.start();
+                //滑动操作
                 if(isScrolling){
                     doGesture();
                     //球移动动画
@@ -518,6 +516,9 @@ public class BallView extends View {
         }
     }
 
+    /**
+     * 处理 单击事件、滑动事件。
+     */
     private class SingleTapGestureListener implements GestureDetector.OnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
@@ -552,7 +553,7 @@ public class BallView extends View {
             float deltaY = lastScrollY - firstScrollY;
 
             double angle = Math.atan2(deltaY, deltaX);
-
+            //判断currentGestureSTATE
             if (angle > -Math.PI/4 && angle < Math.PI/4) {
                 currentGestureSTATE = GESTURE_STATE.RIGHT;
             } else if (angle > Math.PI/4 && angle < Math.PI*3/4) {
@@ -583,6 +584,10 @@ public class BallView extends View {
 
 
     }
+
+    /**
+     * 根据currentGestureSTATE改变显示参数
+     */
     private void moveFloatBall() {
         int gestureMoveDistance = 18;
         switch (currentGestureSTATE){
@@ -607,7 +612,6 @@ public class BallView extends View {
                 ballCenterY=0;
                 break;
         }
-
         invalidate();
     }
 
