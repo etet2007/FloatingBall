@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,7 +21,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
@@ -42,18 +41,24 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
+import com.chenyee.stephenlau.floatingball.services.FloatBallService;
+import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.util.RomUtil;
+
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
+import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
-    public static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
+
     private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
     private static final String GITHUB_REPO_RELEASE_URL = "https://github.com/etet2007/FloatingBall/releases";
     //头像
@@ -81,6 +86,10 @@ public class MainActivity extends AppCompatActivity
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
 
+    public static Intent getStartIntent(Context context) {
+        return new Intent(context, MainActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +114,119 @@ public class MainActivity extends AppCompatActivity
 //            }
     }
 
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        if (mMaxScrollSize == 0)
+            mMaxScrollSize = appBarLayout.getTotalScrollRange();
+
+        int percentage = (Math.abs(i)) * 100 / mMaxScrollSize;
+
+        if (percentage >= PERCENTAGE_TO_ANIMATE_AVATAR && mIsAvatarShown) {
+            mIsAvatarShown = false;
+
+            mProfileImage.animate()
+                    .scaleY(0).scaleX(0)
+                    .setDuration(200)
+                    .start();
+        }
+
+        if (percentage <= PERCENTAGE_TO_ANIMATE_AVATAR && !mIsAvatarShown) {
+            mIsAvatarShown = true;
+
+            mProfileImage.animate()
+                    .scaleY(1).scaleX(1)
+                    .start();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //选取图片的回调
+        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+
+            if (c == null)
+                return;
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+
+            Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt(EXTRA_TYPE, FloatBallService.TYPE_IMAGE);
+            bundle.putString("imagePath", imagePath);
+            intent.putExtras(bundle);
+            startService(intent);
+
+            c.close();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==mREQUEST_external_storage){
+            //判断是否成功
+            //            成功继续打开图片？
+        }
+    }
+
+    // 模板的代码
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_share) {
+            Intent textIntent = new Intent(Intent.ACTION_SEND);
+            textIntent.setType("text/plain");
+            textIntent.putExtra(Intent.EXTRA_TEXT, GITHUB_REPO_RELEASE_URL);
+            startActivity(Intent.createChooser(textIntent, "shared"));
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
     private void initFunctionViews() {
         doubleClickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +239,7 @@ public class MainActivity extends AppCompatActivity
                                 // of the selected item
 
                                 SharedPreferences.Editor editor = prefs.edit();
-                                editor.putInt(KEY_DOUBLE_CLICK_EVENT,which);
+                                editor.putInt(PREF_DOUBLE_CLICK_EVENT,which);
                                 editor.apply();
 
                                 sendUpdateIntentToService();
@@ -194,10 +316,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
     private void requestDrawOverlaysPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -216,41 +334,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        if (mMaxScrollSize == 0)
-            mMaxScrollSize = appBarLayout.getTotalScrollRange();
 
-        int percentage = (Math.abs(i)) * 100 / mMaxScrollSize;
-
-        if (percentage >= PERCENTAGE_TO_ANIMATE_AVATAR && mIsAvatarShown) {
-            mIsAvatarShown = false;
-
-            mProfileImage.animate()
-                    .scaleY(0).scaleX(0)
-                    .setDuration(200)
-                    .start();
-        }
-
-        if (percentage <= PERCENTAGE_TO_ANIMATE_AVATAR && !mIsAvatarShown) {
-            mIsAvatarShown = true;
-
-            mProfileImage.animate()
-                    .scaleY(1).scaleX(1)
-                    .start();
-        }
-    }
 
     private void initContentViews() {
         //获取悬浮球参数
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hasAddedBall = prefs.getBoolean(KEY_HAS_ADDED_BALL, false);
+        boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
         Log.d(TAG, "hasAddedBall: "+hasAddedBall);
-        int opacity = prefs.getInt(KEY_OPACITY, 125);
-        int ballSize = prefs.getInt(KEY_SIZE, 25);
-        boolean useBackground = prefs.getBoolean(KEY_USE_BACKGROUND, false);
-        boolean useGrayBackground = prefs.getBoolean(KEY_USE_GRAY_BACKGROUND, true);
-        int doubleClickEvent = prefs.getInt(KEY_DOUBLE_CLICK_EVENT, 0);
+        int opacity = prefs.getInt(PREF_OPACITY, 125);
+        int ballSize = prefs.getInt(PREF_SIZE, 25);
+        boolean useBackground = prefs.getBoolean(PREF_USE_BACKGROUND, false);
+        boolean useGrayBackground = prefs.getBoolean(PREF_USE_GRAY_BACKGROUND, true);
+        int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, 0);
 
         //根据数据进行初始化
         opacitySeekBar.setProgress(opacity);
@@ -285,7 +380,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(KEY_OPACITY,value);
+                editor.putInt(PREF_OPACITY,value);
                 editor.apply();
                 sendUpdateIntentToService();
             }
@@ -300,7 +395,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(KEY_SIZE,value);
+                editor.putInt(PREF_SIZE,value);
                 editor.apply();
                 sendUpdateIntentToService();
             }
@@ -319,7 +414,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(KEY_MOVE_UP_DISTANCE,value);
+                editor.putInt(PREF_MOVE_UP_DISTANCE,value);
                 editor.apply();
                 sendUpdateIntentToService();
             }
@@ -338,7 +433,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(KEY_USE_BACKGROUND,isChecked);
+                editor.putBoolean(PREF_USE_BACKGROUND,isChecked);
                 editor.apply();
                 sendUpdateIntentToService();
             }
@@ -358,7 +453,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(KEY_USE_GRAY_BACKGROUND,isChecked);
+                editor.putBoolean(PREF_USE_GRAY_BACKGROUND,isChecked);
                 editor.apply();
                 sendUpdateIntentToService();
             }
@@ -390,48 +485,9 @@ public class MainActivity extends AppCompatActivity
     private void sendUpdateIntentToService() {
         Intent intent = new Intent(MainActivity.this, FloatBallService.class);
         Bundle data = new Bundle();
-        data.putInt("type", FloatBallService.TYPE_UPDATE_DATA);
+        data.putInt(EXTRA_TYPE, FloatBallService.TYPE_UPDATE_DATA);
         intent.putExtras(data);
         startService(intent);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //选取图片的回调
-        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
-
-            String[] filePathColumns = {MediaStore.Images.Media.DATA};
-            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
-
-            if (c == null)
-                return;
-            c.moveToFirst();
-            int columnIndex = c.getColumnIndex(filePathColumns[0]);
-            String imagePath = c.getString(columnIndex);
-
-            Intent intent = new Intent(MainActivity.this, FloatBallService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("type", FloatBallService.TYPE_IMAGE);
-            bundle.putString("imagePath", imagePath);
-            intent.putExtras(bundle);
-            startService(intent);
-
-            c.close();
-        }
-
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==mREQUEST_external_storage){
-            //判断是否成功
-            //            成功继续打开图片？
-        }
     }
 
 
@@ -457,7 +513,7 @@ public class MainActivity extends AppCompatActivity
 
         Intent intent = new Intent(MainActivity.this, FloatBallService.class);
         Bundle data = new Bundle();
-        data.putInt("type", FloatBallService.TYPE_ADD);
+        data.putInt(EXTRA_TYPE, FloatBallService.TYPE_ADD);
         intent.putExtras(data);
         startService(intent);
     }
@@ -465,7 +521,7 @@ public class MainActivity extends AppCompatActivity
     private void removeFloatBall() {
         Intent intent = new Intent(MainActivity.this, FloatBallService.class);
         Bundle data = new Bundle();
-        data.putInt("type", FloatBallService.TYPE_DEL);
+        data.putInt(EXTRA_TYPE, FloatBallService.TYPE_DEL);
         intent.putExtras(data);
         startService(intent);
     }
@@ -480,54 +536,4 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // 模板的代码
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-         if (id == R.id.nav_share) {
-             Intent textIntent = new Intent(Intent.ACTION_SEND);
-             textIntent.setType("text/plain");
-             textIntent.putExtra(Intent.EXTRA_TEXT, GITHUB_REPO_RELEASE_URL);
-             startActivity(Intent.createChooser(textIntent, "shared"));
-             }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 }

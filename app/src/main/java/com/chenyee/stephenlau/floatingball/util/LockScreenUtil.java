@@ -1,9 +1,12 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.util;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+
+import com.chenyee.stephenlau.floatingball.LockReceiver;
+import com.chenyee.stephenlau.floatingball.R;
 
 /**
  * Created by lqtian on 2018/2/7.

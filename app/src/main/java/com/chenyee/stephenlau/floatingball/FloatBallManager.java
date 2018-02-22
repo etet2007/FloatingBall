@@ -11,7 +11,10 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 
-import static com.chenyee.stephenlau.floatingball.SharedPreferencesUtil.*;
+import com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil;
+import com.chenyee.stephenlau.floatingball.views.BallView;
+
+import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
 
 
 /**
@@ -137,11 +140,11 @@ public class FloatBallManager {
         }
 
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
-        editor.putBoolean(KEY_HAS_ADDED_BALL, isOpenedBall);
+        editor.putBoolean(PREF_HAS_ADDED_BALL, isOpenedBall);
 
         LayoutParams params = mBallView.getLayoutParams();
-        editor.putInt(KEY_PARAM_X,params.x);
-        editor.putInt(KEY_PARAM_Y,params.y);
+        editor.putInt(PREF_PARAM_X,params.x);
+        editor.putInt(PREF_PARAM_Y,params.y);
 
         editor.apply();
     }
@@ -156,26 +159,26 @@ public class FloatBallManager {
     public void updateBallViewParameter() {
         if (mBallView != null) {
             //Opacity
-            mBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_OPACITY,125));
+            mBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.PREF_OPACITY,125));
             //Size
-            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt(KEY_SIZE,25));
+            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt(PREF_SIZE,25));
 
             mBallView.createBitmapCropFromBitmapRead();
 
             //Use gray background
-            mBallView.useGrayBackground = defaultSharedPreferences.getBoolean(KEY_USE_GRAY_BACKGROUND, true);
+            mBallView.useGrayBackground = defaultSharedPreferences.getBoolean(PREF_USE_GRAY_BACKGROUND, true);
             //Use background
-            mBallView.useBackground =defaultSharedPreferences.getBoolean(KEY_USE_BACKGROUND ,false);
+            mBallView.useBackground =defaultSharedPreferences.getBoolean(PREF_USE_BACKGROUND,false);
 
             //Double click event
-            int doubleClickEvent =defaultSharedPreferences.getInt(KEY_DOUBLE_CLICK_EVENT ,0);
+            int doubleClickEvent =defaultSharedPreferences.getInt(PREF_DOUBLE_CLICK_EVENT,0);
             mBallView.doubleClickEvent=doubleClickEvent;
             if(doubleClickEvent!=NONE)
                 mBallView.setUseDoubleTapOrNot(true);
             else
                 mBallView.setUseDoubleTapOrNot(false);
 
-            moveUpDistance = defaultSharedPreferences.getInt(SharedPreferencesUtil.KEY_MOVE_UP_DISTANCE, 130);
+            moveUpDistance = defaultSharedPreferences.getInt(SharedPreferencesUtil.PREF_MOVE_UP_DISTANCE, 130);
 
             mBallView.requestLayout();
             mBallView.invalidate();

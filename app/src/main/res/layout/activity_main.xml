@@ -10,7 +10,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/activity_material_up_concept"
+        layout="@layout/partial_material_up_concept"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

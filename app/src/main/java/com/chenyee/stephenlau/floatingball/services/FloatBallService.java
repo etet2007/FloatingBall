@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.ActivityManager;
@@ -10,8 +10,12 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InputMethodManager;
 
+import com.chenyee.stephenlau.floatingball.FloatBallManager;
+
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.EXTRA_TYPE;
 
 
 /**
@@ -23,7 +27,7 @@ import java.util.List;
  */
 
 public class FloatBallService extends AccessibilityService {
-    public static final String TAG = "AccessibilityService";
+    private static final String TAG = "AccessibilityService";
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_DEL = 1;
@@ -120,7 +124,7 @@ public class FloatBallService extends AccessibilityService {
 
             Bundle data = intent.getExtras();
             if (data != null) {
-                int type = data.getInt("type");
+                int type = data.getInt(EXTRA_TYPE);
                 if (type == TYPE_ADD) {
                     mFloatBallManager.addBallView(this);
                 }

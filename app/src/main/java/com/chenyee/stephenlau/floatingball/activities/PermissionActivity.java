@@ -1,18 +1,21 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.activities;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.chenyee.stephenlau.floatingball.LockReceiver;
+import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
+import com.chenyee.stephenlau.floatingball.util.LockScreenUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -88,8 +91,7 @@ public class PermissionActivity extends AppCompatActivity {
         }
 
         if(hasDrawPermission&hasAccessibilityPermission&hasLockScreenPermission){
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            startActivity(MainActivity.getStartIntent(this));
             finish();
         }
     }

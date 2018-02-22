@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.util;
 
 import android.accessibilityservice.AccessibilityService;
 import android.annotation.TargetApi;
@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class AccessibilityUtil {
-    public static final String TAG = "AccessibilityUtil";
+    private static final String TAG = "AccessibilityUtil";
     /**
      * 单击返回功能
      * @param service
@@ -40,15 +40,17 @@ public class AccessibilityUtil {
      * @param service
      */
     public static void doHome(AccessibilityService service) {
-//        boolean success=service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+        //某些手机不支持 一加/魅族都不行
+        boolean success=service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 
-//        if(!success){
+        if(!success){
+            //smartisan os不行？
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
 
             intent.addCategory(Intent.CATEGORY_HOME); //"android.intent.category.HOME"
             service.startActivity(intent);
-//        }
+        }
     }
 
     /**
