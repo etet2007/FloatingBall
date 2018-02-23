@@ -39,8 +39,8 @@ import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.NON
  * Created by stephenlau on 2017/12/5.
  */
 
-public class BallView extends View {
-    public static final String TAG="BallView";
+public class FloatingBallView extends View {
+    private static final String TAG = FloatingBallView.class.getSimpleName();
 
     private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -162,7 +162,7 @@ public class BallView extends View {
     }
 
 
-    public BallView(Context context) {
+    public FloatingBallView(Context context) {
         super(context);
         performAddAnimator();
 
@@ -357,7 +357,7 @@ public class BallView extends View {
                     public void run() {
                         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
                         if (windowManager != null) {
-                            windowManager.removeView(BallView.this);
+                            windowManager.removeView(FloatingBallView.this);
                         }
 
                     }
@@ -372,7 +372,7 @@ public class BallView extends View {
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+                mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
 
             }
         });
@@ -387,7 +387,7 @@ public class BallView extends View {
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+                mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
             }
         });
         animation.start();
@@ -452,7 +452,7 @@ public class BallView extends View {
                     mLayoutParams.x = (int) (event.getRawX() - mLastTouchEventX);
                     mLayoutParams.y = (int) (event.getRawY() - mOffsetToParentY);
 
-                    mWindowManager.updateViewLayout(BallView.this, mLayoutParams);
+                    mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:

@@ -26,8 +26,8 @@ import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.EXT
  * Created by wangxiandeng on 2016/11/25.
  */
 
-public class FloatBallService extends AccessibilityService {
-    private static final String TAG = "AccessibilityService";
+public class FloatingBallService extends AccessibilityService {
+    private static final String TAG =FloatingBallService.class.getSimpleName();
 
     public static final int TYPE_ADD = 0;
     public static final int TYPE_DEL = 1;

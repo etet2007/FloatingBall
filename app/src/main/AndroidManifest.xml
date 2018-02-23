@@ -29,7 +29,7 @@
 
         <!-- 全局Service -->
         <service
-            android:name=".services.FloatBallService"
+            android:name=".services.FloatingBallService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService"/>

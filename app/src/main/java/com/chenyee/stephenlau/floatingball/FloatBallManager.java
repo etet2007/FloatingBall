@@ -11,8 +11,9 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 
+import com.chenyee.stephenlau.floatingball.activities.MainActivity;
 import com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil;
-import com.chenyee.stephenlau.floatingball.views.BallView;
+import com.chenyee.stephenlau.floatingball.views.FloatingBallView;
 
 import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
 
@@ -22,6 +23,8 @@ import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
  * 单例
  */
 public class FloatBallManager {
+    private static final String TAG =FloatBallManager.class.getSimpleName();
+
     //单例
     private static FloatBallManager mFloatBallManager=new FloatBallManager();
     private FloatBallManager(){}
@@ -30,7 +33,7 @@ public class FloatBallManager {
     }
 
     //BallView
-    private BallView mBallView;
+    private FloatingBallView mFloatingBallView;
     //WindowManager
     private WindowManager mWindowManager;
 
@@ -41,8 +44,8 @@ public class FloatBallManager {
 
     //创建BallView
     public void addBallView(Context context) {
-        if (mBallView == null) {
-            mBallView = new BallView(context);
+        if (mFloatingBallView == null) {
+            mFloatingBallView = new FloatingBallView(context);
 
             WindowManager windowManager = getWindowManager(context);
 
@@ -70,9 +73,9 @@ public class FloatBallManager {
                     | LayoutParams.FLAG_NOT_FOCUSABLE|LayoutParams.FLAG_LAYOUT_IN_SCREEN|LayoutParams.FLAG_LAYOUT_INSET_DECOR; //FLAG_LAYOUT_IN_SCREEN
 
             //把引用传进去
-            mBallView.setLayoutParams(params);
+            mFloatingBallView.setLayoutParams(params);
             //使用windowManager把ballView加进去
-            windowManager.addView(mBallView, params);
+            windowManager.addView(mFloatingBallView, params);
 
             updateBallViewParameter();
 //            mBallView.performAddAnimator();
@@ -83,15 +86,15 @@ public class FloatBallManager {
     }
 
     public void removeBallView() {
-        if (mBallView == null)
+        if (mFloatingBallView == null)
             return;
 
         isOpenedBall =false;
 
-        mBallView.performRemoveAnimator();
+        mFloatingBallView.performRemoveAnimator();
 
         saveFloatBallData();
-        mBallView = null;
+        mFloatingBallView = null;
     }
 
     private WindowManager getWindowManager(Context context) {
@@ -125,24 +128,24 @@ public class FloatBallManager {
      * @param imagePath 外部图片地址
      */
     public void setBackgroundPic(String imagePath){
-        if (mBallView != null) {
+        if (mFloatingBallView != null) {
 
-            mBallView.copyBackgroundImage(imagePath);
-            mBallView.getBitmapRead();
-            mBallView.createBitmapCropFromBitmapRead();
-            mBallView.invalidate();
+            mFloatingBallView.copyBackgroundImage(imagePath);
+            mFloatingBallView.getBitmapRead();
+            mFloatingBallView.createBitmapCropFromBitmapRead();
+            mFloatingBallView.invalidate();
         }
     }
 
     public void saveFloatBallData(){
-        if(defaultSharedPreferences==null || mBallView==null){
+        if(defaultSharedPreferences==null || mFloatingBallView ==null){
             return;
         }
 
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
         editor.putBoolean(PREF_HAS_ADDED_BALL, isOpenedBall);
 
-        LayoutParams params = mBallView.getLayoutParams();
+        LayoutParams params = mFloatingBallView.getLayoutParams();
         editor.putInt(PREF_PARAM_X,params.x);
         editor.putInt(PREF_PARAM_Y,params.y);
 
@@ -150,51 +153,51 @@ public class FloatBallManager {
     }
 
     public void setUseBackground(boolean useBackground) {
-        if (mBallView != null) {
-            mBallView.useBackground = useBackground;
-            mBallView.invalidate();
+        if (mFloatingBallView != null) {
+            mFloatingBallView.useBackground = useBackground;
+            mFloatingBallView.invalidate();
         }
     }
     // 根据SharedPreferences中的数据更新BallView的显示参数
     public void updateBallViewParameter() {
-        if (mBallView != null) {
+        if (mFloatingBallView != null) {
             //Opacity
-            mBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.PREF_OPACITY,125));
+            mFloatingBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.PREF_OPACITY,125));
             //Size
-            mBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt(PREF_SIZE,25));
+            mFloatingBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt(PREF_SIZE,25));
 
-            mBallView.createBitmapCropFromBitmapRead();
+            mFloatingBallView.createBitmapCropFromBitmapRead();
 
             //Use gray background
-            mBallView.useGrayBackground = defaultSharedPreferences.getBoolean(PREF_USE_GRAY_BACKGROUND, true);
+            mFloatingBallView.useGrayBackground = defaultSharedPreferences.getBoolean(PREF_USE_GRAY_BACKGROUND, true);
             //Use background
-            mBallView.useBackground =defaultSharedPreferences.getBoolean(PREF_USE_BACKGROUND,false);
+            mFloatingBallView.useBackground =defaultSharedPreferences.getBoolean(PREF_USE_BACKGROUND,false);
 
             //Double click event
             int doubleClickEvent =defaultSharedPreferences.getInt(PREF_DOUBLE_CLICK_EVENT,0);
-            mBallView.doubleClickEvent=doubleClickEvent;
+            mFloatingBallView.doubleClickEvent=doubleClickEvent;
             if(doubleClickEvent!=NONE)
-                mBallView.setUseDoubleTapOrNot(true);
+                mFloatingBallView.setUseDoubleTapOrNot(true);
             else
-                mBallView.setUseDoubleTapOrNot(false);
+                mFloatingBallView.setUseDoubleTapOrNot(false);
 
             moveUpDistance = defaultSharedPreferences.getInt(SharedPreferencesUtil.PREF_MOVE_UP_DISTANCE, 130);
 
-            mBallView.requestLayout();
-            mBallView.invalidate();
+            mFloatingBallView.requestLayout();
+            mFloatingBallView.invalidate();
         }
     }
 
 
     public void moveBallViewUp() {
-        if(mBallView!=null){
-            mBallView.performUpAnimator(moveUpDistance);
+        if(mFloatingBallView !=null){
+            mFloatingBallView.performUpAnimator(moveUpDistance);
         }
     }
 
     public void moveBallViewDown() {
-        if(mBallView!=null){
-            mBallView.performDownAnimator(moveUpDistance);
+        if(mFloatingBallView !=null){
+            mFloatingBallView.performDownAnimator(moveUpDistance);
         }
     }
 }

@@ -42,9 +42,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
-import com.chenyee.stephenlau.floatingball.services.FloatBallService;
+import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.RomUtil;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -57,7 +56,7 @@ import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
-    private static final String TAG = "MainActivity";
+    private static final String TAG =MainActivity.class.getSimpleName();
 
     private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
     private static final String GITHUB_REPO_RELEASE_URL = "https://github.com/etet2007/FloatingBall/releases";
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.double_click)RelativeLayout doubleClickLayout;
     @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
     //参数
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
 
     //调用系统相册-选择图片
     private static final int IMAGE = 1;
@@ -156,9 +155,9 @@ public class MainActivity extends AppCompatActivity
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
 
-            Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+            Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
             Bundle bundle = new Bundle();
-            bundle.putInt(EXTRA_TYPE, FloatBallService.TYPE_IMAGE);
+            bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_IMAGE);
             bundle.putString("imagePath", imagePath);
             intent.putExtras(bundle);
             startService(intent);
@@ -483,9 +482,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void sendUpdateIntentToService() {
-        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+        Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatBallService.TYPE_UPDATE_DATA);
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
         intent.putExtras(data);
         startService(intent);
     }
@@ -511,17 +510,17 @@ public class MainActivity extends AppCompatActivity
     private void addFloatBall() {
         requestAccessibility();
 
-        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+        Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatBallService.TYPE_ADD);
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
         intent.putExtras(data);
         startService(intent);
     }
 
     private void removeFloatBall() {
-        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
+        Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatBallService.TYPE_DEL);
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_DEL);
         intent.putExtras(data);
         startService(intent);
     }

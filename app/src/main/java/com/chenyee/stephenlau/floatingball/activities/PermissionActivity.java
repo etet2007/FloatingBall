@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,7 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PermissionActivity extends AppCompatActivity {
-    private static final String TAG ="PermissionActivity";
+    private static final String TAG =PermissionActivity.class.getSimpleName();
 
     @BindView(R.id.drawOverlays_button) Button drawOverlaysButton;
     @BindView(R.id.accessibility_button) Button accessibilityButton;
