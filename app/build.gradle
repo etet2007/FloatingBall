@@ -46,6 +46,13 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
+    // icons
+    implementation 'com.mikepenz:iconics-core:3.0.0@aar'
+    implementation "com.mikepenz:iconics-views:3.0.0@aar"
+    implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
+    implementation 'com.mikepenz:community-material-typeface:2.0.46.1@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:4.7.0.2@aar'
+
     // ui
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
     implementation 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
