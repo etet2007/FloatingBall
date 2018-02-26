@@ -21,6 +21,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
@@ -38,18 +39,20 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
+import com.mikepenz.iconics.context.IconicsContextWrapper;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
 
@@ -76,7 +79,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.use_gray_background_switch) SwitchCompat useGrayBackgroundSwitch;
     @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
 
-    @BindView(R.id.double_click)RelativeLayout doubleClickLayout;
     @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
     //参数
     private SharedPreferences prefs;
@@ -88,9 +90,14 @@ public class MainActivity extends AppCompatActivity
     public static Intent getStartIntent(Context context) {
         return new Intent(context, MainActivity.class);
     }
-
+    //使用iconics自动解析xml中的表情
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(IconicsContextWrapper.wrap(newBase));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //ButterKnife
@@ -100,8 +107,6 @@ public class MainActivity extends AppCompatActivity
         initFrameViews();
         //初始化view
         initContentViews();
-        //初始化功能选择view
-        initFunctionViews();
         //申请DrawOverlays权限
         requestDrawOverlaysPermission();
 
@@ -112,6 +117,18 @@ public class MainActivity extends AppCompatActivity
 //                        new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
 //                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
 //            }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
     }
 
     @Override
@@ -179,7 +196,7 @@ public class MainActivity extends AppCompatActivity
     // 模板的代码
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -227,32 +244,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void initFunctionViews() {
-        doubleClickLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(R.string.double_click_title)
-                        .setItems(R.array.double_click, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // The 'which' argument contains the index position
-                                // of the selected item
-
-                                SharedPreferences.Editor editor = prefs.edit();
-                                editor.putInt(PREF_DOUBLE_CLICK_EVENT,which);
-                                editor.apply();
-
-                                sendUpdateIntentToService();
-
-                                Resources res =getResources();
-                                String[] double_click = res.getStringArray(R.array.double_click);
-                                doubleClickTextView.setText(double_click[which]);
-                            }
-                        });
-                builder.show();
-            }
-        });
-    }
 
     private boolean hasPermission() {
         AppOpsManager appOps = (AppOpsManager)
@@ -509,8 +500,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addFloatBall() {
-        requestAccessibility();
-
         Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
         Bundle data = new Bundle();
         data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
@@ -527,13 +516,29 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void requestAccessibility() {
-        // 判断辅助功能是否开启
-        if (!AccessibilityUtil.isAccessibilitySettingsOn(this)) {
-            // 引导至辅助功能设置页面
-            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-            Toast.makeText(this,getResources().getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
-        }
+
+
+    //双击功能选择
+    @OnClick(R.id.double_click_function)
+    public void onDoubleClickClicked(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.double_click_title)
+                .setItems(R.array.double_click, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The 'which' argument contains the index position
+                        // of the selected item
+
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt(PREF_DOUBLE_CLICK_EVENT,which);
+                        editor.apply();
+
+                        sendUpdateIntentToService();
+
+                        String[] double_click = getResources().getStringArray(R.array.double_click);
+                        doubleClickTextView.setText(double_click[which]);
+                    }
+                });
+        builder.show();
     }
 
 }

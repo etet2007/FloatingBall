@@ -49,7 +49,6 @@ public class FloatingBallService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-//        Log.d(TAG, "onAccessibilityEvent "+event);
         inputMethodSate(getApplicationContext());
     }
     /**
@@ -61,7 +60,7 @@ public class FloatingBallService extends AccessibilityService {
         String defaultInputName = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
         defaultInputName = defaultInputName.substring(0, defaultInputName.indexOf("/"));
         boolean isInputing = false;
-        if(android.os.Build.VERSION.SDK_INT > 20) {//这代码太牛了
+        if(android.os.Build.VERSION.SDK_INT > 20) {//这代码找了好久
             try{
                 InputMethodManager imm = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 Class clazz = imm.getClass();
@@ -107,6 +106,7 @@ public class FloatingBallService extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
         mFloatBallManager.saveFloatBallData();
     }
 
@@ -125,6 +125,7 @@ public class FloatingBallService extends AccessibilityService {
             Bundle data = intent.getExtras();
             if (data != null) {
                 int type = data.getInt(EXTRA_TYPE);
+
                 if (type == TYPE_ADD) {
                     mFloatBallManager.addBallView(this);
                 }

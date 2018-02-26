@@ -51,7 +51,7 @@ public class PermissionActivity extends AppCompatActivity {
         accessibilityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestAccessibility();
+                AccessibilityUtil.checkAccessibilitySetting(PermissionActivity.this);
 
             }
         });
@@ -110,14 +110,5 @@ public class PermissionActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
         }
         Toast.makeText(this, "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
-    }
-
-
-
-
-    private void requestAccessibility() {
-            // 引导至辅助功能设置页面
-            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-            Toast.makeText(this,getResources().getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
     }
 }

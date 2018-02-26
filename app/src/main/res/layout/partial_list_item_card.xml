@@ -3,9 +3,18 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:theme="@style/CardViewTextTheme"
 
 	android:orientation="vertical">
+
+<!--测试iconics-->
+	<!--<ImageView-->
+		<!--android:layout_width="48dp"-->
+		<!--android:layout_height="48dp"-->
+		<!--app:ico_color="@color/colorPrimaryDark"-->
+		<!--app:ico_icon="gmd-adb"-->
+		<!--app:ico_size="48dp" />-->
 
 	<android.support.v7.widget.CardView
 		xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -26,7 +35,7 @@
 			app:layout_behavior="@string/appbar_scrolling_view_behavior"
 			tools:context="com.chenyee.stephenlau.floatingball.activities.MainActivity"
 			tools:showIn="@layout/app_bar_main">
-
+            <!--android:text="@string/opacity"-->
 			<android.support.v7.widget.AppCompatTextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -34,6 +43,7 @@
 				android:text="@string/opacity"
 				android:layout_marginBottom="20dp"
 				/>
+
 			<org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 				android:id="@+id/opacity_seekbar"
 				android:layout_width="match_parent"
@@ -177,7 +187,7 @@
 			android:layout_margin="10dp">
 
 			<RelativeLayout
-				android:id="@+id/double_click"
+				android:id="@+id/double_click_function"
 				android:layout_height="match_parent"
 				android:layout_width="match_parent"
 				xmlns:android="http://schemas.android.com/apk/res/android"

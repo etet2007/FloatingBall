@@ -11,6 +11,9 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.chenyee.stephenlau.floatingball.R;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -121,6 +124,11 @@ public class AccessibilityUtil {
 //        return secondActivity;
 //    }
 
+    /**
+     * 判断辅助功能是否开启
+     * @param context
+     * @return
+     */
     public static boolean isAccessibilitySettingsOn(Context context) {
         int accessibilityEnabled = 0;
 
@@ -147,6 +155,13 @@ public class AccessibilityUtil {
         return false;
     }
 
+    public static void checkAccessibilitySetting(Context context) {
+        if(!isAccessibilitySettingsOn(context)){
+            // 引导至辅助功能设置页面
+            context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            Toast.makeText(context,context.getResources().getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 }
