@@ -120,6 +120,14 @@ public class MainActivity extends AppCompatActivity
 //                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
 //            }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(prefs.getBoolean(PREF_HAS_ADDED_BALL, false)){
+            addFloatBall();
+        }
 
     }
 
@@ -509,6 +517,8 @@ public class MainActivity extends AppCompatActivity
         data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
         intent.putExtras(data);
         startService(intent);
+
+//        FloatBallManager.getInstance().addBallView(MainActivity.this);
     }
 
     private void removeFloatBall() {

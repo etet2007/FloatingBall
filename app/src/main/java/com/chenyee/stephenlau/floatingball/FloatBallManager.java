@@ -99,7 +99,7 @@ public class FloatBallManager {
 
     private WindowManager getWindowManager(Context context) {
         if (mWindowManager == null) {
-            mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            mWindowManager = (WindowManager) context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         }
         return mWindowManager;
     }

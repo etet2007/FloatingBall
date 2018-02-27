@@ -168,7 +168,7 @@ public class FloatingBallView extends View {
         super(context);
         performAddAnimator();
 
-//        mService = (AccessibilityService) context;
+        mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
         mDetector =new GestureDetector(context,new SingleTapGestureListener());

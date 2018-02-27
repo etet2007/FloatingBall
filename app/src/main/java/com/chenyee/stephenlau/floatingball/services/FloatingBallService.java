@@ -86,7 +86,6 @@ public class FloatingBallService extends AccessibilityService {
                 }
             }
         }
-
         if(isInputing) {
             if (!hasSoftKeyboardShow)
                 mFloatBallManager.moveBallViewUp();
@@ -114,7 +113,7 @@ public class FloatingBallService extends AccessibilityService {
     // Do not call this method directly.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onAccessibilityEvent onStartCommand");
+        Log.d(TAG, "onStartCommand");
 
         if(intent != null ) {
             //mFloatBallManager的判断是因为生命周期有时候有问题
