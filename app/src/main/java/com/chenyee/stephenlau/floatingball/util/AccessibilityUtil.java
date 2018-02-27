@@ -154,7 +154,11 @@ public class AccessibilityUtil {
 
         return false;
     }
-
+    /**
+     * 判断辅助功能是否开启，并开启设置
+     * @param context
+     * @return
+     */
     public static void checkAccessibilitySetting(Context context) {
         if(!isAccessibilitySettingsOn(context)){
             // 引导至辅助功能设置页面
