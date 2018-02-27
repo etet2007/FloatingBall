@@ -45,8 +45,7 @@ import com.chenyee.stephenlau.floatingball.FloatBallManager;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
-import com.mikepenz.iconics.context.IconicsContextWrapper;
-import com.mikepenz.iconics.context.IconicsLayoutInflater2;
+
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -92,13 +91,13 @@ public class MainActivity extends AppCompatActivity
         return new Intent(context, MainActivity.class);
     }
     //使用iconics自动解析xml中的表情
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(IconicsContextWrapper.wrap(newBase));
-    }
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        super.attachBaseContext(IconicsContextWrapper.wrap(newBase));
+//    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
+//        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -231,9 +230,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

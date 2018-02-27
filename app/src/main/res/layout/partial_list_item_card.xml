@@ -19,8 +19,7 @@
 	<android.support.v7.widget.CardView
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/card_view1"
-		style="@style/CardViewStyle"
+        style="@style/CardViewStyle"
 		>
 
 		<android.support.v7.widget.LinearLayoutCompat

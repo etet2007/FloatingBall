@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	>
@@ -13,7 +14,6 @@
 		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
 		>
 		<android.support.design.widget.CollapsingToolbarLayout
-			android:id="@+id/main.collapsing"
 			android:layout_width="match_parent"
 			android:layout_height="200dp"
 			app:expandedTitleMarginStart="48dp"
@@ -22,7 +22,6 @@
 			>
 
 			<android.support.v7.widget.AppCompatImageView
-				android:id="@+id/materialup.profile_backdrop"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:scaleType="centerCrop"
@@ -91,7 +90,8 @@
 		android:src="@drawable/ic_floating_button"
 		android:layout_margin="@dimen/activity_horizontal_margin"
 		android:clickable="true"
-		/>
+		android:focusable="true"
+		tools:targetApi="lollipop"/>
 
 	<de.hdodenhof.circleimageview.CircleImageView
 		android:id="@+id/materialup.profile_image"
@@ -105,5 +105,5 @@
 		app:border_color="#FFF"
 		app:layout_scrollFlags="scroll"
 		app:layout_anchorGravity="top|center_horizontal"
-		/>
+		tools:targetApi="lollipop"/>
 </android.support.design.widget.CoordinatorLayout>

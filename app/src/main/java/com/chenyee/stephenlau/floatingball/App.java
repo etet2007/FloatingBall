@@ -1,12 +1,9 @@
 package com.chenyee.stephenlau.floatingball;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.support.v4.view.LayoutInflaterCompat;
 
-import com.mikepenz.community_material_typeface_library.CommunityMaterial;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.iconics.Iconics;
 
 
 /**
