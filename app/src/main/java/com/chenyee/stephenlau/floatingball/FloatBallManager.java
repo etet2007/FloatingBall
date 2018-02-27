@@ -32,9 +32,9 @@ public class FloatBallManager {
         return mFloatBallManager;
     }
 
-    //BallView
+    // FloatingBallView
     private FloatingBallView mFloatingBallView;
-    //WindowManager
+    // WindowManager
     private WindowManager mWindowManager;
 
     private SharedPreferences defaultSharedPreferences;
@@ -42,7 +42,7 @@ public class FloatBallManager {
 
     private int moveUpDistance=130;
 
-    //创建BallView
+    // 创建BallView
     public void addBallView(Context context) {
         if (mFloatingBallView == null) {
             mFloatingBallView = new FloatingBallView(context);

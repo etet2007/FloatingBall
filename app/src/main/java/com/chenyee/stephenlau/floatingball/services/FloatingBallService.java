@@ -32,7 +32,6 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_ADD = 0;
     public static final int TYPE_DEL = 1;
     public static final int TYPE_IMAGE =2;
-//    public static final int TYPE_SAVE =3;
     public static final int TYPE_USE_BACKGROUND =4;
     public static final int TYPE_UPDATE_DATA =5;
 
@@ -60,7 +59,7 @@ public class FloatingBallService extends AccessibilityService {
         String defaultInputName = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
         defaultInputName = defaultInputName.substring(0, defaultInputName.indexOf("/"));
         boolean isInputing = false;
-        if(android.os.Build.VERSION.SDK_INT > 20) {//这代码找了好久
+        if(android.os.Build.VERSION.SDK_INT > 20) {//Work
             try{
                 InputMethodManager imm = (InputMethodManager) context.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 Class clazz = imm.getClass();

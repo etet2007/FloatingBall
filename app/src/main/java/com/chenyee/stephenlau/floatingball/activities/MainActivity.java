@@ -41,6 +41,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.chenyee.stephenlau.floatingball.FloatBallManager;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //ButterKnife
         ButterKnife.bind(this);
 
@@ -117,6 +119,8 @@ public class MainActivity extends AppCompatActivity
 //                        new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
 //                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
 //            }
+
+
     }
 
     @Override
