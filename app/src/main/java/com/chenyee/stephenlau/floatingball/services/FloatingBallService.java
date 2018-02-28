@@ -42,6 +42,7 @@ public class FloatingBallService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        Log.d(TAG, "onServiceConnected: ");
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
     }
@@ -125,7 +126,7 @@ public class FloatingBallService extends AccessibilityService {
                 int type = data.getInt(EXTRA_TYPE);
 
                 if (type == TYPE_ADD) {
-                    mFloatBallManager.addBallView(this);
+                    mFloatBallManager.addBallView(FloatingBallService.this);
                 }
                 if(type== TYPE_DEL){
                     mFloatBallManager.removeBallView();//内部有mFloatBallManager.saveFloatBallData();

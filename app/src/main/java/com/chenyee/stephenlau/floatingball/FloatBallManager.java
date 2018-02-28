@@ -19,7 +19,7 @@ import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
 
 
 /**
- * 管理FloatBall的类。
+ * 管理FloatingBall的类。
  * 单例
  */
 public class FloatBallManager {
@@ -47,7 +47,7 @@ public class FloatBallManager {
         if (mFloatingBallView == null) {
             mFloatingBallView = new FloatingBallView(context);
 
-            WindowManager windowManager = getWindowManager(context);
+            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
             Point size = new Point();
             windowManager.getDefaultDisplay().getSize(size);
@@ -58,8 +58,8 @@ public class FloatBallManager {
             defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
             LayoutParams params = new LayoutParams();
-            params.x=defaultSharedPreferences.getInt("paramsX",screenWidth / 2);
-            params.y=defaultSharedPreferences.getInt("paramsY",screenHeight / 2);
+            params.x=defaultSharedPreferences.getInt(PREF_PARAM_X,screenWidth / 2);
+            params.y=defaultSharedPreferences.getInt(PREF_PARAM_Y,screenHeight / 2);
             params.width = LayoutParams.WRAP_CONTENT;
             params.height = LayoutParams.WRAP_CONTENT;
             params.gravity = Gravity.START | Gravity.TOP;
@@ -97,12 +97,7 @@ public class FloatBallManager {
         mFloatingBallView = null;
     }
 
-    private WindowManager getWindowManager(Context context) {
-        if (mWindowManager == null) {
-            mWindowManager = (WindowManager) context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-        }
-        return mWindowManager;
-    }
+
 
 
 //    public void setOpacity(int opacity) {
