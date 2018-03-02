@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">FloatingBall</string>
 
+    <string name="GITHUB_REPO_URL">https://github.com/etet2007/FloatingBall</string>
+    <string name="GITHUB_REPO_RELEASE_URL">https://github.com/etet2007/FloatingBall/releases</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

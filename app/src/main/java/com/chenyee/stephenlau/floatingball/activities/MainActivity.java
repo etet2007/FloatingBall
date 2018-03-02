@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
     private static final String TAG =MainActivity.class.getSimpleName();
 
-    private static final String GITHUB_REPO_URL = "https://github.com/etet2007/FloatingBall";
-    private static final String GITHUB_REPO_RELEASE_URL = "https://github.com/etet2007/FloatingBall/releases";
     //头像
     private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 40;
     private boolean mIsAvatarShown = true;
@@ -246,7 +244,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_share) {
             Intent textIntent = new Intent(Intent.ACTION_SEND);
             textIntent.setType("text/plain");
-            textIntent.putExtra(Intent.EXTRA_TEXT, GITHUB_REPO_RELEASE_URL);
+            textIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.GITHUB_REPO_RELEASE_URL));
             startActivity(Intent.createChooser(textIntent, "shared"));
         }
 
@@ -278,7 +276,7 @@ public class MainActivity extends AppCompatActivity
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override public boolean onMenuItemClick(MenuItem item) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPO_URL));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(R.string.GITHUB_REPO_URL)));
                 startActivity(browserIntent);
                 return true;
             }
