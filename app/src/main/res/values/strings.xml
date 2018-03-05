@@ -25,6 +25,8 @@
     <string name="drawoverlays_permission">DrawOverlays permission</string>
     <string name="request_accessibility">Request accessibility</string>
 
+    <string name="active_device_administrator">Active device administrator</string>
+
     <string name="double_click_title">Double click</string>
     <string name="double_click">Double click:</string>
 
