@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_share) {
             Intent textIntent = new Intent(Intent.ACTION_SEND);
             textIntent.setType("text/plain");
-            textIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.GITHUB_REPO_RELEASE_URL));
+            textIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.GITHUB_REPO_RELEASE_URL));
             startActivity(Intent.createChooser(textIntent, "shared"));
         }
 
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override public boolean onMenuItemClick(MenuItem item) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(R.string.GITHUB_REPO_URL)));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.GITHUB_REPO_URL)));
                 startActivity(browserIntent);
                 return true;
             }

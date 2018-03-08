@@ -43,14 +43,19 @@ public class AccessibilityUtil {
      * @param service
      */
     public static void doHome(AccessibilityService service) {
-        //某些手机不支持 一加/魅族都不行
-        boolean success=service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
-
-        if(!success){
-            //smartisan os不行？
+        if(RomUtil.isRom(RomUtil.ROM_ONEPLUS)){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
+            intent.addCategory(Intent.CATEGORY_HOME); //"android.intent.category.HOME"
+            service.startActivity(intent);
 
+            return;
+        }
+
+        boolean success=service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+        if(!success){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
             intent.addCategory(Intent.CATEGORY_HOME); //"android.intent.category.HOME"
             service.startActivity(intent);
         }
@@ -163,7 +168,7 @@ public class AccessibilityUtil {
         if(!isAccessibilitySettingsOn(context)){
             // 引导至辅助功能设置页面
             context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-            Toast.makeText(context,context.getResources().getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
         }
     }
 

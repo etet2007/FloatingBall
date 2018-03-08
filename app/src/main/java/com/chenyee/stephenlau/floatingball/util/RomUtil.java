@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 
 public class RomUtil {
     private static final String TAG = "RomUtil";
+
     public static final String ROM_MIUI = "MIUI";
     public static final String ROM_EMUI = "EMUI";
     public static final String ROM_FLYME = "FLYME";
@@ -23,6 +24,20 @@ public class RomUtil {
     public static final String ROM_QIHU = "QIHU";
     public static final String ROM_LENOVO = "LENOVO";
     public static final String ROM_SAMSUNG = "SAMSUNG";
+    public static final String ROM_ONEPLUS = "ONEPLUS";
+
+    public static boolean isRom(String nameToCompare){
+        String version = Build.DISPLAY.toUpperCase();
+        String name = Build.MANUFACTURER.toUpperCase();
+        //初始化sVersion sName
+        Log.d(TAG, "version: "+Build.DISPLAY.toUpperCase()+" name: "+sName);
+        //version: AMIGO3.6.0 name: GIONEE
+        //version: ONEPLUS A5010_43_180207 name: ONEPLUS
+
+        return name.equals(nameToCompare);
+
+
+    }
 
     private static final String KEY_VERSION_MIUI = "ro.miui.ui.version.name";
     private static final String KEY_VERSION_EMUI = "ro.build.version.emui";
@@ -31,6 +46,8 @@ public class RomUtil {
     private static final String KEY_VERSION_VIVO = "ro.vivo.os.version";
     private static final String KEY_VERSION_GIONEE = "ro.gn.sv.version";
     private static final String KEY_VERSION_LENOVO = "ro.lenovo.lvp.version";
+
+
 
     private static String sName;
     private static String sVersion;
@@ -76,9 +93,11 @@ public class RomUtil {
      * @return
      */
     public static boolean check(String rom) {
+        //已经有sName，立刻进行判断。
         if (sName != null) {
             return sName.equals(rom);
         }
+
         if (!TextUtils.isEmpty(sVersion = getProp(KEY_VERSION_MIUI))) {
             sName = ROM_MIUI;
         } else if (!TextUtils.isEmpty(sVersion = getProp(KEY_VERSION_EMUI))){
