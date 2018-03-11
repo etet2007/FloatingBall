@@ -487,10 +487,10 @@ public class FloatingBallView extends View {
                 AccessibilityUtil.doNotification(mService);
                 break;
             case LEFT:
-                AccessibilityUtil.doRecents(mService);
+                AccessibilityUtil.doLeft(mService);
                 break;
             case RIGHT:
-                AccessibilityUtil.doRecents(mService);
+                AccessibilityUtil.doRight(mService);
                 break;
             case NONE:
                 break;

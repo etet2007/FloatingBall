@@ -3,6 +3,10 @@ package com.chenyee.stephenlau.floatingball.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AppOpsManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +14,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +27,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.LayoutInflaterCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
@@ -41,8 +47,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.FloatBallManager;
-import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
 
@@ -78,6 +82,8 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
 
     @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
+    @BindView(R.id.right_slide_textView)AppCompatTextView rightSlideTextView;
+
     //参数
     private SharedPreferences prefs;
 
@@ -117,7 +123,12 @@ public class MainActivity extends AppCompatActivity
 //                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
 //            }
 
+
+
     }
+
+
+
 
     @Override
     protected void onResume() {
@@ -346,6 +357,8 @@ public class MainActivity extends AppCompatActivity
         boolean useBackground = prefs.getBoolean(PREF_USE_BACKGROUND, false);
         boolean useGrayBackground = prefs.getBoolean(PREF_USE_GRAY_BACKGROUND, true);
         int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, 0);
+        int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, 0);
+
 
         //根据数据进行初始化
         opacitySeekBar.setProgress(opacity);
@@ -356,6 +369,9 @@ public class MainActivity extends AppCompatActivity
         Resources res =getResources();
         String[] double_click = res.getStringArray(R.array.double_click);
         doubleClickTextView.setText(double_click[doubleClickEvent]);
+
+        String[] right_slide = res.getStringArray(R.array.right_slide);
+        rightSlideTextView.setText(right_slide[rightSlideEvent]);
 
         //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
@@ -552,4 +568,25 @@ public class MainActivity extends AppCompatActivity
         builder.show();
     }
 
+    @OnClick(R.id.right_function)
+    public void onRight_function(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.right_slide_title)
+                .setItems(R.array.right_slide, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The 'which' argument contains the index position
+                        // of the selected item
+
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt(PREF_RIGHT_SLIDE_EVENT,which);
+                        editor.apply();
+
+                        sendUpdateIntentToService();
+
+                        String[] right_slide = getResources().getStringArray(R.array.right_slide);
+                        rightSlideTextView.setText(right_slide[which]);
+                    }
+                });
+        builder.show();
+    }
 }
