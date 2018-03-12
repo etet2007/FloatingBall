@@ -74,7 +74,7 @@
 	android:layout_height="match_parent">
 
 	<include
-			layout="@layout/partial_list_item_card"
+			layout="@layout/partial_function_list_item"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"/>
 
@@ -95,14 +95,12 @@
 
 	<de.hdodenhof.circleimageview.CircleImageView
 		android:id="@+id/materialup.profile_image"
-		android:layout_width="96dp"
-		android:layout_height="96dp"
+		android:layout_width="105dp"
+		android:layout_height="105dp"
 		android:layout_gravity="center_horizontal"
 		android:src="@drawable/ic_floating_button"
 		app:layout_anchor="@id/materialup.title_container"
 		android:elevation="8dp"
-		app:border_width="2dp"
-		app:border_color="#FFF"
 		app:layout_scrollFlags="scroll"
 		app:layout_anchorGravity="top|center_horizontal"
 		tools:targetApi="lollipop"/>
