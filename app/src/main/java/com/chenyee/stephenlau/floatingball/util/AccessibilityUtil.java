@@ -1,23 +1,20 @@
 package com.chenyee.stephenlau.floatingball.util;
 
 import android.accessibilityservice.AccessibilityService;
-import android.annotation.TargetApi;
-import android.app.ActivityManager;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.HIDE;
+import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.PREF_RIGHT_SLIDE_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.RECENT_APPS;
 
 public class AccessibilityUtil {
     private static final String TAG = "AccessibilityUtil";
@@ -43,6 +40,8 @@ public class AccessibilityUtil {
      * @param service
      */
     public static void doHome(AccessibilityService service) {
+        // TODO: 2018/3/9 换为设置接口的方式 
+        //OnePlus
         if(RomUtil.isRom(RomUtil.ROM_ONEPLUS)){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
@@ -51,7 +50,7 @@ public class AccessibilityUtil {
 
             return;
         }
-
+        //其他手机
         boolean success=service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
         if(!success){
             Intent intent = new Intent();
@@ -65,23 +64,21 @@ public class AccessibilityUtil {
      * 左右滑动打开多任务
      * @param service
      */
-    public static void doRecents(AccessibilityService service) {
+    public static void doLeft(AccessibilityService service) {
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
-
-        //getTopApp package name
-//        getTopApp(service);
-
-        //不可用
-//        String packageName=getTopApp(service);
-//        if(packageName!=null && !packageName.isEmpty()){
-//            PackageManager packageManager = service.getPackageManager();
-//            Intent intent=new Intent();
-//            intent =packageManager.getLaunchIntentForPackage(packageName);
-//            service.startActivity(intent);
-//        }
-
     }
 
+    public static void doRight(AccessibilityService service) {
+        SharedPreferences defaultSharedPreferences=PreferenceManager.getDefaultSharedPreferences(service);
+        int rightSlideEvent =defaultSharedPreferences.getInt(PREF_RIGHT_SLIDE_EVENT,0);
+        if(rightSlideEvent==RECENT_APPS)
+            service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+        else if (rightSlideEvent == HIDE) {
+            Toast.makeText(service, "hide", Toast.LENGTH_LONG).show();
+            FloatingBallService floatingBallService=(FloatingBallService)service;
+            floatingBallService.hideBall();
+        }
+    }
 //    public static String  getTopApp(Context context) {
 //        String topActivity = "";
 //        String secondActivity = "";
@@ -167,7 +164,7 @@ public class AccessibilityUtil {
     public static void checkAccessibilitySetting(Context context) {
         if(!isAccessibilitySettingsOn(context)){
             // 引导至辅助功能设置页面
-            context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK ));
             Toast.makeText(context,context.getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
         }
     }

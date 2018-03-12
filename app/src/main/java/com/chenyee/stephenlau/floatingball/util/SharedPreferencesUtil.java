@@ -16,6 +16,8 @@ public class SharedPreferencesUtil {
   public static final String PREF_MOVE_UP_DISTANCE = "PREF_MOVE_UP_DISTANCE";
 
   public static final String PREF_DOUBLE_CLICK_EVENT = "PREF_DOUBLE_CLICK_EVENT";
+  public static final String PREF_RIGHT_SLIDE_EVENT = "PREF_RIGHT_SLIDE_EVENT";
+
 
   public static final String EXTRA_TYPE = "EXTRA_TYPE";
 
@@ -23,4 +25,6 @@ public class SharedPreferencesUtil {
   public static final int HOME = 1;
   public static final int LOCK_SCREEN = 2;
 
+  public static final int RECENT_APPS = 0;
+  public static final int HIDE = 1;
 }

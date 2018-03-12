@@ -29,14 +29,12 @@ public class RomUtil {
     public static boolean isRom(String nameToCompare){
         String version = Build.DISPLAY.toUpperCase();
         String name = Build.MANUFACTURER.toUpperCase();
-        //初始化sVersion sName
+
         Log.d(TAG, "version: "+Build.DISPLAY.toUpperCase()+" name: "+sName);
         //version: AMIGO3.6.0 name: GIONEE
         //version: ONEPLUS A5010_43_180207 name: ONEPLUS
 
         return name.equals(nameToCompare);
-
-
     }
 
     private static final String KEY_VERSION_MIUI = "ro.miui.ui.version.name";

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="double_click">
-    <item>@string/none</item>
-    <item>@string/home</item>
-    <item>@string/lockScreen</item>
+        <item>@string/none</item>
+        <item>@string/home</item>
+        <item>@string/lockScreen</item>
     </string-array>
 
     <string-array name="right_slide">

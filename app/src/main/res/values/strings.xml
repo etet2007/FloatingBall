@@ -30,13 +30,21 @@
     <string name="double_click_title">Double click</string>
     <string name="double_click">Double click:</string>
 
+    <string name="right_slide_title">Right slide</string>
+    <string name="right_slide">Right slide:</string>
+
     <string name="use_gray_background">Use gray background?</string>
+
     <string name="home">Home</string>
     <string name="lockScreen">Lock screen</string>
     <string name="none">None</string>
-
+    <string name="recent_apps">Recent apps</string>
+    <string name="hide">Hide</string>
 
     <!--<string name="compose_shortcut_short_label1">1</string>-->
+    <string name="hideNotificationContentTitle">Hiding</string>
+    <string name="hideNotificationContentText">Click to bring it back.</string>
+
 
 
 </resources>

@@ -2,15 +2,23 @@ package com.chenyee.stephenlau.floatingball.services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InputMethodManager;
 
 import com.chenyee.stephenlau.floatingball.FloatBallManager;
+import com.chenyee.stephenlau.floatingball.R;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -36,6 +44,7 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_UPDATE_DATA =5;
 
     private FloatBallManager mFloatBallManager;
+    private NotificationManager mNotificationManager;
 
     private boolean hasSoftKeyboardShow=false;
 
@@ -45,6 +54,9 @@ public class FloatingBallService extends AccessibilityService {
         Log.d(TAG, "onServiceConnected: ");
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
+
+        //TEST
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -135,9 +147,7 @@ public class FloatingBallService extends AccessibilityService {
                 if (type == TYPE_IMAGE) {
                     mFloatBallManager.setBackgroundPic(data.getString("imagePath"));
                 }
-//                if(type == TYPE_SAVE){
-//                    mFloatBallManager.saveFloatBallData();
-//                }
+
                 if(type== TYPE_USE_BACKGROUND){
                     mFloatBallManager.setUseBackground(data.getBoolean("useBackground"));
                 }
@@ -147,5 +157,56 @@ public class FloatingBallService extends AccessibilityService {
             }
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void hideBall(){
+        if(mFloatBallManager==null)
+            mFloatBallManager = FloatBallManager.getInstance();
+
+        mFloatBallManager.removeBallView();//内部有mFloatBallManager.saveFloatBallData();
+        sendNotification();
+
+    }
+    private void sendNotification() {
+        String contentTitle = getString(R.string.hideNotificationContentTitle);
+        String contentText = getString(R.string.hideNotificationContentText);
+
+        if(mNotificationManager==null){
+            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        }
+        Intent intent = new Intent(this, FloatingBallService.class);
+        Bundle data = new Bundle();
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+        intent.putExtras(data);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            String channelID = "1";
+            String channelName = "channel_name";
+            NotificationChannel mChannel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_LOW);
+
+            mNotificationManager.createNotificationChannel(mChannel);
+
+            Notification notification = new Notification.Builder(this, channelID)
+                    .setSmallIcon(R.mipmap.ic_launcher_app)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
+                    .setContentTitle(contentTitle)
+                    .setContentText(contentText)
+                    .setAutoCancel(true)
+                    .setContentIntent(pintent)
+                    .build();
+            mNotificationManager.notify(1, notification);
+
+        }else{
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher_app)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
+                    .setContentTitle(contentTitle)
+                    .setContentText(contentText)
+                    .setAutoCancel(true)
+                    .setContentIntent(pintent)
+                    .build();
+            mNotificationManager.notify(1, notification);
+        }
     }
 }
