@@ -4,7 +4,7 @@ package com.chenyee.stephenlau.floatingball.util;
  * Created by stephenlau on 17-12-28.
  */
 
-public class SharedPreferencesUtil {
+public class StaticStringUtil {
   public static final String PREF_OPACITY = "PREF_OPACITY";
   public static final String PREF_SIZE = "PREF_SIZE";
   public static final String PREF_USE_BACKGROUND = "PREF_USE_BACKGROUND";

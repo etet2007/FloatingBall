@@ -45,6 +45,5 @@
     <string name="hideNotificationContentTitle">Hiding</string>
     <string name="hideNotificationContentText">Click to bring it back.</string>
 
-
-
+    <string name="version_textview">Version:%s</string>
 </resources>

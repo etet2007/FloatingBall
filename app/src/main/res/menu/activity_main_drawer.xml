@@ -22,15 +22,12 @@
             <!--android:title="Tools"/>-->
     <!--</group>-->
 
-    <item android:title="@string/communicate">
-        <menu>
+
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-
                 android:title="@string/share"/>
 
-        </menu>
-    </item>
+
 
 </menu>

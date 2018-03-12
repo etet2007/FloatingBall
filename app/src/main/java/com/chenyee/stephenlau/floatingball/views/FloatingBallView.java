@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,7 +16,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Vibrator;
 
-import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -33,9 +31,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.HOME;
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.LOCK_SCREEN;
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.NONE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HOME;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.LOCK_SCREEN;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 
 /**
  * Created by stephenlau on 2017/12/5.

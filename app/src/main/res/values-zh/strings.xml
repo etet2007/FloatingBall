@@ -47,4 +47,6 @@
 
     <string name="hideNotificationContentTitle">隐藏中</string>
     <string name="hideNotificationContentText">点击重启。</string>
+
+    <string name="version_textview">版本:%s</string>
 </resources>

@@ -12,9 +12,9 @@ import android.widget.Toast;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.HIDE;
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.PREF_RIGHT_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.RECENT_APPS;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HIDE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_RIGHT_SLIDE_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.RECENT_APPS;
 
 public class AccessibilityUtil {
     private static final String TAG = "AccessibilityUtil";

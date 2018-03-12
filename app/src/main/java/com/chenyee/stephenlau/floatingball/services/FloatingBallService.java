@@ -19,11 +19,12 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.chenyee.stephenlau.floatingball.FloatBallManager;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.activities.MainActivity;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.EXTRA_TYPE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 
 
 /**
@@ -47,6 +48,10 @@ public class FloatingBallService extends AccessibilityService {
     private NotificationManager mNotificationManager;
 
     private boolean hasSoftKeyboardShow=false;
+
+    public static Intent getStartIntent(Context context) {
+        return new Intent(context, FloatingBallService.class);
+    }
 
     @Override
     protected void onServiceConnected() {

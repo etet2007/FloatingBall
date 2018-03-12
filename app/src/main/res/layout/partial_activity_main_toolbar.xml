@@ -93,14 +93,28 @@
 		android:focusable="true"
 		tools:targetApi="lollipop"/>
 
-	<de.hdodenhof.circleimageview.CircleImageView
+<!--	<de.hdodenhof.circleimageview.CircleImageView
 		android:id="@+id/materialup.profile_image"
-		android:layout_width="105dp"
-		android:layout_height="105dp"
+		android:layout_width="100dp"
+		android:layout_height="100dp"
+		android:layout_gravity="center_horizontal"
+		android:src="@drawable/ic_floating_button"
+		app:border_width="2dp"
+		app:border_overlay="true"
+		app:layout_anchor="@id/materialup.title_container"
+		android:elevation="8dp"
+		app:layout_scrollFlags="scroll"
+		app:layout_anchorGravity="top|center_horizontal"
+		tools:targetApi="lollipop"/>-->
+
+	<android.support.v7.widget.AppCompatImageView
+		android:id="@+id/materialup.profile_image"
+		android:layout_width="95dp"
+		android:layout_height="95dp"
 		android:layout_gravity="center_horizontal"
 		android:src="@drawable/ic_floating_button"
 		app:layout_anchor="@id/materialup.title_container"
-		android:elevation="8dp"
+		android:elevation="20dp"
 		app:layout_scrollFlags="scroll"
 		app:layout_anchorGravity="top|center_horizontal"
 		tools:targetApi="lollipop"/>

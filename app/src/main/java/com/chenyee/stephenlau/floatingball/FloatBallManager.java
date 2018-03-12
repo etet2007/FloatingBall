@@ -11,11 +11,10 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 
-import com.chenyee.stephenlau.floatingball.activities.MainActivity;
-import com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil;
+import com.chenyee.stephenlau.floatingball.util.StaticStringUtil;
 import com.chenyee.stephenlau.floatingball.views.FloatingBallView;
 
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 
 /**
@@ -157,7 +156,7 @@ public class FloatBallManager {
     public void updateBallViewParameter() {
         if (mFloatingBallView != null) {
             //Opacity
-            mFloatingBallView.setOpacity(defaultSharedPreferences.getInt(SharedPreferencesUtil.PREF_OPACITY,125));
+            mFloatingBallView.setOpacity(defaultSharedPreferences.getInt(StaticStringUtil.PREF_OPACITY,125));
             //Size
             mFloatingBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt(PREF_SIZE,25));
 
@@ -176,7 +175,7 @@ public class FloatBallManager {
             else
                 mFloatingBallView.setUseDoubleTapOrNot(false);
 
-            moveUpDistance = defaultSharedPreferences.getInt(SharedPreferencesUtil.PREF_MOVE_UP_DISTANCE, 130);
+            moveUpDistance = defaultSharedPreferences.getInt(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 130);
 
             mFloatingBallView.requestLayout();
             mFloatingBallView.invalidate();

@@ -3,19 +3,14 @@ package com.chenyee.stephenlau.floatingball.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AppOpsManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,7 +22,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
@@ -45,6 +39,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
@@ -58,7 +53,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.chenyee.stephenlau.floatingball.util.SharedPreferencesUtil.*;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 
 public class MainActivity extends AppCompatActivity
@@ -104,7 +99,6 @@ public class MainActivity extends AppCompatActivity
 //        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         //ButterKnife
         ButterKnife.bind(this);
 
@@ -122,13 +116,7 @@ public class MainActivity extends AppCompatActivity
 //                        new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
 //                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
 //            }
-
-
-
     }
-
-
-
 
     @Override
     protected void onResume() {
@@ -136,7 +124,6 @@ public class MainActivity extends AppCompatActivity
         if(prefs.getBoolean(PREF_HAS_ADDED_BALL, false)){
             addFloatBall();
         }
-
     }
 
     @Override
@@ -149,6 +136,34 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //选取图片的回调
+        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+
+            if (c == null)
+                return;
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+
+            Bundle bundle = new Bundle();
+            bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_IMAGE);
+            bundle.putString("imagePath", imagePath);
+            Intent intent = new Intent(MainActivity.this, FloatingBallService.class)
+                    .putExtras(bundle);
+            startService(intent);
+
+            c.close();
+        }
     }
 
     @Override
@@ -172,38 +187,10 @@ public class MainActivity extends AppCompatActivity
 
             mProfileImage.animate()
                     .scaleY(1).scaleX(1)
+                    .setDuration(200)
                     .start();
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //选取图片的回调
-        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
-
-            String[] filePathColumns = {MediaStore.Images.Media.DATA};
-            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
-
-            if (c == null)
-                return;
-            c.moveToFirst();
-            int columnIndex = c.getColumnIndex(filePathColumns[0]);
-            String imagePath = c.getString(columnIndex);
-
-            Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_IMAGE);
-            bundle.putString("imagePath", imagePath);
-            intent.putExtras(bundle);
-            startService(intent);
-
-            c.close();
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -238,11 +225,9 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {
 //            return true;
 //        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -253,9 +238,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_share) {
-            Intent textIntent = new Intent(Intent.ACTION_SEND);
-            textIntent.setType("text/plain");
-            textIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.GITHUB_REPO_RELEASE_URL));
+            Intent textIntent = new Intent(Intent.ACTION_SEND)
+                    .setType("text/plain")
+                    .putExtra(Intent.EXTRA_TEXT, getString(R.string.GITHUB_REPO_RELEASE_URL));
             startActivity(Intent.createChooser(textIntent, "shared"));
         }
 
@@ -287,19 +272,12 @@ public class MainActivity extends AppCompatActivity
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override public boolean onMenuItemClick(MenuItem item) {
+                //只有一个，所以不用判断
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.GITHUB_REPO_URL)));
                 startActivity(browserIntent);
                 return true;
             }
         });
-
-//        toolbar.setNavigationIcon(R.drawable.ic_menu_send);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                onBackPressed();
-//            }
-//        });
 
         //Set up the appBarLayout.
         AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.materialup_appbar);
@@ -325,6 +303,14 @@ public class MainActivity extends AppCompatActivity
         // Set up the navigation drawer.左侧滑出的菜单。
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        try {
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pi.versionName;
+            TextView versionTextView = navigationView.getHeaderView(0).findViewById(R.id.version_textView);
+            versionTextView.setText(String.format(getString(R.string.version_textview),version));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -337,8 +323,8 @@ public class MainActivity extends AppCompatActivity
             // To prompt the user to grant this approval, the app must send an intent with the action
             // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
             if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivityForResult(intent, 1);
                 Toast.makeText(this, "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
             }
@@ -348,31 +334,24 @@ public class MainActivity extends AppCompatActivity
 
 
     private void initContentViews() {
-        //获取悬浮球参数
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
-        Log.d(TAG, "hasAddedBall: "+hasAddedBall);
-        int opacity = prefs.getInt(PREF_OPACITY, 125);
-        int ballSize = prefs.getInt(PREF_SIZE, 25);
-        boolean useBackground = prefs.getBoolean(PREF_USE_BACKGROUND, false);
-        boolean useGrayBackground = prefs.getBoolean(PREF_USE_GRAY_BACKGROUND, true);
-        int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, 0);
-        int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, 0);
 
-
-        //根据数据进行初始化
-        opacitySeekBar.setProgress(opacity);
-        sizeSeekBar.setProgress(ballSize);
-        backgroundSwitch.setChecked(useBackground);
-        useGrayBackgroundSwitch.setChecked(useGrayBackground);
+        opacitySeekBar.setProgress(prefs.getInt(PREF_OPACITY, 125));
+        sizeSeekBar.setProgress(prefs.getInt(PREF_SIZE, 25));
+        backgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_BACKGROUND, false));
+        useGrayBackgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_GRAY_BACKGROUND, true));
 
         Resources res =getResources();
         String[] double_click = res.getStringArray(R.array.double_click);
+        int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, 0);
         doubleClickTextView.setText(double_click[doubleClickEvent]);
 
         String[] right_slide = res.getStringArray(R.array.right_slide);
+        int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, 0);
         rightSlideTextView.setText(right_slide[rightSlideEvent]);
 
+        boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
+        Log.d(TAG, "hasAddedBall: "+hasAddedBall);
         //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
         //悬浮球的开关
@@ -415,12 +394,9 @@ public class MainActivity extends AppCompatActivity
                 editor.apply();
                 sendUpdateIntentToService();
             }
-
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
             }
@@ -437,12 +413,10 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-
             }
         });
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -530,8 +504,6 @@ public class MainActivity extends AppCompatActivity
         data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
         intent.putExtras(data);
         startService(intent);
-
-//        FloatBallManager.getInstance().addBallView(MainActivity.this);
     }
 
     private void removeFloatBall() {
@@ -542,9 +514,6 @@ public class MainActivity extends AppCompatActivity
         startService(intent);
     }
 
-
-
-
     //双击功能选择
     @OnClick(R.id.double_click_function)
     public void onDoubleClickClicked(View view) {
@@ -552,9 +521,6 @@ public class MainActivity extends AppCompatActivity
         builder.setTitle(R.string.double_click_title)
                 .setItems(R.array.double_click, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt(PREF_DOUBLE_CLICK_EVENT,which);
                         editor.apply();
@@ -574,9 +540,6 @@ public class MainActivity extends AppCompatActivity
         builder.setTitle(R.string.right_slide_title)
                 .setItems(R.array.right_slide, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt(PREF_RIGHT_SLIDE_EVENT,which);
                         editor.apply();
