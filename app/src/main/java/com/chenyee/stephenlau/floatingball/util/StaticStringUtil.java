@@ -5,6 +5,7 @@ package com.chenyee.stephenlau.floatingball.util;
  */
 
 public class StaticStringUtil {
+//  PREF
   public static final String PREF_OPACITY = "PREF_OPACITY";
   public static final String PREF_SIZE = "PREF_SIZE";
   public static final String PREF_USE_BACKGROUND = "PREF_USE_BACKGROUND";
@@ -18,7 +19,7 @@ public class StaticStringUtil {
   public static final String PREF_DOUBLE_CLICK_EVENT = "PREF_DOUBLE_CLICK_EVENT";
   public static final String PREF_RIGHT_SLIDE_EVENT = "PREF_RIGHT_SLIDE_EVENT";
 
-
+//EXTRA_TYPE
   public static final String EXTRA_TYPE = "EXTRA_TYPE";
 
   public static final int NONE = 0;

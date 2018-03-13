@@ -27,13 +27,6 @@ public class AccessibilityUtil {
         Log.d(TAG, "doBack: "+success);
     }
 
-    /**
-     * 下拉打开通知栏
-     * @param service
-     */
-    public static void doNotification(AccessibilityService service) {
-        service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);
-    }
 
     /**
      * 上拉返回桌面
@@ -60,25 +53,6 @@ public class AccessibilityUtil {
         }
     }
 
-    /**
-     * 左右滑动打开多任务
-     * @param service
-     */
-    public static void doLeft(AccessibilityService service) {
-        service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
-    }
-
-    public static void doRight(AccessibilityService service) {
-        SharedPreferences defaultSharedPreferences=PreferenceManager.getDefaultSharedPreferences(service);
-        int rightSlideEvent =defaultSharedPreferences.getInt(PREF_RIGHT_SLIDE_EVENT,0);
-        if(rightSlideEvent==RECENT_APPS)
-            service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
-        else if (rightSlideEvent == HIDE) {
-            Toast.makeText(service, "hide", Toast.LENGTH_LONG).show();
-            FloatingBallService floatingBallService=(FloatingBallService)service;
-            floatingBallService.hideBall();
-        }
-    }
 //    public static String  getTopApp(Context context) {
 //        String topActivity = "";
 //        String secondActivity = "";

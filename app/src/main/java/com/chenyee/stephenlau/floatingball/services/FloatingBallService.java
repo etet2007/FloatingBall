@@ -45,7 +45,7 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_UPDATE_DATA =5;
 
     private FloatBallManager mFloatBallManager;
-    private NotificationManager mNotificationManager;
+//    private NotificationManager mNotificationManager;
 
     private boolean hasSoftKeyboardShow=false;
 
@@ -60,8 +60,6 @@ public class FloatingBallService extends AccessibilityService {
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
 
-        //TEST
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -118,6 +116,7 @@ public class FloatingBallService extends AccessibilityService {
     @Override
     public void onInterrupt() {
         Log.d(TAG, "onInterrupt: ");
+        mFloatBallManager.saveFloatBallData();
     }
     @Override
     public void onDestroy() {
@@ -148,13 +147,9 @@ public class FloatingBallService extends AccessibilityService {
                 if(type== TYPE_DEL){
                     mFloatBallManager.removeBallView();//内部有mFloatBallManager.saveFloatBallData();
                 }
-                //intent中传地址
+                //intent中传图片地址，也可以换为sharedPreference吧
                 if (type == TYPE_IMAGE) {
                     mFloatBallManager.setBackgroundPic(data.getString("imagePath"));
-                }
-
-                if(type== TYPE_USE_BACKGROUND){
-                    mFloatBallManager.setUseBackground(data.getBoolean("useBackground"));
                 }
                 if(type==TYPE_UPDATE_DATA){
                     mFloatBallManager.updateBallViewParameter();
@@ -170,15 +165,15 @@ public class FloatingBallService extends AccessibilityService {
 
         mFloatBallManager.removeBallView();//内部有mFloatBallManager.saveFloatBallData();
         sendNotification();
-
     }
     private void sendNotification() {
         String contentTitle = getString(R.string.hideNotificationContentTitle);
         String contentText = getString(R.string.hideNotificationContentText);
+        NotificationManager notificationManager  = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        if(mNotificationManager==null){
-            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        }
+        if(notificationManager==null)
+            return;
+
         Intent intent = new Intent(this, FloatingBallService.class);
         Bundle data = new Bundle();
         data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
@@ -190,7 +185,7 @@ public class FloatingBallService extends AccessibilityService {
             String channelName = "channel_name";
             NotificationChannel mChannel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_LOW);
 
-            mNotificationManager.createNotificationChannel(mChannel);
+            notificationManager.createNotificationChannel(mChannel);
 
             Notification notification = new Notification.Builder(this, channelID)
                     .setSmallIcon(R.mipmap.ic_launcher_app)
@@ -200,7 +195,7 @@ public class FloatingBallService extends AccessibilityService {
                     .setAutoCancel(true)
                     .setContentIntent(pintent)
                     .build();
-            mNotificationManager.notify(1, notification);
+            notificationManager.notify(1, notification);
 
         }else{
             Notification notification = new NotificationCompat.Builder(this)
@@ -211,7 +206,7 @@ public class FloatingBallService extends AccessibilityService {
                     .setAutoCancel(true)
                     .setContentIntent(pintent)
                     .build();
-            mNotificationManager.notify(1, notification);
+            notificationManager.notify(1, notification);
         }
     }
 }

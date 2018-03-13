@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(Intent.createChooser(textIntent, "shared"));
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initFrameViews() {
         // Set up the toolbar. 工具栏。
-        Toolbar toolbar = (Toolbar) findViewById(R.id.materialup_toolbar);
+        Toolbar toolbar = findViewById(R.id.materialup_toolbar);
         setSupportActionBar(toolbar);//顺序会有影响
         ActionBar ab = getSupportActionBar();
         ab.setHomeButtonEnabled(true);
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         //Set up the appBarLayout.
-        AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.materialup_appbar);
+        AppBarLayout appbarLayout = findViewById(R.id.materialup_appbar);
         appbarLayout.addOnOffsetChangedListener(this);
         mMaxScrollSize = appbarLayout.getTotalScrollRange();
 
@@ -294,14 +294,14 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Set up the ActionBarDrawerToggle.
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         // Set up the navigation drawer.左侧滑出的菜单。
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         try {
             PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
