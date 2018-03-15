@@ -4,18 +4,18 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.chenyee.stephenlau.floatingball.LockReceiver;
 import com.chenyee.stephenlau.floatingball.R;
+
+import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
 
 /**
  * Created by lqtian on 2018/2/7.
  */
 
 public class LockScreenUtil {
-
-//    private DevicePolicyManager policyManager;
-//    private ComponentName componentName;
 
     public static boolean canLockScreen(Context context){
         DevicePolicyManager policyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -35,7 +35,6 @@ public class LockScreenUtil {
         ComponentName componentName = new ComponentName(context, LockReceiver.class);
         if (policyManager.isAdminActive(componentName)) {//判断是否有权限
             policyManager.lockNow();
-//            finish();
         }else{
             //使用隐式意图调用系统方法来激活指定的设备管理器
             Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);

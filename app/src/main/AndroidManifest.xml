@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.chenyee.stephenlau.floatingball">
+          package="com.chenyee.stephenlau.floatingball"
+          android:installLocation="internalOnly"
+    >
 
     <!-- 悬浮窗需要SYSTEM_ALERT_WINDOW权限 -->
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
@@ -9,6 +11,8 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--开机启动-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions"/>
@@ -68,6 +72,12 @@
                 android:resource="@xml/lock_screen" />
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".StartServiceAtBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

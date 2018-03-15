@@ -6,12 +6,15 @@ import android.widget.Toast;
 import com.chenyee.stephenlau.floatingball.FunctionListener;
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 
+import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
+
 /**
  * Created by stephenlau on 18-3-13.
  */
 
 public class FunctionUtil {
     private FloatingBallService mFloatingBallService;
+
     public FunctionUtil(FloatingBallService floatingBallService) {
         mFloatingBallService = floatingBallService;
     }
@@ -50,5 +53,17 @@ public class FunctionUtil {
         }
     };
 
-
+    public FunctionListener deviceLockFunctionListener=new FunctionListener() {
+        @Override
+        public void onClick() {
+            LockScreenUtil.lockScreen(mFloatingBallService);
+        }
+    };
+    public FunctionListener rootLockFunctionListener=new FunctionListener() {
+        @Override
+        public void onClick() {
+            String apkRoot="input keyevent 26";
+            rootCommand(apkRoot);
+        }
+    };
 }

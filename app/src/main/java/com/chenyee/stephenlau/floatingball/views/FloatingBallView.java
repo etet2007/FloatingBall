@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Vibrator;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -35,6 +37,8 @@ import java.io.IOException;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HOME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.LOCK_SCREEN;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_Y;
 
 /**
  * Created by stephenlau on 2017/12/5.
@@ -74,6 +78,7 @@ public class FloatingBallView extends View {
     private FunctionListener mUpFunctionListener;
     private FunctionListener mLeftFunctionListener;
     private FunctionListener mRightFunctionListener;
+    private FunctionListener mDoubleTapFunctionListener;
 
 
     //标志
@@ -83,6 +88,7 @@ public class FloatingBallView extends View {
 
     private boolean useBackground=false;
     private boolean useGrayBackground=true;
+    private boolean useDoubleClick=false;
     //上次touchEvent的位置
     private float mLastTouchEventX;
     private float mLastTouchEventY;
@@ -121,10 +127,23 @@ public class FloatingBallView extends View {
         this.useBackground = useBackground;
     }
 
-    public void setDoubleClickEventType(int doubleClickEvent) {
-        this.doubleClickEvent = doubleClickEvent;
+//    public void setDoubleClickEventType(int doubleClickEvent,FunctionListener doubleTapFunctionListener) {
+//
+//        this.doubleClickEvent = doubleClickEvent;
+//        this.mDoubleTapFunctionListener=doubleTapFunctionListener;
+//
+//        if(doubleClickEvent!=NONE)
+//            mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
+//        else
+//            mDetector.setOnDoubleTapListener(null);
+//    }
 
-        if(doubleClickEvent!=NONE)
+    public void setDoubleClickEventType(boolean useDoubleClick,FunctionListener doubleTapFunctionListener) {
+
+        this.useDoubleClick = useDoubleClick;
+        this.mDoubleTapFunctionListener=doubleTapFunctionListener;
+
+        if(useDoubleClick)
             mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
         else
             mDetector.setOnDoubleTapListener(null);
@@ -473,6 +492,12 @@ public class FloatingBallView extends View {
                     mLayoutParams.x = (int) (event.getRawX() - mLastTouchEventX);
                     mLayoutParams.y = (int) (event.getRawY() - mLastTouchEventY);
 
+                    SharedPreferences defaultSharedPreferences =PreferenceManager.getDefaultSharedPreferences(getContext());
+                    SharedPreferences.Editor editor = defaultSharedPreferences.edit();
+                    editor.putInt(PREF_PARAM_X,mLayoutParams.x);
+                    editor.putInt(PREF_PARAM_Y,mLayoutParams.y);
+                    editor.apply();
+
                     mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
                 }
                 break;
@@ -531,11 +556,14 @@ public class FloatingBallView extends View {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Log.d(TAG, "onDoubleTap: "+e);
-            if(doubleClickEvent==HOME){
-                AccessibilityUtil.doHome(mService);
-            }else if(doubleClickEvent==LOCK_SCREEN)
-                LockScreenUtil.lockScreen(mService);
+            if(mDoubleTapFunctionListener!=null)
+                mDoubleTapFunctionListener.onClick();
+
+//            Log.d(TAG, "onDoubleTap: "+e);
+//            if(doubleClickEvent==HOME){
+//                AccessibilityUtil.doHome(mService);
+//            }else if(doubleClickEvent==LOCK_SCREEN)
+//                LockScreenUtil.lockScreen(mService);
             return false;
         }
 
@@ -562,7 +590,7 @@ public class FloatingBallView extends View {
         //单击
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            if(doubleClickEvent==NONE)
+            if(!useDoubleClick)
                 AccessibilityUtil.doBack(mService);
             return false;
         }

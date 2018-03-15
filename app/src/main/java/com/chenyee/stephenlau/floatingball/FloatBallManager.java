@@ -7,7 +7,10 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.Surface;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.util.FunctionUtil;
+import com.chenyee.stephenlau.floatingball.util.RootUtil;
 import com.chenyee.stephenlau.floatingball.util.StaticStringUtil;
 import com.chenyee.stephenlau.floatingball.views.FloatingBallView;
 
@@ -60,6 +64,8 @@ public class FloatBallManager {
             int screenWidth = size.x;
             int screenHeight = size.y;
 
+
+
             //Use ShardPreferences to init layout parameters.
             defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -91,7 +97,6 @@ public class FloatBallManager {
             mFloatingBallView.setLeftFunctionListener(mFunctionUtil.recentAppsFunctionListener);
             mFloatingBallView.setRightFunctionListener(mFunctionUtil.recentAppsFunctionListener);
             mFloatingBallView.setDownFunctionListener(mFunctionUtil.notificationFunctionListener);
-
 
             updateBallViewParameter();
 
@@ -160,14 +165,27 @@ public class FloatBallManager {
             mFloatingBallView.setUseBackground(defaultSharedPreferences.getBoolean(PREF_USE_BACKGROUND,false));
 
             //Double click event
-            mFloatingBallView.setDoubleClickEventType(defaultSharedPreferences.getInt(PREF_DOUBLE_CLICK_EVENT,0));
+            int double_click_event= defaultSharedPreferences.getInt(PREF_DOUBLE_CLICK_EVENT,0);
+            boolean useDoubleClick=true;
+            if(double_click_event==NONE){
+                useDoubleClick=false;
+                mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.nullFunctionListener);
+            }else if (double_click_event==HOME){
+                mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.homeFunctionListener);
+            }else if(double_click_event==LOCK_SCREEN){
+                if(RootUtil.isDeviceRooted())
+                    mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.rootLockFunctionListener);
+                else {
+                    mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.deviceLockFunctionListener);
+                }
+            }
 
+            //RightSlideEvent
             int rightSlideEvent =defaultSharedPreferences.getInt(PREF_RIGHT_SLIDE_EVENT,0);
             if(rightSlideEvent==RECENT_APPS)
                 mFloatingBallView.setRightFunctionListener(mFunctionUtil.recentAppsFunctionListener);
             else if (rightSlideEvent == HIDE)
                 mFloatingBallView.setRightFunctionListener(mFunctionUtil.hideFunctionListener);
-
 
             mFloatingBallView.setMoveUpDistance(defaultSharedPreferences.getInt(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 200));
 
@@ -185,39 +203,35 @@ public class FloatBallManager {
         if(mFloatingBallView !=null) mFloatingBallView.performMoveDownAnimator();
     }
 
+    public void hideBallView() {
 
-//    private FunctionListener nullFunctionListener=new FunctionListener() {
-//        @Override
-//        public void onClick() {
+    }
+//    public void getLocation() {
+//        //是否全屏没什么变化
+//        int location[] = new int[2];
+//        if (mFloatingBallView != null) {
+//            mFloatingBallView.getLocationOnScreen(location);
+//            Log.d(TAG, "getLocation: "+location[0]+" "+location[1]);
+//            mFloatingBallView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+//                @Override
+//                public void onSystemUiVisibilityChange(int visibility) {
+//                    // Note that system bars will only be "visible" if none of the
+//                    // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+//                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+//                        // TODO: The system bars are visible. Make any desired
+//                        // adjustments to your UI, such as showing the action bar or
+//                        // other navigational controls.
+//                        mFloatingBallView.performMoveUpAnimator();
+//                    } else {
+//                        // TODO: The system bars are NOT visible. Make any desired
+//                        // adjustments to your UI, such as hiding the action bar or
+//                        // other navigational controls.
+//                        mFloatingBallView.performMoveDownAnimator();
+//                    }
+//                }
+//            });
 //        }
-//    };
-//    private FunctionListener recentAppsFunctionListener=new FunctionListener() {
-//        @Override
-//        public void onClick() {
-//            mFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
-//        }
-//    };
-//
-//    private FunctionListener homeFunctionListener=new FunctionListener() {
-//        @Override
-//        public void onClick() {
-//            AccessibilityUtil.doHome(mFloatingBallService);
-//        }
-//    };
-//
-//    private FunctionListener hideFunctionListener=new FunctionListener() {
-//        @Override
-//        public void onClick() {
-//            Toast.makeText(mFloatingBallService, "hide", Toast.LENGTH_LONG).show();
-//            mFloatingBallService.hideBall();
-//        }
-//    };
-//
-//    private FunctionListener notificationFunctionListener=new FunctionListener() {
-//        @Override
-//        public void onClick() {
-//            mFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);
-//        }
-//    };
+//    }
+
 }
 

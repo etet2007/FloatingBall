@@ -21,11 +21,11 @@ public class StaticStringUtil {
 
 //EXTRA_TYPE
   public static final String EXTRA_TYPE = "EXTRA_TYPE";
-
+//double click
   public static final int NONE = 0;
   public static final int HOME = 1;
   public static final int LOCK_SCREEN = 2;
-
+//right
   public static final int RECENT_APPS = 0;
   public static final int HIDE = 1;
 }

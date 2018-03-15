@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.Surface;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InputMethodManager;
 
@@ -57,14 +59,38 @@ public class FloatingBallService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected: ");
-        if(mFloatBallManager==null)
+        if(mFloatBallManager==null){
             mFloatBallManager = FloatBallManager.getInstance();
-
+            mFloatBallManager.addBallView(FloatingBallService.this);
+        }
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         inputMethodSate(getApplicationContext());
+
+        //full screen detect
+//        mFloatBallManager.getLocation();
+//        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+//        Log.d(TAG, "onAccessibilityEvent: flags: "+windowManager.getDefaultDisplay().getFlags());
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            Log.d(TAG, "onAccessibilityEvent: Mode: " + windowManager.getDefaultDisplay().getMode());
+//        }
+
+        // Rotate screen detect
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        int currentRatation = windowManager.getDefaultDisplay().getRotation();
+
+        if (Surface.ROTATION_0 == currentRatation) {
+            mFloatBallManager.addBallView(FloatingBallService.this);
+        } else if(Surface.ROTATION_180 == currentRatation) {
+            mFloatBallManager.addBallView(FloatingBallService.this);
+        } else if(Surface.ROTATION_90 == currentRatation) {
+            mFloatBallManager.removeBallView();
+        } else if(Surface.ROTATION_270 == currentRatation) {
+            mFloatBallManager.removeBallView();
+        }
+
     }
     /**
      * According to the state of input method, move the floatingBall view.
@@ -72,8 +98,6 @@ public class FloatingBallService extends AccessibilityService {
      */
     private void inputMethodSate(Context context) {
         //得到默认输入法包名
-        String defaultInputName = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
-        defaultInputName = defaultInputName.substring(0, defaultInputName.indexOf("/"));
         boolean isInputing = false;
         if(android.os.Build.VERSION.SDK_INT > 20) {//Work
             try{
@@ -82,7 +106,7 @@ public class FloatingBallService extends AccessibilityService {
                 Method method = clazz.getMethod("getInputMethodWindowVisibleHeight", null);
                 method.setAccessible(true);
                 int height = (Integer) method.invoke(imm, null);
-                Log.d("LOG", "height == "+height);
+//                Log.d("LOG", "height == "+height);
                 if(height > 100) {
                     isInputing = true;
                 }
@@ -90,6 +114,9 @@ public class FloatingBallService extends AccessibilityService {
                 e.printStackTrace();
             }
         }else {//应该不work
+            String defaultInputName = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+            defaultInputName = defaultInputName.substring(0, defaultInputName.indexOf("/"));
+
             ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
             List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
 
@@ -102,6 +129,7 @@ public class FloatingBallService extends AccessibilityService {
                 }
             }
         }
+
         if(isInputing) {
             if (!hasSoftKeyboardShow)
                 mFloatBallManager.moveBallViewUp();
