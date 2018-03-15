@@ -50,6 +50,15 @@ public class FloatBallManager {
     private SharedPreferences defaultSharedPreferences;
     private boolean isOpenedBall;
 
+    public boolean isOpenedBall() {
+        return isOpenedBall;
+    }
+
+    public void setOpenedBall(boolean openedBall) {
+        isOpenedBall = openedBall;
+    }
+
+
     // 创建BallView
     public void addBallView(Context context) {
         if (mFloatingBallView == null) {
@@ -63,8 +72,6 @@ public class FloatBallManager {
             windowManager.getDefaultDisplay().getSize(size);
             int screenWidth = size.x;
             int screenHeight = size.y;
-
-
 
             //Use ShardPreferences to init layout parameters.
             defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -99,21 +106,14 @@ public class FloatBallManager {
             mFloatingBallView.setDownFunctionListener(mFunctionUtil.notificationFunctionListener);
 
             updateBallViewParameter();
-
-            isOpenedBall =true;
-            saveFloatBallData();
         }
     }
 
     public void removeBallView() {
         if (mFloatingBallView == null)
             return;
-        //改变状态
-        isOpenedBall =false;
         //动画
         mFloatingBallView.performRemoveAnimator();
-
-        saveFloatBallData();
         mFloatingBallView = null;
     }
 
@@ -135,14 +135,14 @@ public class FloatBallManager {
      * 保存打开状态，位置。
      */
     public void saveFloatBallData(){
-        if(defaultSharedPreferences==null || mFloatingBallView ==null) return;
+        if(defaultSharedPreferences==null) return;
 
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
         editor.putBoolean(PREF_HAS_ADDED_BALL, isOpenedBall);
 
-        LayoutParams params = mFloatingBallView.getLayoutParams();
-        editor.putInt(PREF_PARAM_X,params.x);
-        editor.putInt(PREF_PARAM_Y,params.y);
+//        LayoutParams params = mFloatingBallView.getLayoutParams();
+//        editor.putInt(PREF_PARAM_X,params.x);
+//        editor.putInt(PREF_PARAM_Y,params.y);
 
         editor.apply();
     }
@@ -173,20 +173,32 @@ public class FloatBallManager {
             }else if (double_click_event==HOME){
                 mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.homeFunctionListener);
             }else if(double_click_event==LOCK_SCREEN){
-                if(RootUtil.isDeviceRooted())
-                    mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.rootLockFunctionListener);
-                else {
                     mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.deviceLockFunctionListener);
+            }else if(double_click_event==ROOT_LOCK_SCREEN) {
+                if (RootUtil.isDeviceRooted()){
+                    mFloatingBallView.setDoubleClickEventType(useDoubleClick, mFunctionUtil.rootLockFunctionListener);
+                }else {
+                    Toast.makeText(mFloatingBallView.getContext(),"Device is not rooted!",Toast.LENGTH_LONG).show();
                 }
             }
-
+            //LeftSlideEvent
+            int leftSlideEvent =defaultSharedPreferences.getInt(PREF_LEFT_SLIDE_EVENT,0);
+            if(leftSlideEvent==RECENT_APPS)
+                mFloatingBallView.setLeftFunctionListener(mFunctionUtil.recentAppsFunctionListener);
+            else if (leftSlideEvent == HIDE)
+                mFloatingBallView.setLeftFunctionListener(mFunctionUtil.hideFunctionListener);
+            else if(leftSlideEvent==LAST_APPS)
+                mFloatingBallView.setLeftFunctionListener(mFunctionUtil.lastAppFunctionListener);
+            
             //RightSlideEvent
             int rightSlideEvent =defaultSharedPreferences.getInt(PREF_RIGHT_SLIDE_EVENT,0);
             if(rightSlideEvent==RECENT_APPS)
                 mFloatingBallView.setRightFunctionListener(mFunctionUtil.recentAppsFunctionListener);
             else if (rightSlideEvent == HIDE)
                 mFloatingBallView.setRightFunctionListener(mFunctionUtil.hideFunctionListener);
-
+            else if(rightSlideEvent==LAST_APPS)
+                mFloatingBallView.setRightFunctionListener(mFunctionUtil.lastAppFunctionListener);
+            
             mFloatingBallView.setMoveUpDistance(defaultSharedPreferences.getInt(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 200));
 
             mFloatingBallView.requestLayout();

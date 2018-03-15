@@ -8,9 +8,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -21,12 +23,13 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.chenyee.stephenlau.floatingball.FloatBallManager;
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.activities.MainActivity;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ADDED_BALL;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ROTATE_HIDE_BALL;
 
 
 /**
@@ -50,6 +53,7 @@ public class FloatingBallService extends AccessibilityService {
 //    private NotificationManager mNotificationManager;
 
     private boolean hasSoftKeyboardShow=false;
+    boolean hasRotatedBall = false;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, FloatingBallService.class);
@@ -61,12 +65,26 @@ public class FloatingBallService extends AccessibilityService {
         Log.d(TAG, "onServiceConnected: ");
         if(mFloatBallManager==null){
             mFloatBallManager = FloatBallManager.getInstance();
-            mFloatBallManager.addBallView(FloatingBallService.this);
+
+            addBallViewAndSaveState();
+
         }
+    }
+
+    private void addBallViewAndSaveState() {
+        mFloatBallManager.addBallView(FloatingBallService.this);
+        mFloatBallManager.setOpenedBall(true);
+        mFloatBallManager.saveFloatBallData();
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean hasAddBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
+        Log.d(TAG, "onAccessibilityEvent: hasAddBall "+hasAddBall);
+        if(!hasAddBall)
+            return;
+
         inputMethodSate(getApplicationContext());
 
         //full screen detect
@@ -79,18 +97,18 @@ public class FloatingBallService extends AccessibilityService {
 
         // Rotate screen detect
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        int currentRatation = windowManager.getDefaultDisplay().getRotation();
+        int currentRotation = windowManager.getDefaultDisplay().getRotation();
 
-        if (Surface.ROTATION_0 == currentRatation) {
+//        hasRotatedBall = prefs.getBoolean(PREF_HAS_ROTATE_HIDE_BALL, false);
+
+        if ( (Surface.ROTATION_0 == currentRotation ||Surface.ROTATION_180 == currentRotation)) {
             mFloatBallManager.addBallView(FloatingBallService.this);
-        } else if(Surface.ROTATION_180 == currentRatation) {
-            mFloatBallManager.addBallView(FloatingBallService.this);
-        } else if(Surface.ROTATION_90 == currentRatation) {
+            Log.d(TAG, "onAccessibilityEvent: addBallView");
+        } else if((Surface.ROTATION_90 == currentRotation||Surface.ROTATION_270 == currentRotation)) {
             mFloatBallManager.removeBallView();
-        } else if(Surface.ROTATION_270 == currentRatation) {
-            mFloatBallManager.removeBallView();
+            Log.d(TAG, "onAccessibilityEvent: removeBallView");
+
         }
-
     }
     /**
      * According to the state of input method, move the floatingBall view.
@@ -170,10 +188,10 @@ public class FloatingBallService extends AccessibilityService {
                 int type = data.getInt(EXTRA_TYPE);
 
                 if (type == TYPE_ADD) {
-                    mFloatBallManager.addBallView(FloatingBallService.this);
+                    addBallViewAndSaveState();
                 }
                 if(type== TYPE_DEL){
-                    mFloatBallManager.removeBallView();//内部有mFloatBallManager.saveFloatBallData();
+                    removeBallViewAndSaveData();
                 }
                 //intent中传图片地址，也可以换为sharedPreference吧
                 if (type == TYPE_IMAGE) {
@@ -187,11 +205,17 @@ public class FloatingBallService extends AccessibilityService {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    private void removeBallViewAndSaveData() {
+        mFloatBallManager.removeBallView();
+        mFloatBallManager.setOpenedBall(false);
+        mFloatBallManager.saveFloatBallData();
+    }
+
     public void hideBall(){
         if(mFloatBallManager==null)
             mFloatBallManager = FloatBallManager.getInstance();
 
-        mFloatBallManager.removeBallView();//内部有mFloatBallManager.saveFloatBallData();
+        removeBallViewAndSaveData();
         sendNotification();
     }
     private void sendNotification() {

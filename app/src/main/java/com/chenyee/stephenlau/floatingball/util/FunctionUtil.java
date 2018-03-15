@@ -31,6 +31,14 @@ public class FunctionUtil {
         }
     };
 
+    public FunctionListener lastAppFunctionListener=new FunctionListener() {
+        @Override
+        public void onClick() {
+            mFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+            mFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+        }
+    };
+
     public FunctionListener homeFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {

@@ -4,10 +4,12 @@
         <item>@string/none</item>
         <item>@string/home</item>
         <item>@string/lockScreen</item>
+        <item>@string/rootLockScreen</item>
     </string-array>
 
-    <string-array name="right_slide">
+    <string-array name="left_right_slide">
         <item>@string/recent_apps</item>
+        <item>@string/last_app</item>
         <item>@string/hide</item>
     </string-array>
 </resources>

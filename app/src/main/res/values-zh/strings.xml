@@ -41,8 +41,10 @@
 
     <string name="home">桌面</string>
     <string name="lockScreen">锁屏</string>
+    <string name="rootLockScreen">Root锁屏</string>
     <string name="none">无</string>
     <string name="recent_apps">任务列表</string>
+    <string name="last_app">上一任务</string>
     <string name="hide">隐藏</string>
 
     <string name="hideNotificationContentTitle">隐藏中</string>

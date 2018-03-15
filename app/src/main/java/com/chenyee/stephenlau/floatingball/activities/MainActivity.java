@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
 
     @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
+    @BindView(R.id.left_slide_textView)AppCompatTextView leftSlideTextView;
     @BindView(R.id.right_slide_textView)AppCompatTextView rightSlideTextView;
 
     //参数
@@ -346,9 +347,12 @@ public class MainActivity extends AppCompatActivity
         int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, 0);
         doubleClickTextView.setText(double_click[doubleClickEvent]);
 
-        String[] right_slide = res.getStringArray(R.array.right_slide);
+        String[] left_right_slide = res.getStringArray(R.array.left_right_slide);
         int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, 0);
-        rightSlideTextView.setText(right_slide[rightSlideEvent]);
+        rightSlideTextView.setText(left_right_slide[rightSlideEvent]);
+
+        int leftSlideEvent = prefs.getInt(PREF_LEFT_SLIDE_EVENT, 0);
+        leftSlideTextView.setText(left_right_slide[leftSlideEvent]);
 
         boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
         Log.d(TAG, "hasAddedBall: "+hasAddedBall);
@@ -534,11 +538,30 @@ public class MainActivity extends AppCompatActivity
         builder.show();
     }
 
+    @OnClick(R.id.left_function)
+    public void onLeft_function(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.left_slide_title)
+                .setItems(R.array.left_right_slide, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt(PREF_LEFT_SLIDE_EVENT,which);
+                        editor.apply();
+
+                        sendUpdateIntentToService();
+
+                        String[] left_right_slide = getResources().getStringArray(R.array.left_right_slide);
+                        leftSlideTextView.setText(left_right_slide[which]);
+                    }
+                });
+        builder.show();
+    }
+
     @OnClick(R.id.right_function)
     public void onRight_function(View view){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.right_slide_title)
-                .setItems(R.array.right_slide, new DialogInterface.OnClickListener() {
+                .setItems(R.array.left_right_slide, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt(PREF_RIGHT_SLIDE_EVENT,which);
@@ -546,10 +569,12 @@ public class MainActivity extends AppCompatActivity
 
                         sendUpdateIntentToService();
 
-                        String[] right_slide = getResources().getStringArray(R.array.right_slide);
-                        rightSlideTextView.setText(right_slide[which]);
+                        String[] left_right_slide = getResources().getStringArray(R.array.left_right_slide);
+                        rightSlideTextView.setText(left_right_slide[which]);
                     }
                 });
         builder.show();
     }
+
+
 }
