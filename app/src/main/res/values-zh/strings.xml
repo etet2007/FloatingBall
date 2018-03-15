@@ -36,6 +36,8 @@
     <string name="right_slide_title">右滑</string>
     <string name="right_slide">右滑:</string>
 
+    <string name="left_slide_title">左滑</string>
+    <string name="left_slide">左滑:</string>
 
     <string name="use_gray_background">是否显示灰色背景</string>
 
