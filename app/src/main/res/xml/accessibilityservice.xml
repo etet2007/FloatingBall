@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <accessibility-service
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged|typeWindowsChanged|typeViewClicked|typeViewFocused"
+    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged|typeWindowsChanged"
     android:canRetrieveWindowContent="true"
 
-    android:notificationTimeout="100"
-    android:description="@string/accessibility"
-/>
+    android:notificationTimeout="500"
+    android:description="@string/accessibility"/>
 
     <!--typeWindowContentChanged-->

@@ -61,6 +61,7 @@ public class FloatBallManager {
 
     // 创建BallView
     public void addBallView(Context context) {
+        Log.d(TAG, "FloatBallManager addBallView: ");
         if (mFloatingBallView == null) {
             mFloatingBallView = new FloatingBallView(context);
 

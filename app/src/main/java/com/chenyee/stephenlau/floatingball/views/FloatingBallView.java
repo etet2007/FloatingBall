@@ -80,7 +80,6 @@ public class FloatingBallView extends View {
     private FunctionListener mRightFunctionListener;
     private FunctionListener mDoubleTapFunctionListener;
 
-
     //标志
     private boolean isFirstEvent=false;
     private boolean isScrolling=false;

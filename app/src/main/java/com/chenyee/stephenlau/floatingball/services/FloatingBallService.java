@@ -65,9 +65,7 @@ public class FloatingBallService extends AccessibilityService {
         Log.d(TAG, "onServiceConnected: ");
         if(mFloatBallManager==null){
             mFloatBallManager = FloatBallManager.getInstance();
-
             addBallViewAndSaveState();
-
         }
     }
 
@@ -77,11 +75,19 @@ public class FloatingBallService extends AccessibilityService {
         mFloatBallManager.saveFloatBallData();
     }
 
+    /**
+     *  todo onAccessibilityEvent 中放太多逻辑会影响性能。有回调的方法解决会更好。
+     * @param event
+     */
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        // 旋转屏幕 TYPE_WINDOW_STATE_CHANGED 32 TYPE_WINDOW_CONTENT_CHANGED 2048。只有TYPE_WINDOW_CONTENT_CHANGED才能cover所有情况
+        Log.d(TAG, "onAccessibilityEvent: "+event.getEventType());
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean hasAddBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
         Log.d(TAG, "onAccessibilityEvent: hasAddBall "+hasAddBall);
+        //没有打开悬浮球
         if(!hasAddBall)
             return;
 
@@ -100,14 +106,13 @@ public class FloatingBallService extends AccessibilityService {
         int currentRotation = windowManager.getDefaultDisplay().getRotation();
 
 //        hasRotatedBall = prefs.getBoolean(PREF_HAS_ROTATE_HIDE_BALL, false);
-
-        if ( (Surface.ROTATION_0 == currentRotation ||Surface.ROTATION_180 == currentRotation)) {
-            mFloatBallManager.addBallView(FloatingBallService.this);
+        //这样其实会疯狂调用add方法
+        if ((Surface.ROTATION_0 == currentRotation || Surface.ROTATION_180 == currentRotation)) {
             Log.d(TAG, "onAccessibilityEvent: addBallView");
-        } else if((Surface.ROTATION_90 == currentRotation||Surface.ROTATION_270 == currentRotation)) {
-            mFloatBallManager.removeBallView();
-            Log.d(TAG, "onAccessibilityEvent: removeBallView");
-
+            mFloatBallManager.addBallView(FloatingBallService.this);
+        } else if ((Surface.ROTATION_90 == currentRotation || Surface.ROTATION_270 == currentRotation)) {
+                Log.d(TAG, "onAccessibilityEvent: removeBallView");
+                mFloatBallManager.removeBallView();
         }
     }
     /**
