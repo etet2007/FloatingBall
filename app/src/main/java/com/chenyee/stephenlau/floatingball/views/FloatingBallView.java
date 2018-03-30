@@ -138,7 +138,6 @@ public class FloatingBallView extends View {
 //    }
 
     public void setDoubleClickEventType(boolean useDoubleClick,FunctionListener doubleTapFunctionListener) {
-
         this.useDoubleClick = useDoubleClick;
         this.mDoubleTapFunctionListener=doubleTapFunctionListener;
 
@@ -147,6 +146,7 @@ public class FloatingBallView extends View {
         else
             mDetector.setOnDoubleTapListener(null);
     }
+
     public void setMoveUpDistance(int moveUpDistance) {
         this.moveUpDistance = moveUpDistance;
     }

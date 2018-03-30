@@ -202,7 +202,7 @@ public class FloatingBallService extends AccessibilityService {
                 if (type == TYPE_IMAGE) {
                     mFloatBallManager.setBackgroundPic(data.getString("imagePath"));
                 }
-                if(type==TYPE_UPDATE_DATA){
+                if(type == TYPE_UPDATE_DATA){
                     mFloatBallManager.updateBallViewParameter();
                 }
             }
