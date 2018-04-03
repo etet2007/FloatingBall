@@ -166,40 +166,24 @@ public class FloatBallManager {
             mFloatingBallView.setUseBackground(defaultSharedPreferences.getBoolean(PREF_USE_BACKGROUND,false));
 
             //Double click event
-            int double_click_event= defaultSharedPreferences.getInt(PREF_DOUBLE_CLICK_EVENT,0);
+            int double_click_event= defaultSharedPreferences.getInt(PREF_DOUBLE_CLICK_EVENT,NONE);
             boolean useDoubleClick=true;
-            if(double_click_event==NONE){
-                useDoubleClick=false;
-                mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.nullFunctionListener);
-            }else if (double_click_event==HOME){
-                mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.homeFunctionListener);
-            }else if(double_click_event==LOCK_SCREEN){
-                    mFloatingBallView.setDoubleClickEventType(useDoubleClick,mFunctionUtil.deviceLockFunctionListener);
-            }else if(double_click_event==ROOT_LOCK_SCREEN) {
-                if (RootUtil.isDeviceRooted()){
-                    mFloatingBallView.setDoubleClickEventType(useDoubleClick, mFunctionUtil.rootLockFunctionListener);
-                }else {
-                    Toast.makeText(mFloatingBallView.getContext(),"Device is not rooted!",Toast.LENGTH_LONG).show();
-                }
-            }
+            if(double_click_event==NONE) useDoubleClick=false;
+            mFloatingBallView.setDoubleClickEventType(useDoubleClick,getListener(double_click_event));
+
             //LeftSlideEvent
-            int leftSlideEvent =defaultSharedPreferences.getInt(PREF_LEFT_SLIDE_EVENT,0);
-            if(leftSlideEvent==RECENT_APPS)
-                mFloatingBallView.setLeftFunctionListener(mFunctionUtil.recentAppsFunctionListener);
-            else if (leftSlideEvent == HIDE)
-                mFloatingBallView.setLeftFunctionListener(mFunctionUtil.hideFunctionListener);
-            else if(leftSlideEvent==LAST_APPS)
-                mFloatingBallView.setLeftFunctionListener(mFunctionUtil.lastAppFunctionListener);
-            
+            int leftSlideEvent =defaultSharedPreferences.getInt(PREF_LEFT_SLIDE_EVENT,RECENT_APPS);
+            mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
             //RightSlideEvent
-            int rightSlideEvent =defaultSharedPreferences.getInt(PREF_RIGHT_SLIDE_EVENT,0);
-            if(rightSlideEvent==RECENT_APPS)
-                mFloatingBallView.setRightFunctionListener(mFunctionUtil.recentAppsFunctionListener);
-            else if (rightSlideEvent == HIDE)
-                mFloatingBallView.setRightFunctionListener(mFunctionUtil.hideFunctionListener);
-            else if(rightSlideEvent==LAST_APPS)
-                mFloatingBallView.setRightFunctionListener(mFunctionUtil.lastAppFunctionListener);
-            
+            int rightSlideEvent =defaultSharedPreferences.getInt(PREF_RIGHT_SLIDE_EVENT,RECENT_APPS);
+            mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
+            //UpSlideEvent
+            int upSlideEvent =defaultSharedPreferences.getInt(PREF_UP_SLIDE_EVENT,HOME);
+            mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
+            //DownSlideEvent
+            int downSlideEvent =defaultSharedPreferences.getInt(PREF_DOWN_SLIDE_EVENT,NOTIFICATION);
+            mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
+
             mFloatingBallView.setMoveUpDistance(defaultSharedPreferences.getInt(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 200));
 
             mFloatingBallView.requestLayout();
@@ -207,6 +191,27 @@ public class FloatBallManager {
         }
     }
 
+    private FunctionListener getListener(int key) {
+        FunctionListener functionListener = mFunctionUtil.nullFunctionListener;
+        if(key==RECENT_APPS){
+            functionListener= mFunctionUtil.recentAppsFunctionListener;
+        }else if(key==LAST_APPS){
+            functionListener= mFunctionUtil.lastAppFunctionListener;
+        } else if (key == HIDE) {
+            functionListener =  mFunctionUtil.hideFunctionListener;
+        } else if (key == NONE) {
+            functionListener =  mFunctionUtil.nullFunctionListener;
+        } else if(key==HOME){
+            functionListener =  mFunctionUtil.homeFunctionListener;
+        }else if(key ==LOCK_SCREEN){
+            functionListener =  mFunctionUtil.deviceLockFunctionListener;
+        } else if (key == ROOT_LOCK_SCREEN) {
+            functionListener =  mFunctionUtil.rootLockFunctionListener;
+        } else if (key == NOTIFICATION) {
+            functionListener =  mFunctionUtil.notificationFunctionListener;
+        }
+        return functionListener;
+    }
 
     public void moveBallViewUp() {
         if(mFloatingBallView !=null) mFloatingBallView.performMoveUpAnimator();

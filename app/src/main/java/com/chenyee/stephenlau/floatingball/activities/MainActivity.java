@@ -78,8 +78,9 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
     @BindView(R.id.left_slide_textView)AppCompatTextView leftSlideTextView;
+    @BindView(R.id.up_slide_textView)AppCompatTextView upSlideTextView;
+    @BindView(R.id.down_slide_textView)AppCompatTextView downSlideTextView;
     @BindView(R.id.right_slide_textView)AppCompatTextView rightSlideTextView;
-
     //参数
     private SharedPreferences prefs;
 
@@ -345,17 +346,7 @@ public class MainActivity extends AppCompatActivity
         backgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_BACKGROUND, false));
         useGrayBackgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_GRAY_BACKGROUND, true));
 
-        Resources res =getResources();
-        String[] double_click = res.getStringArray(R.array.double_click);
-        int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, 0);
-        doubleClickTextView.setText(double_click[doubleClickEvent]);
-
-        String[] left_right_slide = res.getStringArray(R.array.left_right_slide);
-        int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, 0);
-        rightSlideTextView.setText(left_right_slide[rightSlideEvent]);
-
-        int leftSlideEvent = prefs.getInt(PREF_LEFT_SLIDE_EVENT, 0);
-        leftSlideTextView.setText(left_right_slide[leftSlideEvent]);
+        updateFunctionList();
 
         boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
         Log.d(TAG, "hasAddedBall: "+hasAddedBall);
@@ -457,6 +448,25 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void updateFunctionList() {
+        Resources res =getResources();
+        String[] functionList = res.getStringArray(R.array.function_array);
+        int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, NONE);
+        doubleClickTextView.setText(functionList[doubleClickEvent]);
+
+        int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
+        rightSlideTextView.setText(functionList[rightSlideEvent]);
+
+        int leftSlideEvent = prefs.getInt(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
+        leftSlideTextView.setText(functionList[leftSlideEvent]);
+
+        int upSlideEvent = prefs.getInt(PREF_UP_SLIDE_EVENT, HOME);
+        upSlideTextView.setText(functionList[upSlideEvent]);
+
+        int downSlideEvent = prefs.getInt(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
+        downSlideTextView.setText(functionList[downSlideEvent]);
+    }
+
     private void updateViewsState(boolean hasAddedBall) {
         if(hasAddedBall) {
             fab.setImageAlpha(255);
@@ -526,7 +536,7 @@ public class MainActivity extends AppCompatActivity
     public void onDoubleClickClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.double_click_title)
-                .setItems(R.array.double_click, new DialogInterface.OnClickListener() {
+                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt(PREF_DOUBLE_CLICK_EVENT,which);
@@ -534,8 +544,7 @@ public class MainActivity extends AppCompatActivity
 
                         sendUpdateIntentToService();
 
-                        String[] double_click = getResources().getStringArray(R.array.double_click);
-                        doubleClickTextView.setText(double_click[which]);
+                        updateFunctionList();
                     }
                 });
         builder.show();
@@ -545,7 +554,7 @@ public class MainActivity extends AppCompatActivity
     public void onLeft_function(View view){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.left_slide_title)
-                .setItems(R.array.left_right_slide, new DialogInterface.OnClickListener() {
+                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt(PREF_LEFT_SLIDE_EVENT,which);
@@ -553,8 +562,8 @@ public class MainActivity extends AppCompatActivity
 
                         sendUpdateIntentToService();
 
-                        String[] left_right_slide = getResources().getStringArray(R.array.left_right_slide);
-                        leftSlideTextView.setText(left_right_slide[which]);
+                        updateFunctionList();
+
                     }
                 });
         builder.show();
@@ -564,20 +573,53 @@ public class MainActivity extends AppCompatActivity
     public void onRight_function(View view){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.right_slide_title)
-                .setItems(R.array.left_right_slide, new DialogInterface.OnClickListener() {
+                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt(PREF_RIGHT_SLIDE_EVENT,which);
                         editor.apply();
-
+                        Log.d(TAG, "onClick: "+which);
                         sendUpdateIntentToService();
 
-                        String[] left_right_slide = getResources().getStringArray(R.array.left_right_slide);
-                        rightSlideTextView.setText(left_right_slide[which]);
+                        updateFunctionList();
+
                     }
                 });
         builder.show();
     }
+    @OnClick(R.id.up_function)
+    public void onUp_function(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.up_slide_title)
+                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt(PREF_UP_SLIDE_EVENT,which);
+                        editor.apply();
 
+                        sendUpdateIntentToService();
 
+                        updateFunctionList();
+
+                    }
+                });
+        builder.show();
+    }
+    @OnClick(R.id.down_function)
+    public void onDown_function(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.down_slide_title)
+                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt(PREF_DOWN_SLIDE_EVENT,which);
+                        editor.apply();
+
+                        sendUpdateIntentToService();
+
+                        updateFunctionList();
+                    }
+                });
+        builder.show();
+    }
 }

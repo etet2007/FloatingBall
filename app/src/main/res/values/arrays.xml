@@ -12,4 +12,18 @@
         <item>@string/last_app</item>
         <item>@string/hide</item>
     </string-array>
+
+    <string-array name="function_array">
+        <item>@string/recent_apps</item>
+        <item>@string/last_app</item>
+        <item>@string/hide</item>
+        <item>@string/none</item>
+        <item>@string/home</item>
+        <item>@string/lockScreen</item>
+        <item>@string/rootLockScreen</item>
+        <item>@string/notification</item>
+
+    </string-array>
+
+
 </resources>

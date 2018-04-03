@@ -36,6 +36,12 @@
     <string name="left_slide_title">Left slide</string>
     <string name="left_slide">Left slide:</string>
 
+    <string name="up_slide_title">Up slide</string>
+    <string name="up_slide">Up slide:</string>
+
+    <string name="down_slide_title">Down slide</string>
+    <string name="down_slide">Down slide:</string>
+    
     <string name="use_gray_background">Use gray background?</string>
 
     <string name="home">Home</string>
@@ -45,6 +51,8 @@
     <string name="recent_apps">Recent apps</string>
     <string name="last_app">Last app</string>
     <string name="hide">Hide</string>
+    <string name="notification">Expand notifications</string>
+
 
     <!--<string name="compose_shortcut_short_label1">1</string>-->
     <string name="hideNotificationContentTitle">Hiding</string>

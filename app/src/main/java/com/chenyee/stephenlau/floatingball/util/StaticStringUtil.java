@@ -23,19 +23,26 @@ public class StaticStringUtil {
   public static final String PREF_DOUBLE_CLICK_EVENT = "PREF_DOUBLE_CLICK_EVENT";
   public static final String PREF_RIGHT_SLIDE_EVENT = "PREF_RIGHT_SLIDE_EVENT";
   public static final String PREF_LEFT_SLIDE_EVENT = "PREF_LEFT_SLIDE_EVENT";
+  public static final String PREF_UP_SLIDE_EVENT = "PREF_UP_SLIDE_EVENT";
+  public static final String PREF_DOWN_SLIDE_EVENT = "PREF_DOWN_SLIDE_EVENT";
 
 //EXTRA_TYPE
   public static final String EXTRA_TYPE = "EXTRA_TYPE";
 //double click
-  public static final int NONE = 0;
-  public static final int HOME = 1;
-  public static final int LOCK_SCREEN = 2;
-  public static final int ROOT_LOCK_SCREEN = 3;
+//  public static final int NONE = 0;
+//  public static final int HOME = 1;
+//  public static final int LOCK_SCREEN = 2;
+//  public static final int ROOT_LOCK_SCREEN = 3;
 
   //left right
   public static final int RECENT_APPS = 0;
   public static final int LAST_APPS = 1;
   public static final int HIDE = 2;
+  public static final int NONE = 3;
+  public static final int HOME = 4;
+  public static final int LOCK_SCREEN = 5;
+  public static final int ROOT_LOCK_SCREEN = 6;
+  public static final int NOTIFICATION = 7;
 
 //  public static final Map<Integer,Integer>LEFT_RIGHT_MAP;
 //  static
