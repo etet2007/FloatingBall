@@ -12,14 +12,12 @@ import com.squareup.leakcanary.LeakCanary;
  */
 
 public class App extends Application {
-    private static App mInstance;
+//    private static App mInstance;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mInstance = this;
-        registerFontIcons();
-        initialiseStorage();
+//        mInstance = this;
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
@@ -31,13 +29,4 @@ public class App extends Application {
 
     }
 
-    private void initialiseStorage() {
-//        Prefs.init(this);
-    }
-
-    private void registerFontIcons() {
-//        Iconics.registerFont(new GoogleMaterial());
-//        Iconics.registerFont(new CommunityMaterial());
-//        Iconics.registerFont(new FontAwesome());
-    }
 }

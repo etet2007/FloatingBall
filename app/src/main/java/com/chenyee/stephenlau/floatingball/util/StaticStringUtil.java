@@ -8,7 +8,7 @@ import java.util.Map;
  */
 
 public class StaticStringUtil {
-//  PREF
+// PREF
   public static final String PREF_OPACITY = "PREF_OPACITY";
   public static final String PREF_SIZE = "PREF_SIZE";
   public static final String PREF_USE_BACKGROUND = "PREF_USE_BACKGROUND";
@@ -28,13 +28,7 @@ public class StaticStringUtil {
 
 //EXTRA_TYPE
   public static final String EXTRA_TYPE = "EXTRA_TYPE";
-//double click
-//  public static final int NONE = 0;
-//  public static final int HOME = 1;
-//  public static final int LOCK_SCREEN = 2;
-//  public static final int ROOT_LOCK_SCREEN = 3;
 
-  //left right
   public static final int RECENT_APPS = 0;
   public static final int LAST_APPS = 1;
   public static final int HIDE = 2;
@@ -44,12 +38,4 @@ public class StaticStringUtil {
   public static final int ROOT_LOCK_SCREEN = 6;
   public static final int NOTIFICATION = 7;
 
-//  public static final Map<Integer,Integer>LEFT_RIGHT_MAP;
-//  static
-//  {
-//    LEFT_RIGHT_MAP = new HashMap<Integer, Integer>();
-//    LEFT_RIGHT_MAP.put(RECENT_APPS, 0);
-//    LEFT_RIGHT_MAP.put(LAST_APPS, 1);
-//    LEFT_RIGHT_MAP.put(LAST_APPS, 2);
-//  }
 }

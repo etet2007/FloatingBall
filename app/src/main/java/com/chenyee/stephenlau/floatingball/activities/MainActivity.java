@@ -91,11 +91,7 @@ public class MainActivity extends AppCompatActivity
     public static Intent getStartIntent(Context context) {
         return new Intent(context, MainActivity.class);
     }
-    //使用iconics自动解析xml中的表情
-//    @Override
-//    protected void attachBaseContext(Context newBase) {
-//        super.attachBaseContext(IconicsContextWrapper.wrap(newBase));
-//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
