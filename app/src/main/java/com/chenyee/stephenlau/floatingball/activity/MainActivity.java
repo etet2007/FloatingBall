@@ -2,6 +2,8 @@ package com.chenyee.stephenlau.floatingball.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,8 +43,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.artitk.licensefragment.ListViewLicenseFragment;
+import com.artitk.licensefragment.model.LicenseID;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.fragment.SettingFragment;
+import com.chenyee.stephenlau.floatingball.util.ActivityUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -69,32 +75,10 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     @BindView(R.id.start_switch)
     SwitchCompat ballSwitch;
-    @BindView(R.id.opacity_seekbar)
-    DiscreteSeekBar opacitySeekBar;
-    @BindView(R.id.size_seekbar)
-    DiscreteSeekBar sizeSeekBar;
-    @BindView(R.id.choosePic_button)
-    Button choosePicButton;
-    @BindView(R.id.background_switch)
-    SwitchCompat backgroundSwitch;
-    @BindView(R.id.upDistance_seekbar)
-    DiscreteSeekBar upDistanceSeekBar;
-    @BindView(R.id.use_gray_background_switch)
-    SwitchCompat useGrayBackgroundSwitch;
+
     @BindView(R.id.materialup_profile_image)
     ImageView mProfileImage;
 
-    @BindView(R.id.double_click_textView)
-    AppCompatTextView doubleClickTextView;
-    @BindView(R.id.left_slide_textView)
-    AppCompatTextView leftSlideTextView;
-    @BindView(R.id.up_slide_textView)
-    AppCompatTextView upSlideTextView;
-    @BindView(R.id.down_slide_textView)
-    AppCompatTextView downSlideTextView;
-    @BindView(R.id.right_slide_textView)
-    AppCompatTextView rightSlideTextView;
-    //参数
     private SharedPreferences prefs;
 
     //调用系统相册-选择图片
@@ -114,19 +98,19 @@ public class MainActivity extends AppCompatActivity
 
         //初始化toolbar等
         initFrameViews();
-        //初始化view
-        initContentViews();
-        //申请DrawOverlays权限
-        requestDrawOverlaysPermission();
 
+        FragmentManager fragmentManager = getFragmentManager();
+            SettingFragment settingFragment =
+                    (SettingFragment) fragmentManager.findFragmentById(R.id.contentFrame);
+            if (settingFragment == null) {
+                settingFragment = SettingFragment.newInstance();
+                ActivityUtils.addFragmentToActivity(fragmentManager,settingFragment,R.id.contentFrame);
+            }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (prefs.getBoolean(PREF_HAS_ADDED_BALL, false)) {
-            addFloatBall();
-        }
     }
 
     @Override
@@ -251,6 +235,14 @@ public class MainActivity extends AppCompatActivity
                     .setType("text/plain")
                     .putExtra(Intent.EXTRA_TEXT, getString(R.string.GITHUB_REPO_RELEASE_URL));
             startActivity(Intent.createChooser(textIntent, "shared"));
+        } else if (id == R.id.nav_license) {
+
+            FragmentManager fragmentManager = getFragmentManager();
+//            ListViewLicenseFragment listViewLicenseFragment = (ListViewLicenseFragment) fragmentManager.findFragmentById(R.id.contentFrame);
+//            if (listViewLicenseFragment == null) {
+            ListViewLicenseFragment listViewLicenseFragment = ListViewLicenseFragment.newInstance(new int[] { LicenseID.RETROFIT });
+                ActivityUtils.addFragmentToActivity(fragmentManager,listViewLicenseFragment,R.id.contentFrame);
+//            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -292,6 +284,23 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //悬浮球的开关
+        ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    addFloatBall();
+                    Snackbar.make(buttonView, R.string.add_ball_hint, Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                } else {
+                    removeFloatBall();
+                    Snackbar.make(buttonView, R.string.remove_ball_hint, Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                }
+                updateViewsState(isChecked);
+            }
+        });
+
         // Set up the ActionBarDrawerToggle.
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -311,191 +320,29 @@ public class MainActivity extends AppCompatActivity
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-    }
 
-
-    private void requestDrawOverlaysPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            //Setting :The Settings provider contains global system-level device preferences.
-            //Checks if the specified context can draw on top of other apps. As of API level 23,
-            // an app cannot draw on top of other apps unless it declares the SYSTEM_ALERT_WINDOW permission
-            // in its manifest, and the user specifically grants the app this capability.
-            // To prompt the user to grant this approval, the app must send an intent with the action
-            // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
-            if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivityForResult(intent, 1);
-                Toast.makeText(this, "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
-    private void initContentViews() {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        opacitySeekBar.setProgress(prefs.getInt(PREF_OPACITY, 125));
-        sizeSeekBar.setProgress(prefs.getInt(PREF_SIZE, 25));
-        backgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_BACKGROUND, false));
-        useGrayBackgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_GRAY_BACKGROUND, true));
-
-        updateFunctionList();
-
         boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
-        Log.d(TAG, "hasAddedBall: " + hasAddedBall);
-        //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
-        //悬浮球的开关
-        ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    addFloatBall();
-                    Snackbar.make(buttonView, R.string.add_ball_hint, Snackbar.LENGTH_SHORT)
-                            .setAction("Action", null).show();
-                } else {
-                    removeFloatBall();
-                    Snackbar.make(buttonView, R.string.remove_ball_hint, Snackbar.LENGTH_SHORT)
-                            .setAction("Action", null).show();
-                }
-                updateViewsState(isChecked);
-            }
-        });
 
-        opacitySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-            @Override
-            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_OPACITY, value);
-                editor.apply();
-                sendUpdateIntentToService();
-            }
-
-            @Override
-            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-        });
-        sizeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-            @Override
-            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_SIZE, value);
-                editor.apply();
-                sendUpdateIntentToService();
-            }
-
-            @Override
-            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-        });
-
-        upDistanceSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-            @Override
-            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_MOVE_UP_DISTANCE, value);
-                editor.apply();
-                sendUpdateIntentToService();
-            }
-
-            @Override
-            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-        });
-        backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(PREF_USE_BACKGROUND, isChecked);
-                editor.apply();
-                sendUpdateIntentToService();
-            }
-        });
-        choosePicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //检查权限 请求权限 选图片
-                requestStoragePermission();
-
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, IMAGE);//onActivityResult
-            }
-        });
-        useGrayBackgroundSwitch
-                .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putBoolean(PREF_USE_GRAY_BACKGROUND, isChecked);
-                        editor.apply();
-                        sendUpdateIntentToService();
-                    }
-                });
-    }
-
-    private void updateFunctionList() {
-        Resources res = getResources();
-        String[] functionList = res.getStringArray(R.array.function_array);
-        int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, NONE);
-        doubleClickTextView.setText(functionList[doubleClickEvent]);
-
-        int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
-        rightSlideTextView.setText(functionList[rightSlideEvent]);
-
-        int leftSlideEvent = prefs.getInt(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
-        leftSlideTextView.setText(functionList[leftSlideEvent]);
-
-        int upSlideEvent = prefs.getInt(PREF_UP_SLIDE_EVENT, HOME);
-        upSlideTextView.setText(functionList[upSlideEvent]);
-
-        int downSlideEvent = prefs.getInt(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
-        downSlideTextView.setText(functionList[downSlideEvent]);
     }
 
     private void updateViewsState(boolean hasAddedBall) {
         if (hasAddedBall) {
             fab.setImageAlpha(255);
             ballSwitch.setChecked(true);
-            opacitySeekBar.setEnabled(true);
-            sizeSeekBar.setEnabled(true);
-            choosePicButton.setEnabled(true);
-            backgroundSwitch.setEnabled(true);
-            upDistanceSeekBar.setEnabled(true);
-            useGrayBackgroundSwitch.setEnabled(true);
         } else {
             fab.setImageAlpha(40);
             ballSwitch.setChecked(false);
-            opacitySeekBar.setEnabled(false);
-            sizeSeekBar.setEnabled(false);
-            choosePicButton.setEnabled(false);
-            backgroundSwitch.setEnabled(false);
-            upDistanceSeekBar.setEnabled(false);
-            useGrayBackgroundSwitch.setEnabled(false);
         }
-    }
+        FragmentManager fragmentManager = getFragmentManager();
+        SettingFragment settingFragment =
+                (SettingFragment) fragmentManager.findFragmentById(R.id.contentFrame);
+        if (settingFragment != null) {
+            settingFragment.updateViewsState(hasAddedBall);
+        }
 
-    private void sendUpdateIntentToService() {
-        Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
-        Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
-        intent.putExtras(data);
-        startService(intent);
     }
-
 
     private void requestStoragePermission() {
         String[] PERMISSIONS_STORAGE = {
@@ -531,39 +378,39 @@ public class MainActivity extends AppCompatActivity
         startService(intent);
     }
 
-    @OnClick({R.id.double_click_function,
-            R.id.left_function,
-            R.id.right_function,
-            R.id.up_function,
-            R.id.down_function
-    })
-    public void onDoubleClickClicked(View view) {
-        if (view.getId() == R.id.double_click_function) {
-            showFunctionDialog(R.string.double_click_title, PREF_DOUBLE_CLICK_EVENT);
-        } else if (view.getId() == R.id.left_function) {
-            showFunctionDialog(R.string.left_slide_title, PREF_LEFT_SLIDE_EVENT);
-        } else if (view.getId() == R.id.right_function) {
-            showFunctionDialog(R.string.right_slide_title, PREF_RIGHT_SLIDE_EVENT);
-        } else if (view.getId() == R.id.up_function) {
-            showFunctionDialog(R.string.up_slide_title, PREF_UP_SLIDE_EVENT);
-        } else if (view.getId() == R.id.down_function) {
-            showFunctionDialog(R.string.down_slide_title, PREF_DOWN_SLIDE_EVENT);
-        }
-    }
-
-    private void showFunctionDialog(int titleId, final String prefKey) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(titleId)
-                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt(prefKey, which);
-                        editor.apply();
-
-                        sendUpdateIntentToService();
-
-                        updateFunctionList();
-                    }
-                }).show();
-    }
+//    @OnClick({R.id.double_click_function,
+//            R.id.left_function,
+//            R.id.right_function,
+//            R.id.up_function,
+//            R.id.down_function
+//    })
+//    public void onDoubleClickClicked(View view) {
+//        if (view.getId() == R.id.double_click_function) {
+//            showFunctionDialog(R.string.double_click_title, PREF_DOUBLE_CLICK_EVENT);
+//        } else if (view.getId() == R.id.left_function) {
+//            showFunctionDialog(R.string.left_slide_title, PREF_LEFT_SLIDE_EVENT);
+//        } else if (view.getId() == R.id.right_function) {
+//            showFunctionDialog(R.string.right_slide_title, PREF_RIGHT_SLIDE_EVENT);
+//        } else if (view.getId() == R.id.up_function) {
+//            showFunctionDialog(R.string.up_slide_title, PREF_UP_SLIDE_EVENT);
+//        } else if (view.getId() == R.id.down_function) {
+//            showFunctionDialog(R.string.down_slide_title, PREF_DOWN_SLIDE_EVENT);
+//        }
+//    }
+//
+//    private void showFunctionDialog(int titleId, final String prefKey) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//        builder.setTitle(titleId)
+//                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        SharedPreferences.Editor editor = prefs.edit();
+//                        editor.putInt(prefKey, which);
+//                        editor.apply();
+//
+//                        sendUpdateIntentToService();
+//
+//                        updateFunctionList();
+//                    }
+//                }).show();
+//    }
 }

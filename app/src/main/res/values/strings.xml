@@ -12,7 +12,7 @@
     <string name="opacity">Opacity</string>
     <string name="size">Size</string>
     <string name="use_background_picture">Use background picture?</string>
-    <string name="choose_picture">Choose picture</string>
+    <string name="choose_picture">Choose background picture</string>
     <string name="upDistance">Move up distance</string>
 
     <string name="openAccessibility">Please open accessibility of FloatingBall</string>
@@ -20,6 +20,8 @@
 
     <string name="communicate">Communicate</string>
     <string name="share">Share the release link</string>
+    <string name="license">License</string>
+
     <!--<string name="title_activity_permission">PermissionActivity</string>-->
     <string name="drawoverlays_permission">DrawOverlays permission</string>
     <string name="request_accessibility">Request accessibility</string>
@@ -38,7 +40,7 @@
 
     <string name="down_slide_title">Down slide</string>
     <string name="down_slide">Down slide:</string>
-    
+
     <string name="use_gray_background">Use gray background?</string>
 
     <string name="home">Home</string>
@@ -58,4 +60,7 @@
     <string name="version_textview">Version:%s</string>
     <string name="add_ball_hint">Add floating ball.</string>
     <string name="remove_ball_hint">Remove floating ball.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

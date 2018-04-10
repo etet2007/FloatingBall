@@ -28,6 +28,9 @@
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/share"/>
 
-
+    <item
+        android:id="@+id/nav_license"
+        android:icon="@drawable/ic_menu_share"
+        android:title="@string/license"/>
 
 </menu>

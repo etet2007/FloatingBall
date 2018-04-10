@@ -48,11 +48,15 @@ public class FloatingBallView extends View {
 
 
     //手势的状态，虽然官方不推荐使用enum
-    private enum GESTURE_STATE {
-        UP, DOWN, LEFT, RIGHT,NONE
-    }
-    private GESTURE_STATE currentGestureSTATE;
-    private GESTURE_STATE lastGestureSTATE = GESTURE_STATE.NONE;
+    private static final int UP = 1;
+    private static final int DOWN = 2;
+    private static final int LEFT = 3;
+    private static final int RIGHT = 4;
+    private static final int NONE = 5;
+
+
+    private int currentGestureSTATE;
+    private int lastGestureSTATE = NONE;
 
     //球半径、背景半径
     private float ballRadius=25;
@@ -67,8 +71,6 @@ public class FloatingBallView extends View {
     private float ballCenterX=0;
 
     //function
-    private int doubleClickEvent;
-
     private FunctionListener mDownFunctionListener;
     private FunctionListener mUpFunctionListener;
     private FunctionListener mLeftFunctionListener;
@@ -504,8 +506,8 @@ public class FloatingBallView extends View {
                     doGesture();
                     //球移动动画
                     moveFloatBallBack();
-                    currentGestureSTATE = GESTURE_STATE.NONE;
-                    lastGestureSTATE = GESTURE_STATE.NONE;
+                    currentGestureSTATE = NONE;
+                    lastGestureSTATE = NONE;
                     isScrolling=false;
                 }
                 isLongPress=false;
@@ -606,13 +608,13 @@ public class FloatingBallView extends View {
             double angle = Math.atan2(deltaY, deltaX);
             //判断currentGestureSTATE
             if (angle > -Math.PI/4 && angle < Math.PI/4) {
-                currentGestureSTATE = GESTURE_STATE.RIGHT;
+                currentGestureSTATE = RIGHT;
             } else if (angle > Math.PI/4 && angle < Math.PI*3/4) {
-                currentGestureSTATE = GESTURE_STATE.DOWN;
+                currentGestureSTATE = DOWN;
             } else  if (angle > -Math.PI*3/4 && angle < -Math.PI/4) {
-                currentGestureSTATE = GESTURE_STATE.UP;
+                currentGestureSTATE = UP;
             } else{
-                currentGestureSTATE = GESTURE_STATE.LEFT;
+                currentGestureSTATE = LEFT;
             }
             if(currentGestureSTATE != lastGestureSTATE){
                 moveFloatBall();

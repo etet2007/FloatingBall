@@ -21,21 +21,18 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
  * 管理FloatingBall的类。
  * 单例，因为只需要一个FloatingBallView
  */
-public class FloatBallManager {
-    private static final String TAG =FloatBallManager.class.getSimpleName();
+public class FloatingBallManager {
+    private static final String TAG =FloatingBallManager.class.getSimpleName();
 
-    private static FloatBallManager mFloatBallManager=new FloatBallManager();
-    private FloatBallManager(){}
-    public static FloatBallManager getInstance() {
-        return mFloatBallManager;
+    private static FloatingBallManager sFloatingBallManager =new FloatingBallManager();
+    private FloatingBallManager(){}
+    public static FloatingBallManager getInstance() {
+        return sFloatingBallManager;
     }
 
     // FloatingBallView
     private FloatingBallView mFloatingBallView;
     private FunctionUtil mFunctionUtil;
-
-    // WindowManager
-//    private WindowManager mWindowManager;
 
     private SharedPreferences defaultSharedPreferences;
     private boolean isOpenedBall;
@@ -49,7 +46,7 @@ public class FloatBallManager {
 
     // 创建BallView
     public void addBallView(Context context) {
-        Log.d(TAG, "FloatBallManager addBallView: ");
+        Log.d(TAG, "FloatingBallManager addBallView: ");
         if (mFloatingBallView == null) {
             mFloatingBallView = new FloatingBallView(context);
 
