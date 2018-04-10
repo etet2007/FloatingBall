@@ -6,6 +6,8 @@ import android.support.v4.view.LayoutInflaterCompat;
 
 import com.squareup.leakcanary.LeakCanary;
 
+import java.lang.ref.SoftReference;
+
 
 /**
  * Created by stephenlau on 18-2-24.

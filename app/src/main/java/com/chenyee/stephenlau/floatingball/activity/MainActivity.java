@@ -1,8 +1,7 @@
-package com.chenyee.stephenlau.floatingball.activities;
+package com.chenyee.stephenlau.floatingball.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,12 +41,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
 
-
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
-
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,8 +54,10 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,AppBarLayout.OnOffsetChangedListener {
-    private static final String TAG =MainActivity.class.getSimpleName();
+        implements NavigationView.OnNavigationItemSelectedListener,
+        AppBarLayout.OnOffsetChangedListener {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     //头像
     private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 40;
@@ -66,21 +65,35 @@ public class MainActivity extends AppCompatActivity
     private int mMaxScrollSize;
 
     //控件
-    @BindView(R.id.logo_fab) FloatingActionButton fab;
-    @BindView(R.id.start_switch) SwitchCompat ballSwitch;
-    @BindView(R.id.opacity_seekbar) DiscreteSeekBar opacitySeekBar;
-    @BindView(R.id.size_seekbar) DiscreteSeekBar sizeSeekBar;
-    @BindView(R.id.choosePic_button) Button choosePicButton;
-    @BindView(R.id.background_switch) SwitchCompat backgroundSwitch;
-    @BindView(R.id.upDistance_seekbar) DiscreteSeekBar upDistanceSeekBar;
-    @BindView(R.id.use_gray_background_switch) SwitchCompat useGrayBackgroundSwitch;
-    @BindView(R.id.materialup_profile_image) ImageView mProfileImage;
+    @BindView(R.id.logo_fab)
+    FloatingActionButton fab;
+    @BindView(R.id.start_switch)
+    SwitchCompat ballSwitch;
+    @BindView(R.id.opacity_seekbar)
+    DiscreteSeekBar opacitySeekBar;
+    @BindView(R.id.size_seekbar)
+    DiscreteSeekBar sizeSeekBar;
+    @BindView(R.id.choosePic_button)
+    Button choosePicButton;
+    @BindView(R.id.background_switch)
+    SwitchCompat backgroundSwitch;
+    @BindView(R.id.upDistance_seekbar)
+    DiscreteSeekBar upDistanceSeekBar;
+    @BindView(R.id.use_gray_background_switch)
+    SwitchCompat useGrayBackgroundSwitch;
+    @BindView(R.id.materialup_profile_image)
+    ImageView mProfileImage;
 
-    @BindView(R.id.double_click_textView)AppCompatTextView doubleClickTextView;
-    @BindView(R.id.left_slide_textView)AppCompatTextView leftSlideTextView;
-    @BindView(R.id.up_slide_textView)AppCompatTextView upSlideTextView;
-    @BindView(R.id.down_slide_textView)AppCompatTextView downSlideTextView;
-    @BindView(R.id.right_slide_textView)AppCompatTextView rightSlideTextView;
+    @BindView(R.id.double_click_textView)
+    AppCompatTextView doubleClickTextView;
+    @BindView(R.id.left_slide_textView)
+    AppCompatTextView leftSlideTextView;
+    @BindView(R.id.up_slide_textView)
+    AppCompatTextView upSlideTextView;
+    @BindView(R.id.down_slide_textView)
+    AppCompatTextView downSlideTextView;
+    @BindView(R.id.right_slide_textView)
+    AppCompatTextView rightSlideTextView;
     //参数
     private SharedPreferences prefs;
 
@@ -94,7 +107,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //ButterKnife
@@ -107,19 +119,12 @@ public class MainActivity extends AppCompatActivity
         //申请DrawOverlays权限
         requestDrawOverlaysPermission();
 
-        //申请Apps with usage access权限
-//        if (!hasPermission()) {
-//                //若用户未开启权限，则引导用户开启“Apps with usage access”权限
-//                startActivityForResult(
-//                        new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
-//                        MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
-//            }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(prefs.getBoolean(PREF_HAS_ADDED_BALL, false)){
+        if (prefs.getBoolean(PREF_HAS_ADDED_BALL, false)) {
             addFloatBall();
         }
     }
@@ -142,16 +147,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         //选取图片的回调
         if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
+            if(selectedImage==null)
+                return;
 
             String[] filePathColumns = {MediaStore.Images.Media.DATA};
             Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+            if (c == null) return;
 
-            if (c == null)
-                return;
             c.moveToFirst();
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
@@ -169,8 +174,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        if (mMaxScrollSize == 0)
+        if (mMaxScrollSize == 0) {
             mMaxScrollSize = appBarLayout.getTotalScrollRange();
+        }
 
         int percentage = (Math.abs(i)) * 100 / mMaxScrollSize;
 
@@ -192,10 +198,12 @@ public class MainActivity extends AppCompatActivity
                     .start();
         }
     }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==mREQUEST_external_storage){
+        if (requestCode == mREQUEST_external_storage) {
             //判断是否成功
             //            成功继续打开图片？
         }
@@ -250,18 +258,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
-    private boolean hasPermission() {
-        AppOpsManager appOps = (AppOpsManager)
-                getSystemService(Context.APP_OPS_SERVICE);
-        int mode = 0;
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                    android.os.Process.myUid(), getPackageName());
-        }
-        return mode == AppOpsManager.MODE_ALLOWED;
-    }
-
     private void initFrameViews() {
         // Set up the toolbar. 工具栏。
         Toolbar toolbar = findViewById(R.id.materialup_toolbar);
@@ -272,9 +268,11 @@ public class MainActivity extends AppCompatActivity
         ab.setDisplayShowTitleEnabled(false);
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override public boolean onMenuItemClick(MenuItem item) {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
                 //只有一个，所以不用判断
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.GITHUB_REPO_URL)));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(getString(R.string.GITHUB_REPO_URL)));
                 startActivity(browserIntent);
                 return true;
             }
@@ -307,8 +305,9 @@ public class MainActivity extends AppCompatActivity
         try {
             PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
             String version = pi.versionName;
-            TextView versionTextView = navigationView.getHeaderView(0).findViewById(R.id.version_textView);
-            versionTextView.setText(String.format(getString(R.string.version_textview),version));
+            TextView versionTextView = navigationView.getHeaderView(0)
+                    .findViewById(R.id.version_textView);
+            versionTextView.setText(String.format(getString(R.string.version_textview), version));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -325,13 +324,12 @@ public class MainActivity extends AppCompatActivity
             // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
             if (!Settings.canDrawOverlays(this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivityForResult(intent, 1);
                 Toast.makeText(this, "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
 
 
     private void initContentViews() {
@@ -345,20 +343,20 @@ public class MainActivity extends AppCompatActivity
         updateFunctionList();
 
         boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
-        Log.d(TAG, "hasAddedBall: "+hasAddedBall);
+        Log.d(TAG, "hasAddedBall: " + hasAddedBall);
         //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
         //悬浮球的开关
         ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     addFloatBall();
-                    Snackbar.make(buttonView, "Add floating ball.", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(buttonView, R.string.add_ball_hint, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
-                }else{
+                } else {
                     removeFloatBall();
-                    Snackbar.make(buttonView, "Remove floating ball.", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(buttonView, R.string.remove_ball_hint, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }
                 updateViewsState(isChecked);
@@ -369,13 +367,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_OPACITY,value);
+                editor.putInt(PREF_OPACITY, value);
                 editor.apply();
                 sendUpdateIntentToService();
             }
+
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
             }
+
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
             }
@@ -384,13 +384,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_SIZE,value);
+                editor.putInt(PREF_SIZE, value);
                 editor.apply();
                 sendUpdateIntentToService();
             }
+
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
             }
+
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
             }
@@ -400,7 +402,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_MOVE_UP_DISTANCE,value);
+                editor.putInt(PREF_MOVE_UP_DISTANCE, value);
                 editor.apply();
                 sendUpdateIntentToService();
             }
@@ -417,7 +419,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(PREF_USE_BACKGROUND,isChecked);
+                editor.putBoolean(PREF_USE_BACKGROUND, isChecked);
                 editor.apply();
                 sendUpdateIntentToService();
             }
@@ -433,19 +435,20 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, IMAGE);//onActivityResult
             }
         });
-        useGrayBackgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(PREF_USE_GRAY_BACKGROUND,isChecked);
-                editor.apply();
-                sendUpdateIntentToService();
-            }
-        });
+        useGrayBackgroundSwitch
+                .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putBoolean(PREF_USE_GRAY_BACKGROUND, isChecked);
+                        editor.apply();
+                        sendUpdateIntentToService();
+                    }
+                });
     }
 
     private void updateFunctionList() {
-        Resources res =getResources();
+        Resources res = getResources();
         String[] functionList = res.getStringArray(R.array.function_array);
         int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, NONE);
         doubleClickTextView.setText(functionList[doubleClickEvent]);
@@ -464,7 +467,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateViewsState(boolean hasAddedBall) {
-        if(hasAddedBall) {
+        if (hasAddedBall) {
             fab.setImageAlpha(255);
             ballSwitch.setChecked(true);
             opacitySeekBar.setEnabled(true);
@@ -473,7 +476,7 @@ public class MainActivity extends AppCompatActivity
             backgroundSwitch.setEnabled(true);
             upDistanceSeekBar.setEnabled(true);
             useGrayBackgroundSwitch.setEnabled(true);
-        }else{
+        } else {
             fab.setImageAlpha(40);
             ballSwitch.setChecked(false);
             opacitySeekBar.setEnabled(false);
@@ -499,7 +502,8 @@ public class MainActivity extends AppCompatActivity
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         };
-        int permission = ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permission = ActivityCompat
+                .checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
@@ -522,100 +526,44 @@ public class MainActivity extends AppCompatActivity
     private void removeFloatBall() {
         Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_DEL);
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE);
         intent.putExtras(data);
         startService(intent);
     }
 
-    //双击功能选择
-    @OnClick(R.id.double_click_function)
+    @OnClick({R.id.double_click_function,
+            R.id.left_function,
+            R.id.right_function,
+            R.id.up_function,
+            R.id.down_function
+    })
     public void onDoubleClickClicked(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.double_click_title)
-                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt(PREF_DOUBLE_CLICK_EVENT,which);
-                        editor.apply();
-
-                        sendUpdateIntentToService();
-
-                        updateFunctionList();
-                    }
-                });
-        builder.show();
+        if (view.getId() == R.id.double_click_function) {
+            showFunctionDialog(R.string.double_click_title, PREF_DOUBLE_CLICK_EVENT);
+        } else if (view.getId() == R.id.left_function) {
+            showFunctionDialog(R.string.left_slide_title, PREF_LEFT_SLIDE_EVENT);
+        } else if (view.getId() == R.id.right_function) {
+            showFunctionDialog(R.string.right_slide_title, PREF_RIGHT_SLIDE_EVENT);
+        } else if (view.getId() == R.id.up_function) {
+            showFunctionDialog(R.string.up_slide_title, PREF_UP_SLIDE_EVENT);
+        } else if (view.getId() == R.id.down_function) {
+            showFunctionDialog(R.string.down_slide_title, PREF_DOWN_SLIDE_EVENT);
+        }
     }
 
-    @OnClick(R.id.left_function)
-    public void onLeft_function(View view){
+    private void showFunctionDialog(int titleId, final String prefKey) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.left_slide_title)
+        builder.setTitle(titleId)
                 .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt(PREF_LEFT_SLIDE_EVENT,which);
-                        editor.apply();
-
-                        sendUpdateIntentToService();
-
-                        updateFunctionList();
-
-                    }
-                });
-        builder.show();
-    }
-
-    @OnClick(R.id.right_function)
-    public void onRight_function(View view){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.right_slide_title)
-                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt(PREF_RIGHT_SLIDE_EVENT,which);
-                        editor.apply();
-                        Log.d(TAG, "onClick: "+which);
-                        sendUpdateIntentToService();
-
-                        updateFunctionList();
-
-                    }
-                });
-        builder.show();
-    }
-    @OnClick(R.id.up_function)
-    public void onUp_function(View view){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.up_slide_title)
-                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt(PREF_UP_SLIDE_EVENT,which);
-                        editor.apply();
-
-                        sendUpdateIntentToService();
-
-                        updateFunctionList();
-
-                    }
-                });
-        builder.show();
-    }
-    @OnClick(R.id.down_function)
-    public void onDown_function(View view){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.down_slide_title)
-                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt(PREF_DOWN_SLIDE_EVENT,which);
+                        editor.putInt(prefKey, which);
                         editor.apply();
 
                         sendUpdateIntentToService();
 
                         updateFunctionList();
                     }
-                });
-        builder.show();
+                }).show();
     }
 }

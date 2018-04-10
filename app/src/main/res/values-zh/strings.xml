@@ -3,19 +3,18 @@
     <string name="GITHUB_REPO_URL">https://github.com/etet2007/FloatingBall</string>
     <string name="GITHUB_REPO_RELEASE_URL">https://github.com/etet2007/FloatingBall/releases</string>
 
-
     <string name="app_name">悬浮球</string>
 
     <string name="navigation_drawer_open">打开导航抽屉</string>
     <string name="navigation_drawer_close">关闭导航抽屉</string>
-
 
     <string name="accessibility">开启悬浮球辅助功能</string>
     <string name="on_off">开/关:</string>
     <string name="opacity">透明度</string>
     <string name="size">大小</string>
     <string name="use_background_picture">是否使用背景图片</string>
-        <string name="choose_picture">选择图片</string>
+    <string name="choose_picture">选择图片</string>
+
     <string name="upDistance">上移距离</string>
 
     <string name="openAccessibility">请开启悬浮球辅助功能</string>
@@ -27,7 +26,7 @@
     <string name="request_accessibility">打开辅助功能</string>
 
     <string name="drawoverlays_permission">允许出现在其他应用上</string>
-    <string name="active_device_administrator">激活设备管理器</string>
+    <string name="active_device_administrator">激活设备管理器(用于锁屏)</string>
 
 
     <string name="double_click_title">双击</string>
@@ -48,7 +47,7 @@
     <string name="use_gray_background">是否显示灰色背景</string>
 
     <string name="home">桌面</string>
-    <string name="lockScreen">锁屏</string>
+    <string name="lock_screen">锁屏</string>
     <string name="rootLockScreen">Root锁屏</string>
     <string name="none">无</string>
     <string name="recent_apps">任务列表</string>
@@ -56,8 +55,11 @@
     <string name="hide">隐藏</string>
     <string name="notification">打开通知栏</string>
 
-    <string name="hideNotificationContentTitle">隐藏中</string>
+    <string name="hide_notification_content_title">隐藏中</string>
     <string name="hideNotificationContentText">点击重启。</string>
 
     <string name="version_textview">版本:%s</string>
+
+    <string name="add_ball_hint">添加悬浮球</string>
+    <string name="remove_ball_hint">移除悬浮球</string>
 </resources>

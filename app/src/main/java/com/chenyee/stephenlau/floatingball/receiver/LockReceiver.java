@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.receiver;
 
 import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.content.Intent;
 /**
  * Created by lqtian on 2017/9/29.
  */
-
+//在manifests中声明好就可以
 //android:permission="android.permission.BIND_DEVICE_ADMIN" >
 //  <meta-data
 //          android:name="android.app.device_admin"
@@ -17,16 +17,5 @@ import android.content.Intent;
 //          </intent-filter>
 
 public class LockReceiver extends DeviceAdminReceiver {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
-    }
-    @Override
-    public void onEnabled(Context context, Intent intent) {
-        super.onEnabled(context, intent);
-    }
-    @Override
-    public void onDisabled(Context context, Intent intent) {
-        super.onDisabled(context, intent);
-    }
+
 }

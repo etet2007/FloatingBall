@@ -20,11 +20,11 @@ public class StaticStringUtil {
   public static final String PREF_PARAM_Y = "PREF_PARAM_Y";
   public static final String PREF_MOVE_UP_DISTANCE = "PREF_MOVE_UP_DISTANCE";
 
-  public static final String PREF_DOUBLE_CLICK_EVENT = "PREF_DOUBLE_CLICK_EVENT";
-  public static final String PREF_RIGHT_SLIDE_EVENT = "PREF_RIGHT_SLIDE_EVENT";
-  public static final String PREF_LEFT_SLIDE_EVENT = "PREF_LEFT_SLIDE_EVENT";
-  public static final String PREF_UP_SLIDE_EVENT = "PREF_UP_SLIDE_EVENT";
-  public static final String PREF_DOWN_SLIDE_EVENT = "PREF_DOWN_SLIDE_EVENT";
+  public static final String PREF_DOUBLE_CLICK_EVENT = "DOUBLE_CLICK_EVENT";
+  public static final String PREF_RIGHT_SLIDE_EVENT = "RIGHT_SLIDE_EVENT";
+  public static final String PREF_LEFT_SLIDE_EVENT = "LEFT_SLIDE_EVENT";
+  public static final String PREF_UP_SLIDE_EVENT = "UP_SLIDE_EVENT";
+  public static final String PREF_DOWN_SLIDE_EVENT = "DOWN_SLIDE_EVENT";
 
 //EXTRA_TYPE
   public static final String EXTRA_TYPE = "EXTRA_TYPE";

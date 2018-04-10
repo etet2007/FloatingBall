@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.floatBall;
 
 /**
  * Created by stephenlau on 18-3-13.

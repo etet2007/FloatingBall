@@ -3,8 +3,8 @@ package com.chenyee.stephenlau.floatingball.util;
 import android.accessibilityservice.AccessibilityService;
 import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.FunctionListener;
-import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatBall.FunctionListener;
+import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 
 import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
 

@@ -7,7 +7,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-
     <string name="accessibility">Floating ball accessibility.</string>
     <string name="on_off">On/Off:</string>
     <string name="opacity">Opacity</string>
@@ -24,8 +23,6 @@
     <!--<string name="title_activity_permission">PermissionActivity</string>-->
     <string name="drawoverlays_permission">DrawOverlays permission</string>
     <string name="request_accessibility">Request accessibility</string>
-
-    <string name="active_device_administrator">Active device administrator</string>
 
     <string name="double_click_title">Double click</string>
     <string name="double_click">Double click:</string>
@@ -45,7 +42,7 @@
     <string name="use_gray_background">Use gray background?</string>
 
     <string name="home">Home</string>
-    <string name="lockScreen">Lock screen</string>
+    <string name="lock_screen">Lock screen</string>
     <string name="rootLockScreen">Root lock screen</string>
     <string name="none">None</string>
     <string name="recent_apps">Recent apps</string>
@@ -55,8 +52,10 @@
 
 
     <!--<string name="compose_shortcut_short_label1">1</string>-->
-    <string name="hideNotificationContentTitle">Hiding</string>
+    <string name="hide_notification_content_title">Hiding</string>
     <string name="hideNotificationContentText">Click to bring it back.</string>
 
     <string name="version_textview">Version:%s</string>
+    <string name="add_ball_hint">Add floating ball.</string>
+    <string name="remove_ball_hint">Remove floating ball.</string>
 </resources>

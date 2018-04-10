@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.services;
+package com.chenyee.stephenlau.floatingball.floatBall;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.ActivityManager;
@@ -21,7 +21,6 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InputMethodManager;
 
-import com.chenyee.stephenlau.floatingball.FloatBallManager;
 import com.chenyee.stephenlau.floatingball.R;
 
 import java.lang.reflect.Method;
@@ -29,28 +28,27 @@ import java.util.List;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ADDED_BALL;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ROTATE_HIDE_BALL;
 
 
 /**
- * Accessibility services should only be used to assist users with disabilities in using Android devices and apps.
- *  Such a service can optionally随意地 request the capability能力 for querying the content of the active window.
+ * Accessibility services should only be used to assist users with disabilities in using Android
+ * devices and apps.
+ * Such a service can optionally随意地 request the capability能力 for querying the content of the
+ * active window.
  *
  * Accept the intent from Main activity,
  * Created by wangxiandeng on 2016/11/25.
  */
 
 public class FloatingBallService extends AccessibilityService {
-    private static final String TAG =FloatingBallService.class.getSimpleName();
+    private static final String TAG = FloatingBallService.class.getSimpleName();
 
     public static final int TYPE_ADD = 0;
-    public static final int TYPE_DEL = 1;
-    public static final int TYPE_IMAGE =2;
-    public static final int TYPE_USE_BACKGROUND =4;
-    public static final int TYPE_UPDATE_DATA =5;
+    public static final int TYPE_REMOVE = 1;
+    public static final int TYPE_IMAGE = 2;
+    public static final int TYPE_UPDATE_DATA = 5;
 
     private FloatBallManager mFloatBallManager;
-//    private NotificationManager mNotificationManager;
 
     private boolean hasSoftKeyboardShow=false;
     boolean hasRotatedBall = false;
@@ -69,10 +67,17 @@ public class FloatingBallService extends AccessibilityService {
         }
     }
 
-    private void addBallViewAndSaveState() {
-        mFloatBallManager.addBallView(FloatingBallService.this);
-        mFloatBallManager.setOpenedBall(true);
-        mFloatBallManager.saveFloatBallData();
+    @Override
+    public void onInterrupt() {
+        Log.d(TAG, "onInterrupt: ");
+        if(mFloatBallManager!=null) mFloatBallManager.saveFloatingBallState();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+        if(mFloatBallManager!=null) mFloatBallManager.saveFloatingBallState();
     }
 
     /**
@@ -91,15 +96,7 @@ public class FloatingBallService extends AccessibilityService {
         if(!hasAddBall)
             return;
 
-        inputMethodSate(getApplicationContext());
-
-        //full screen detect
-//        mFloatBallManager.getLocation();
-//        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-//        Log.d(TAG, "onAccessibilityEvent: flags: "+windowManager.getDefaultDisplay().getFlags());
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            Log.d(TAG, "onAccessibilityEvent: Mode: " + windowManager.getDefaultDisplay().getMode());
-//        }
+        inputMethodDetect(getApplicationContext());
 
         // Rotate screen detect
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -119,7 +116,7 @@ public class FloatingBallService extends AccessibilityService {
      * According to the state of input method, move the floatingBall view.
      * @param context Context
      */
-    private void inputMethodSate(Context context) {
+    private void inputMethodDetect(Context context) {
         //得到默认输入法包名
         boolean isInputing = false;
         if(android.os.Build.VERSION.SDK_INT > 20) {//Work
@@ -164,18 +161,6 @@ public class FloatingBallService extends AccessibilityService {
         }
     }
 
-    @Override
-    public void onInterrupt() {
-        Log.d(TAG, "onInterrupt: ");
-        mFloatBallManager.saveFloatBallData();
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
-        mFloatBallManager.saveFloatBallData();
-    }
-
     //    Called by the system every time a client explicitly starts the service by calling startService(Intent),
     // providing the arguments it supplied and a unique integer token representing the start request.
     // Do not call this method directly.
@@ -185,35 +170,35 @@ public class FloatingBallService extends AccessibilityService {
 
         if(intent != null ) {
             //mFloatBallManager的判断是因为生命周期有时候有问题
-            if(mFloatBallManager==null)
+            if (mFloatBallManager == null) {
                 mFloatBallManager = FloatBallManager.getInstance();
+            }
 
             Bundle data = intent.getExtras();
             if (data != null) {
                 int type = data.getInt(EXTRA_TYPE);
 
-                if (type == TYPE_ADD) {
-                    addBallViewAndSaveState();
-                }
-                if(type== TYPE_DEL){
-                    removeBallViewAndSaveData();
-                }
+                if (type == TYPE_ADD)  addBallViewAndSaveState();
+
+                if(type== TYPE_REMOVE) removeBallViewAndSaveData();
+
                 //intent中传图片地址，也可以换为sharedPreference吧
-                if (type == TYPE_IMAGE) {
-                    mFloatBallManager.setBackgroundPic(data.getString("imagePath"));
-                }
-                if(type == TYPE_UPDATE_DATA){
-                    mFloatBallManager.updateBallViewParameter();
-                }
+                if (type == TYPE_IMAGE) mFloatBallManager.setBackgroundPic(data.getString("imagePath"));
+
+                if(type == TYPE_UPDATE_DATA) mFloatBallManager.updateBallViewParameter();
             }
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
+    private void addBallViewAndSaveState() {
+        mFloatBallManager.addBallView(FloatingBallService.this);
+        mFloatBallManager.saveFloatingBallState();
+    }
+
     private void removeBallViewAndSaveData() {
         mFloatBallManager.removeBallView();
-        mFloatBallManager.setOpenedBall(false);
-        mFloatBallManager.saveFloatBallData();
+        mFloatBallManager.saveFloatingBallState();
     }
 
     public void hideBall(){
@@ -223,8 +208,9 @@ public class FloatingBallService extends AccessibilityService {
         removeBallViewAndSaveData();
         sendNotification();
     }
+
     private void sendNotification() {
-        String contentTitle = getString(R.string.hideNotificationContentTitle);
+        String contentTitle = getString(R.string.hide_notification_content_title);
         String contentText = getString(R.string.hideNotificationContentText);
         NotificationManager notificationManager  = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -254,7 +240,7 @@ public class FloatingBallService extends AccessibilityService {
                     .build();
             notificationManager.notify(1, notification);
 
-        }else{
+        } else {
             Notification notification = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.mipmap.ic_launcher_app)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))

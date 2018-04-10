@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.views;
+package com.chenyee.stephenlau.floatingball.floatBall;
 
 import android.accessibilityservice.AccessibilityService;
 import android.animation.Keyframe;
@@ -25,18 +25,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.FunctionListener;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
-import com.chenyee.stephenlau.floatingball.util.LockScreenUtil;
 import com.chenyee.stephenlau.floatingball.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HOME;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.LOCK_SCREEN;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_Y;
 

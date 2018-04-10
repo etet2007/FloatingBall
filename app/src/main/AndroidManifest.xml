@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!--读写-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!--开机启动-->
@@ -26,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <!--<intent-filter>-->
@@ -37,7 +38,7 @@
 
         <!-- 全局Service -->
         <service
-            android:name=".services.FloatingBallService"
+            android:name=".floatBall.FloatingBallService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService"/>
@@ -49,7 +50,7 @@
         </service>
 
         <activity
-            android:name=".activities.PermissionActivity"
+            android:name=".activity.PermissionActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -60,23 +61,25 @@
             </intent-filter>
             <meta-data android:name="android.app.shortcuts"
                        android:resource="@xml/shortcuts" />
-
         </activity>
 
+        <!--用于申请锁屏的权限-->
         <receiver
-            android:name=".LockReceiver"
+            android:name=".receiver.LockReceiver"
             android:description="@string/app_name"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_DEVICE_ADMIN" >
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/lock_screen" />
+
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".StartServiceAtBootReceiver">
+        <!--用于自启动-->
+        <receiver android:name=".receiver.StartServiceAtBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

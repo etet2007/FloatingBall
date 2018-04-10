@@ -1,6 +1,5 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.floatBall;
 
-import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
@@ -9,22 +8,14 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Surface;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.widget.Toast;
 
 
-import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
-import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.util.FunctionUtil;
-import com.chenyee.stephenlau.floatingball.util.RootUtil;
 import com.chenyee.stephenlau.floatingball.util.StaticStringUtil;
-import com.chenyee.stephenlau.floatingball.views.FloatingBallView;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
-
 
 /**
  * 管理FloatingBall的类。
@@ -33,7 +24,6 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 public class FloatBallManager {
     private static final String TAG =FloatBallManager.class.getSimpleName();
 
-    //单例
     private static FloatBallManager mFloatBallManager=new FloatBallManager();
     private FloatBallManager(){}
     public static FloatBallManager getInstance() {
@@ -53,11 +43,9 @@ public class FloatBallManager {
     public boolean isOpenedBall() {
         return isOpenedBall;
     }
-
     public void setOpenedBall(boolean openedBall) {
         isOpenedBall = openedBall;
     }
-
 
     // 创建BallView
     public void addBallView(Context context) {
@@ -65,11 +53,10 @@ public class FloatBallManager {
         if (mFloatingBallView == null) {
             mFloatingBallView = new FloatingBallView(context);
 
-            FloatingBallService floatingBallService = (FloatingBallService) context;
-
             WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-
             Point size = new Point();
+            if (windowManager == null) return;
+
             windowManager.getDefaultDisplay().getSize(size);
             int screenWidth = size.x;
             int screenHeight = size.y;
@@ -93,29 +80,26 @@ public class FloatBallManager {
             params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                     |LayoutParams.FLAG_NOT_FOCUSABLE
                     |LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    |LayoutParams.FLAG_LAYOUT_INSET_DECOR; //FLAG_LAYOUT_IN_SCREEN
+                    |LayoutParams.FLAG_LAYOUT_INSET_DECOR;
 
             //把引用传进去
             mFloatingBallView.setLayoutParams(params);
             //使用windowManager把ballView加进去
             windowManager.addView(mFloatingBallView, params);
 
-            mFunctionUtil=new FunctionUtil(floatingBallService);
-            mFloatingBallView.setUpFunctionListener(mFunctionUtil.homeFunctionListener);
-            mFloatingBallView.setLeftFunctionListener(mFunctionUtil.recentAppsFunctionListener);
-            mFloatingBallView.setRightFunctionListener(mFunctionUtil.recentAppsFunctionListener);
-            mFloatingBallView.setDownFunctionListener(mFunctionUtil.notificationFunctionListener);
-
+            mFunctionUtil=new FunctionUtil((FloatingBallService) context);
             updateBallViewParameter();
+
+            isOpenedBall = true;
         }
     }
 
     public void removeBallView() {
-        if (mFloatingBallView == null)
-            return;
+        if (mFloatingBallView == null) return;
         //动画
         mFloatingBallView.performRemoveAnimator();
         mFloatingBallView = null;
+        isOpenedBall = false;
     }
 
     /**
@@ -135,16 +119,10 @@ public class FloatBallManager {
     /**
      * 保存打开状态，位置。
      */
-    public void saveFloatBallData(){
+    public void saveFloatingBallState(){
         if(defaultSharedPreferences==null) return;
-
         SharedPreferences.Editor editor = defaultSharedPreferences.edit();
         editor.putBoolean(PREF_HAS_ADDED_BALL, isOpenedBall);
-
-//        LayoutParams params = mFloatingBallView.getLayoutParams();
-//        editor.putInt(PREF_PARAM_X,params.x);
-//        editor.putInt(PREF_PARAM_Y,params.y);
-
         editor.apply();
     }
 
@@ -220,36 +198,6 @@ public class FloatBallManager {
     public void moveBallViewDown() {
         if(mFloatingBallView !=null) mFloatingBallView.performMoveDownAnimator();
     }
-
-    public void hideBallView() {
-
-    }
-//    public void getLocation() {
-//        //是否全屏没什么变化
-//        int location[] = new int[2];
-//        if (mFloatingBallView != null) {
-//            mFloatingBallView.getLocationOnScreen(location);
-//            Log.d(TAG, "getLocation: "+location[0]+" "+location[1]);
-//            mFloatingBallView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-//                @Override
-//                public void onSystemUiVisibilityChange(int visibility) {
-//                    // Note that system bars will only be "visible" if none of the
-//                    // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
-//                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-//                        // TODO: The system bars are visible. Make any desired
-//                        // adjustments to your UI, such as showing the action bar or
-//                        // other navigational controls.
-//                        mFloatingBallView.performMoveUpAnimator();
-//                    } else {
-//                        // TODO: The system bars are NOT visible. Make any desired
-//                        // adjustments to your UI, such as hiding the action bar or
-//                        // other navigational controls.
-//                        mFloatingBallView.performMoveDownAnimator();
-//                    }
-//                }
-//            });
-//        }
-//    }
 
 }
 

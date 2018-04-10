@@ -1,12 +1,11 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.services.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 

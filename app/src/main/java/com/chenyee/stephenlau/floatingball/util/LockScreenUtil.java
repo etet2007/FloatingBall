@@ -4,12 +4,9 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
-import com.chenyee.stephenlau.floatingball.LockReceiver;
+import com.chenyee.stephenlau.floatingball.receiver.LockReceiver;
 import com.chenyee.stephenlau.floatingball.R;
-
-import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
 
 /**
  * Created by lqtian on 2018/2/7.
