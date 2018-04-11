@@ -5,27 +5,21 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
@@ -37,31 +31,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.artitk.licensefragment.ListViewLicenseFragment;
-import com.artitk.licensefragment.model.LicenseID;
+import com.artitk.licensefragment.ScrollViewLicenseFragment;
+import com.artitk.licensefragment.model.License;
+import com.artitk.licensefragment.model.LicenseType;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.fragment.SettingFragment;
 import com.chenyee.stephenlau.floatingball.util.ActivityUtils;
 
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        AppBarLayout.OnOffsetChangedListener {
+        implements AppBarLayout.OnOffsetChangedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -78,8 +69,6 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.materialup_profile_image)
     ImageView mProfileImage;
-
-    private SharedPreferences prefs;
 
     //调用系统相册-选择图片
     private static final int IMAGE = 1;
@@ -100,12 +89,8 @@ public class MainActivity extends AppCompatActivity
         initFrameViews();
 
         FragmentManager fragmentManager = getFragmentManager();
-            SettingFragment settingFragment =
-                    (SettingFragment) fragmentManager.findFragmentById(R.id.contentFrame);
-            if (settingFragment == null) {
-                settingFragment = SettingFragment.newInstance();
-                ActivityUtils.addFragmentToActivity(fragmentManager,settingFragment,R.id.contentFrame);
-            }
+        SettingFragment settingFragment = SettingFragment.newInstance();
+        ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment, R.id.contentFrame);
     }
 
     @Override
@@ -224,32 +209,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_share) {
-            Intent textIntent = new Intent(Intent.ACTION_SEND)
-                    .setType("text/plain")
-                    .putExtra(Intent.EXTRA_TEXT, getString(R.string.GITHUB_REPO_RELEASE_URL));
-            startActivity(Intent.createChooser(textIntent, "shared"));
-        } else if (id == R.id.nav_license) {
-
-            FragmentManager fragmentManager = getFragmentManager();
-//            ListViewLicenseFragment listViewLicenseFragment = (ListViewLicenseFragment) fragmentManager.findFragmentById(R.id.contentFrame);
-//            if (listViewLicenseFragment == null) {
-            ListViewLicenseFragment listViewLicenseFragment = ListViewLicenseFragment.newInstance(new int[] { LicenseID.RETROFIT });
-                ActivityUtils.addFragmentToActivity(fragmentManager,listViewLicenseFragment,R.id.contentFrame);
-//            }
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
     private void initFrameViews() {
         // Set up the toolbar. 工具栏。
         Toolbar toolbar = findViewById(R.id.materialup_toolbar);
@@ -310,7 +269,40 @@ public class MainActivity extends AppCompatActivity
 
         // Set up the navigation drawer.左侧滑出的菜单。
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // Handle navigation view item clicks here.
+                int id = item.getItemId();
+                if (id == R.id.nav_share) {
+                    Intent textIntent = new Intent(Intent.ACTION_SEND)
+                            .setType("text/plain")
+                            .putExtra(Intent.EXTRA_TEXT, getString(R.string.GITHUB_REPO_RELEASE_URL));
+                    startActivity(Intent.createChooser(textIntent, "shared"));
+                } else if (id == R.id.nav_license) {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    ScrollViewLicenseFragment recyclerViewLicenseFragment = ScrollViewLicenseFragment.newInstance();
+                    ArrayList<License> customLicenses = new ArrayList<>();
+                    customLicenses.add(new License(MainActivity.this, "Butter Knife", LicenseType.APACHE_LICENSE_20, "2013", "Jake Wharton"));
+                    customLicenses.add(new License(MainActivity.this, "Material Animated Switch", LicenseType.APACHE_LICENSE_20,"2015","Adrián García Lomas"));
+                    customLicenses.add(new License(MainActivity.this, "DiscreteSeekBar", LicenseType.APACHE_LICENSE_20,"2014","Gustavo Claramunt (Ander Webbs)"));
+                    customLicenses.add(new License(MainActivity.this, "CircleImageView", LicenseType.APACHE_LICENSE_20,"2014-2018","Henning Dodenhof"));
+                    recyclerViewLicenseFragment.addCustomLicense(customLicenses);
+
+                    ActivityUtils.addFragmentToActivity(fragmentManager, recyclerViewLicenseFragment, R.id.contentFrame);
+                } else if (id == R.id.setting) {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    SettingFragment settingFragment = SettingFragment.newInstance();
+                    ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment, R.id.contentFrame);
+                }
+
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+
+                return true;
+            }
+        });
+        // Update versionTextView
         try {
             PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
             String version = pi.versionName;
@@ -320,8 +312,8 @@ public class MainActivity extends AppCompatActivity
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // Update views
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
         updateViewsState(hasAddedBall);
 
@@ -336,12 +328,11 @@ public class MainActivity extends AppCompatActivity
             ballSwitch.setChecked(false);
         }
         FragmentManager fragmentManager = getFragmentManager();
-        SettingFragment settingFragment =
-                (SettingFragment) fragmentManager.findFragmentById(R.id.contentFrame);
-        if (settingFragment != null) {
+        Fragment f = fragmentManager.findFragmentById(R.id.contentFrame);
+        if (f instanceof SettingFragment) {
+            SettingFragment settingFragment = (SettingFragment) f;
             settingFragment.updateViewsState(hasAddedBall);
         }
-
     }
 
     private void requestStoragePermission() {
@@ -378,39 +369,4 @@ public class MainActivity extends AppCompatActivity
         startService(intent);
     }
 
-//    @OnClick({R.id.double_click_function,
-//            R.id.left_function,
-//            R.id.right_function,
-//            R.id.up_function,
-//            R.id.down_function
-//    })
-//    public void onDoubleClickClicked(View view) {
-//        if (view.getId() == R.id.double_click_function) {
-//            showFunctionDialog(R.string.double_click_title, PREF_DOUBLE_CLICK_EVENT);
-//        } else if (view.getId() == R.id.left_function) {
-//            showFunctionDialog(R.string.left_slide_title, PREF_LEFT_SLIDE_EVENT);
-//        } else if (view.getId() == R.id.right_function) {
-//            showFunctionDialog(R.string.right_slide_title, PREF_RIGHT_SLIDE_EVENT);
-//        } else if (view.getId() == R.id.up_function) {
-//            showFunctionDialog(R.string.up_slide_title, PREF_UP_SLIDE_EVENT);
-//        } else if (view.getId() == R.id.down_function) {
-//            showFunctionDialog(R.string.down_slide_title, PREF_DOWN_SLIDE_EVENT);
-//        }
-//    }
-//
-//    private void showFunctionDialog(int titleId, final String prefKey) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//        builder.setTitle(titleId)
-//                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        SharedPreferences.Editor editor = prefs.edit();
-//                        editor.putInt(prefKey, which);
-//                        editor.apply();
-//
-//                        sendUpdateIntentToService();
-//
-//                        updateFunctionList();
-//                    }
-//                }).show();
-//    }
 }

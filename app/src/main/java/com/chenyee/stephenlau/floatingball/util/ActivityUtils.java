@@ -39,6 +39,7 @@ public class ActivityUtils {
         fragmentManager
                 .beginTransaction()
                 .replace(frameId, fragment)
+//                .addToBackStack(null)
                 .commit();
     }
 

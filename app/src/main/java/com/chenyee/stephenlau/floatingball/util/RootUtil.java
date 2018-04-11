@@ -58,13 +58,22 @@ public final class RootUtil {
         }
         return result;
     }
-    public static boolean rootCommand(String command){
-        try {
-            Process process = Runtime.getRuntime().exec(new String[] { "su", "-c", command });
-            process.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static boolean rootCommand(final String command){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+//                    Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+//                    process.waitFor();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
 
         return true;
     }

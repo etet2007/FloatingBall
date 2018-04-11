@@ -15,7 +15,7 @@
 		>
 		<android.support.design.widget.CollapsingToolbarLayout
 			android:layout_width="match_parent"
-			android:layout_height="200dp"
+			android:layout_height="170dp"
 			app:expandedTitleMarginStart="48dp"
 			app:expandedTitleMarginEnd="64dp"
 			app:layout_scrollFlags="scroll"
@@ -73,10 +73,12 @@
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
+
         <FrameLayout
             android:id="@+id/contentFrame"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
 	</android.support.v4.widget.NestedScrollView>
 
 
@@ -91,20 +93,6 @@
 		android:clickable="true"
 		android:focusable="true"
 		tools:targetApi="lollipop"/>
-
-<!--	<de.hdodenhof.circleimageview.CircleImageView
-		android:id="@+id/materialup.profile_image"
-		android:layout_width="100dp"
-		android:layout_height="100dp"
-		android:layout_gravity="center_horizontal"
-		android:src="@drawable/ic_floating_button"
-		app:border_width="2dp"
-		app:border_overlay="true"
-		app:layout_anchor="@id/materialup.title_container"
-		android:elevation="8dp"
-		app:layout_scrollFlags="scroll"
-		app:layout_anchorGravity="top|center_horizontal"
-		tools:targetApi="lollipop"/>-->
 
 	<android.support.v7.widget.AppCompatImageView
 		android:id="@+id/materialup.profile_image"

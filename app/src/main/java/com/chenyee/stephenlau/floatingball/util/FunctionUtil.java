@@ -1,6 +1,8 @@
 package com.chenyee.stephenlau.floatingball.util;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Context;
+import android.os.PowerManager;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.floatBall.FunctionListener;

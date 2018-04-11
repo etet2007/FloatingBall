@@ -159,9 +159,11 @@ public class SettingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (prefs.getBoolean(PREF_HAS_ADDED_BALL, false)) {
+        boolean hasAddBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
+        if (hasAddBall ) {
             addFloatBall();
         }
+        updateViewsState(hasAddBall);
     }
 
     @Override

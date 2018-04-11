@@ -46,14 +46,12 @@ public class FloatingBallView extends View {
     private Paint mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mBallEmptyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-
-    //手势的状态，虽然官方不推荐使用enum
+    //手势的状态
     private static final int UP = 1;
     private static final int DOWN = 2;
     private static final int LEFT = 3;
     private static final int RIGHT = 4;
     private static final int NONE = 5;
-
 
     private int currentGestureSTATE;
     private int lastGestureSTATE = NONE;
@@ -542,31 +540,41 @@ public class FloatingBallView extends View {
     }
 
 
-    private class DoubleTapGestureListener implements GestureDetector.OnDoubleTapListener{
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.d(TAG, "onSingleTapConfirmed: "+e);
-            AccessibilityUtil.doBack(mService);
-            return false;
-        }
 
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            if(mDoubleTapFunctionListener!=null)
-                mDoubleTapFunctionListener.onClick();
-
-//            Log.d(TAG, "onDoubleTap: "+e);
-//            if(doubleClickEvent==HOME){
-//                AccessibilityUtil.doHome(mService);
-//            }else if(doubleClickEvent==LOCK_SCREEN)
-//                LockScreenUtil.lockScreen(mService);
-            return false;
+    /**
+     * 根据currentGestureSTATE改变显示参数
+     */
+    private void moveFloatBall() {
+        int gestureMoveDistance = 18;
+        switch (currentGestureSTATE){
+            case UP:
+                ballCenterX=0;
+                ballCenterY=-gestureMoveDistance;
+                break;
+            case DOWN:
+                ballCenterY= gestureMoveDistance;
+                ballCenterX=0;
+                break;
+            case LEFT:
+                ballCenterX=-gestureMoveDistance;
+                ballCenterY=0;
+                break;
+            case RIGHT:
+                ballCenterX= gestureMoveDistance;
+                ballCenterY=0;
+                break;
+            case NONE:
+                ballCenterX=0;
+                ballCenterY=0;
+                break;
         }
+        invalidate();
+    }
 
-        @Override
-        public boolean onDoubleTapEvent(MotionEvent e) {
-            return false;
-        }
+    private void moveFloatBallBack() {
+        PropertyValuesHolder pvh1=PropertyValuesHolder.ofFloat("ballCenterX",0);
+        PropertyValuesHolder pvh2=PropertyValuesHolder.ofFloat("ballCenterY",0);
+        ObjectAnimator.ofPropertyValuesHolder(this, pvh1, pvh2).setDuration(300).start();
     }
 
     /**
@@ -636,41 +644,33 @@ public class FloatingBallView extends View {
         }
     }
 
-    /**
-     * 根据currentGestureSTATE改变显示参数
-     */
-    private void moveFloatBall() {
-        int gestureMoveDistance = 18;
-        switch (currentGestureSTATE){
-            case UP:
-                ballCenterX=0;
-                ballCenterY=-gestureMoveDistance;
-                break;
-            case DOWN:
-                ballCenterY= gestureMoveDistance;
-                ballCenterX=0;
-                break;
-            case LEFT:
-                ballCenterX=-gestureMoveDistance;
-                ballCenterY=0;
-                break;
-            case RIGHT:
-                ballCenterX= gestureMoveDistance;
-                ballCenterY=0;
-                break;
-            case NONE:
-                ballCenterX=0;
-                ballCenterY=0;
-                break;
+    private class DoubleTapGestureListener implements GestureDetector.OnDoubleTapListener{
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.d(TAG, "onSingleTapConfirmed: "+e);
+            AccessibilityUtil.doBack(mService);
+            return false;
         }
-        invalidate();
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            if(mDoubleTapFunctionListener!=null)
+                mDoubleTapFunctionListener.onClick();
+
+//            Log.d(TAG, "onDoubleTap: "+e);
+//            if(doubleClickEvent==HOME){
+//                AccessibilityUtil.doHome(mService);
+//            }else if(doubleClickEvent==LOCK_SCREEN)
+//                LockScreenUtil.lockScreen(mService);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            return false;
+        }
     }
 
-    private void moveFloatBallBack() {
-        PropertyValuesHolder pvh1=PropertyValuesHolder.ofFloat("ballCenterX",0);
-        PropertyValuesHolder pvh2=PropertyValuesHolder.ofFloat("ballCenterY",0);
-        ObjectAnimator.ofPropertyValuesHolder(this, pvh1, pvh2).setDuration(300).start();
-    }
 
 
 }

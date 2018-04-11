@@ -23,14 +23,18 @@
     <!--</group>-->
 
 
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/share"/>
+    <item
+        android:id="@+id/setting"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/setting"/>
 
     <item
         android:id="@+id/nav_license"
-        android:icon="@drawable/ic_menu_share"
+        android:icon="@drawable/ic_announcement_black_24dp"
         android:title="@string/license"/>
+    <item
+        android:id="@+id/nav_share"
+        android:icon="@drawable/ic_menu_share"
+        android:title="@string/share"/>
 
 </menu>
