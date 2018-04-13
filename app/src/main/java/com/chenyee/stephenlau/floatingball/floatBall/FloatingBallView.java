@@ -83,9 +83,11 @@ public class FloatingBallView extends View {
     private boolean useBackground=false;
     private boolean useGrayBackground=true;
     private boolean useDoubleClick=false;
+
     //上次touchEvent的位置
     private float mLastTouchEventX;
     private float mLastTouchEventY;
+
     private WindowManager.LayoutParams mLayoutParams;
 
     private GestureDetector mDetector;
@@ -120,17 +122,6 @@ public class FloatingBallView extends View {
     public void setUseBackground(boolean useBackground) {
         this.useBackground = useBackground;
     }
-
-//    public void setDoubleClickEventType(int doubleClickEvent,FunctionListener doubleTapFunctionListener) {
-//
-//        this.doubleClickEvent = doubleClickEvent;
-//        this.mDoubleTapFunctionListener=doubleTapFunctionListener;
-//
-//        if(doubleClickEvent!=NONE)
-//            mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
-//        else
-//            mDetector.setOnDoubleTapListener(null);
-//    }
 
     public void setDoubleClickEventType(boolean useDoubleClick,FunctionListener doubleTapFunctionListener) {
         this.useDoubleClick = useDoubleClick;
@@ -209,6 +200,10 @@ public class FloatingBallView extends View {
         calcTouchAnimator();
     }
 
+    /**
+     * 构造函数
+     * @param context
+     */
     public FloatingBallView(Context context) {
         super(context);
         performAddAnimator();
@@ -539,8 +534,6 @@ public class FloatingBallView extends View {
         }
     }
 
-
-
     /**
      * 根据currentGestureSTATE改变显示参数
      */
@@ -624,7 +617,7 @@ public class FloatingBallView extends View {
             } else{
                 currentGestureSTATE = LEFT;
             }
-            if(currentGestureSTATE != lastGestureSTATE){
+            if (currentGestureSTATE != lastGestureSTATE) {
                 moveFloatBall();
                 lastGestureSTATE = currentGestureSTATE;
             }
@@ -635,7 +628,7 @@ public class FloatingBallView extends View {
         public void onLongPress(MotionEvent e) {
             long[] pattern = {0, 100};
             mVibrator.vibrate(pattern, -1);
-            isLongPress=true;
+            isLongPress = true;
         }
 
         @Override
@@ -647,21 +640,16 @@ public class FloatingBallView extends View {
     private class DoubleTapGestureListener implements GestureDetector.OnDoubleTapListener{
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.d(TAG, "onSingleTapConfirmed: "+e);
+            Log.d(TAG, "onSingleTapConfirmed: " + e);
             AccessibilityUtil.doBack(mService);
             return false;
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            if(mDoubleTapFunctionListener!=null)
+            if (mDoubleTapFunctionListener != null) {
                 mDoubleTapFunctionListener.onClick();
-
-//            Log.d(TAG, "onDoubleTap: "+e);
-//            if(doubleClickEvent==HOME){
-//                AccessibilityUtil.doHome(mService);
-//            }else if(doubleClickEvent==LOCK_SCREEN)
-//                LockScreenUtil.lockScreen(mService);
+            }
             return false;
         }
 

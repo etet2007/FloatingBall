@@ -3,11 +3,19 @@ package com.chenyee.stephenlau.floatingball.util;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.input.InputManager;
+import android.os.Build;
+import android.os.RemoteException;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.InputEvent;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
+
+import java.lang.reflect.Method;
 
 public class AccessibilityUtil {
     private static final String TAG = "AccessibilityUtil";
@@ -25,14 +33,13 @@ public class AccessibilityUtil {
      * @param service
      */
     public static void doHome(AccessibilityService service) {
-        // TODO: 2018/3/9 换为设置接口的方式 
+        // TODO: 2018/3/9 把Rom的信息存于SharedPreference中，不用每次都判断
         //OnePlus
         if(RomUtil.isRom(RomUtil.ROM_ONEPLUS)){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
             intent.addCategory(Intent.CATEGORY_HOME); //"android.intent.category.HOME"
             service.startActivity(intent);
-
             return;
         }
         //其他手机
@@ -44,6 +51,32 @@ public class AccessibilityUtil {
             service.startActivity(intent);
         }
     }
+    public static void simulateKey(int keyCode) {
+        //使用KeyEvent模拟按键按下与弹起
+        long l = SystemClock.uptimeMillis();
+        KeyEvent localKeyEvent = new KeyEvent(l,l,KeyEvent.ACTION_DOWN,keyCode,0);
+        KeyEvent localKeyEvent1 = new KeyEvent(l,l,KeyEvent.ACTION_UP,keyCode,0);
+
+        //新版本使用InputManager注入按键事件
+        //*******IWindowManager和InputManager都是隐藏类，必须在重新生成sdk中的android.jar，并包含两个类及其依赖*****
+        Class cl = InputManager.class;
+        try {
+            Method method = cl.getMethod("getInstance");
+            method.setAccessible(true);
+            Object result = method.invoke(cl);
+            InputManager im = (InputManager) result;
+
+            method = cl.getMethod("injectInputEvent", InputEvent.class, int.class);
+            method.setAccessible(true);
+            method.invoke(im, localKeyEvent, 0);
+            method.invoke(im, localKeyEvent1, 0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        InputManager.getInstance().injectInputEvent(localKeyEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+//        InputManager.getInstance().injectInputEvent(localKeyEvent1, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+    }
 
     /**
      * 判断辅助功能是否开启
@@ -52,7 +85,6 @@ public class AccessibilityUtil {
      */
     public static boolean isAccessibilitySettingsOn(Context context) {
         int accessibilityEnabled = 0;
-
         //If accessibility is enabled，使用Content Provider读取Setting中Secure的配置。
         try {
             //Settings.Secure: Secure system settings, containing system preferences that applications

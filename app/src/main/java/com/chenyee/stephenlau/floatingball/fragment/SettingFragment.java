@@ -69,8 +69,6 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.RECENT_APPS;
 
 public class SettingFragment extends Fragment {
-
-
     private static final String TAG = SettingFragment.class.getSimpleName();
 
     private Unbinder mUnBinder;
@@ -110,16 +108,12 @@ public class SettingFragment extends Fragment {
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
 
-//    private OnFragmentInteractionListener mListener;
-
     public SettingFragment() {
         // Required empty public constructor
     }
 
-
     public static SettingFragment newInstance() {
-        SettingFragment fragment = new SettingFragment();
-        return fragment;
+        return new SettingFragment();
     }
 
     @Override
@@ -160,7 +154,7 @@ public class SettingFragment extends Fragment {
     public void onResume() {
         super.onResume();
         boolean hasAddBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
-        if (hasAddBall ) {
+        if (hasAddBall) {
             addFloatBall();
         }
         updateViewsState(hasAddBall);
@@ -179,7 +173,6 @@ public class SettingFragment extends Fragment {
 
         super.onDestroy();
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -218,7 +211,6 @@ public class SettingFragment extends Fragment {
             //            成功继续打开图片？
         }
     }
-
 
     private void requestDrawOverlaysPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -380,7 +372,6 @@ public class SettingFragment extends Fragment {
         intent.putExtras(data);
         getActivity().startService(intent);
     }
-
 
     private void requestStoragePermission() {
         String[] PERMISSIONS_STORAGE = {

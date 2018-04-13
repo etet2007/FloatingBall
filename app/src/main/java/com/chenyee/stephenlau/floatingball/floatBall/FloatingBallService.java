@@ -46,12 +46,12 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_ADD = 0;
     public static final int TYPE_REMOVE = 1;
     public static final int TYPE_IMAGE = 2;
-    public static final int TYPE_UPDATE_DATA = 5;
+    public static final int TYPE_UPDATE_DATA = 3;
 
     private FloatingBallManager mFloatingBallManager;
 
     private boolean hasSoftKeyboardShow=false;
-    boolean hasRotatedBall = false;
+//    boolean hasRotatedBall = false;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, FloatingBallService.class);
@@ -61,7 +61,7 @@ public class FloatingBallService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected: ");
-        if(mFloatingBallManager ==null){
+        if(mFloatingBallManager == null){
             mFloatingBallManager = FloatingBallManager.getInstance();
             addBallViewAndSaveState();
         }
@@ -102,8 +102,7 @@ public class FloatingBallService extends AccessibilityService {
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         int currentRotation = windowManager.getDefaultDisplay().getRotation();
 
-//        hasRotatedBall = prefs.getBoolean(PREF_HAS_ROTATE_HIDE_BALL, false);
-        //这样其实会疯狂调用add方法
+        //这样会不断调用add方法
         if ((Surface.ROTATION_0 == currentRotation || Surface.ROTATION_180 == currentRotation)) {
             Log.d(TAG, "onAccessibilityEvent: addBallView");
             mFloatingBallManager.addBallView(FloatingBallService.this);

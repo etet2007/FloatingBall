@@ -53,7 +53,6 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 public class MainActivity extends AppCompatActivity
         implements AppBarLayout.OnOffsetChangedListener {
-
     private static final String TAG = MainActivity.class.getSimpleName();
 
     //头像
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     @BindView(R.id.start_switch)
     SwitchCompat ballSwitch;
-
     @BindView(R.id.materialup_profile_image)
     ImageView mProfileImage;
 
