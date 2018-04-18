@@ -13,6 +13,7 @@ import android.view.WindowManager.LayoutParams;
 
 
 import com.chenyee.stephenlau.floatingball.util.FunctionUtil;
+import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.chenyee.stephenlau.floatingball.util.StaticStringUtil;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
@@ -34,7 +35,7 @@ public class FloatingBallManager {
     private FloatingBallView mFloatingBallView;
     private FunctionUtil mFunctionUtil;
 
-    private SharedPreferences defaultSharedPreferences;
+//    private SharedPreferences defaultSharedPreferences;
     private boolean isOpenedBall;
 
     public boolean isOpenedBall() {
@@ -58,13 +59,10 @@ public class FloatingBallManager {
             int screenWidth = size.x;
             int screenHeight = size.y;
 
-            //Use ShardPreferences to init layout parameters.
-            defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-
             LayoutParams params = new LayoutParams();
             //位置
-            params.x=defaultSharedPreferences.getInt(PREF_PARAM_X,screenWidth / 2);
-            params.y=defaultSharedPreferences.getInt(PREF_PARAM_Y,screenHeight / 2);
+            params.x=SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X,screenWidth / 2);
+            params.y= SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y,screenHeight / 2);
             params.width = LayoutParams.WRAP_CONTENT;
             params.height = LayoutParams.WRAP_CONTENT;
             params.gravity = Gravity.START | Gravity.TOP;
@@ -114,13 +112,10 @@ public class FloatingBallManager {
     }
 
     /**
-     * 保存打开状态，位置。
+     * 保存打开状态
      */
     public void saveFloatingBallState(){
-        if(defaultSharedPreferences==null) return;
-        SharedPreferences.Editor editor = defaultSharedPreferences.edit();
-        editor.putBoolean(PREF_HAS_ADDED_BALL, isOpenedBall);
-        editor.apply();
+        SharedPrefsUtils.setBooleanPreference(PREF_HAS_ADDED_BALL, isOpenedBall);
     }
 
     /**
@@ -129,37 +124,37 @@ public class FloatingBallManager {
     public void updateBallViewParameter() {
         if (mFloatingBallView != null) {
             //Opacity
-            mFloatingBallView.setOpacity(defaultSharedPreferences.getInt(StaticStringUtil.PREF_OPACITY,125));
+            mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY,125));
             //Size
-            mFloatingBallView.changeFloatBallSizeWithRadius(defaultSharedPreferences.getInt(PREF_SIZE,25));
+            mFloatingBallView.changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE,25));
 
             mFloatingBallView.createBitmapCropFromBitmapRead();
 
             //Use gray background
-            mFloatingBallView.setUseGrayBackground(defaultSharedPreferences.getBoolean(PREF_USE_GRAY_BACKGROUND, true));
+            mFloatingBallView.setUseGrayBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
             //Use background
-            mFloatingBallView.setUseBackground(defaultSharedPreferences.getBoolean(PREF_USE_BACKGROUND,false));
+            mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND,false));
 
             //Double click event
-            int double_click_event= defaultSharedPreferences.getInt(PREF_DOUBLE_CLICK_EVENT,NONE);
+            int double_click_event= SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT,NONE);
             boolean useDoubleClick=true;
             if(double_click_event==NONE) useDoubleClick=false;
             mFloatingBallView.setDoubleClickEventType(useDoubleClick,getListener(double_click_event));
 
             //LeftSlideEvent
-            int leftSlideEvent =defaultSharedPreferences.getInt(PREF_LEFT_SLIDE_EVENT,RECENT_APPS);
+            int leftSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT,RECENT_APPS);
             mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
             //RightSlideEvent
-            int rightSlideEvent =defaultSharedPreferences.getInt(PREF_RIGHT_SLIDE_EVENT,RECENT_APPS);
+            int rightSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT,RECENT_APPS);
             mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
             //UpSlideEvent
-            int upSlideEvent =defaultSharedPreferences.getInt(PREF_UP_SLIDE_EVENT,HOME);
+            int upSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT,HOME);
             mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
             //DownSlideEvent
-            int downSlideEvent =defaultSharedPreferences.getInt(PREF_DOWN_SLIDE_EVENT,NOTIFICATION);
+            int downSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT,NOTIFICATION);
             mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
 
-            mFloatingBallView.setMoveUpDistance(defaultSharedPreferences.getInt(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 200));
+            mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 200));
 
             mFloatingBallView.requestLayout();
             mFloatingBallView.invalidate();
@@ -169,9 +164,9 @@ public class FloatingBallManager {
     private FunctionListener getListener(int key) {
         FunctionListener functionListener = mFunctionUtil.nullFunctionListener;
         if(key==RECENT_APPS){
-            functionListener= mFunctionUtil.recentAppsFunctionListener;
+            functionListener = mFunctionUtil.recentAppsFunctionListener;
         }else if(key==LAST_APPS){
-            functionListener= mFunctionUtil.lastAppFunctionListener;
+            functionListener = mFunctionUtil.lastAppFunctionListener;
         } else if (key == HIDE) {
             functionListener =  mFunctionUtil.hideFunctionListener;
         } else if (key == NONE) {

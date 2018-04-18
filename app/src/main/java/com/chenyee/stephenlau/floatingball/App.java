@@ -1,6 +1,8 @@
 package com.chenyee.stephenlau.floatingball;
 
 import android.app.Application;
+
+import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.squareup.leakcanary.LeakCanary;
 
 
@@ -12,6 +14,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        SharedPrefsUtils.setApplicationContext(getApplicationContext());
+
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.

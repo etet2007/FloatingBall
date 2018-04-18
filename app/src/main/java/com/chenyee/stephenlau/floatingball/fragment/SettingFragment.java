@@ -18,31 +18,21 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.activity.MainActivity;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -74,10 +64,6 @@ public class SettingFragment extends Fragment {
     private Unbinder mUnBinder;
 
     //控件
-//    @BindView(R.id.logo_fab)
-//    FloatingActionButton fab;
-//    @BindView(R.id.start_switch)
-//    SwitchCompat ballSwitch;
     @BindView(R.id.opacity_seekbar)
     DiscreteSeekBar opacitySeekBar;
     @BindView(R.id.size_seekbar)
@@ -102,7 +88,7 @@ public class SettingFragment extends Fragment {
     @BindView(R.id.right_slide_textView)
     AppCompatTextView rightSlideTextView;
     //参数
-    private SharedPreferences prefs;
+//    private SharedPreferences prefs;
 
     //调用系统相册-选择图片
     private static final int IMAGE = 1;
@@ -153,7 +139,7 @@ public class SettingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        boolean hasAddBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
+        boolean hasAddBall = SharedPrefsUtils.getBooleanPreference( PREF_HAS_ADDED_BALL, false);
         if (hasAddBall) {
             addFloatBall();
         }
@@ -231,25 +217,23 @@ public class SettingFragment extends Fragment {
 
 
     private void initContentViews() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        opacitySeekBar.setProgress(prefs.getInt(PREF_OPACITY, 125));
-        sizeSeekBar.setProgress(prefs.getInt(PREF_SIZE, 25));
-        backgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_BACKGROUND, false));
-        useGrayBackgroundSwitch.setChecked(prefs.getBoolean(PREF_USE_GRAY_BACKGROUND, true));
+        opacitySeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
+        sizeSeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
+        backgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
+        useGrayBackgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
 
-        updateFunctionList();
+        updateFunctionListView();
 
-        boolean hasAddedBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
+        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
         //hasAddedBall代表两种状态
         updateViewsState(hasAddedBall);
 
         opacitySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPreferences.Editor editor = prefs.edit()
-                        .putInt(PREF_OPACITY, value);
-                editor.apply();
+                SharedPrefsUtils.setIntegerPreference( PREF_OPACITY, value);
+
                 sendUpdateIntentToService();
             }
 
@@ -264,9 +248,7 @@ public class SettingFragment extends Fragment {
         sizeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_SIZE, value);
-                editor.apply();
+                SharedPrefsUtils.setIntegerPreference( PREF_SIZE, value);
                 sendUpdateIntentToService();
             }
 
@@ -282,9 +264,7 @@ public class SettingFragment extends Fragment {
         upDistanceSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(PREF_MOVE_UP_DISTANCE, value);
-                editor.apply();
+                SharedPrefsUtils.setIntegerPreference( PREF_MOVE_UP_DISTANCE, value);
                 sendUpdateIntentToService();
             }
 
@@ -299,9 +279,7 @@ public class SettingFragment extends Fragment {
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean(PREF_USE_BACKGROUND, isChecked);
-                editor.apply();
+                SharedPrefsUtils.setBooleanPreference( PREF_USE_BACKGROUND, isChecked);
                 sendUpdateIntentToService();
             }
         });
@@ -320,30 +298,29 @@ public class SettingFragment extends Fragment {
                 .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putBoolean(PREF_USE_GRAY_BACKGROUND, isChecked);
-                        editor.apply();
+                        SharedPrefsUtils.setBooleanPreference( PREF_USE_GRAY_BACKGROUND, isChecked);
+
                         sendUpdateIntentToService();
                     }
                 });
     }
 
-    private void updateFunctionList() {
+    private void updateFunctionListView() {
         Resources res = getResources();
         String[] functionList = res.getStringArray(R.array.function_array);
-        int doubleClickEvent = prefs.getInt(PREF_DOUBLE_CLICK_EVENT, NONE);
+        int doubleClickEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE);
         doubleClickTextView.setText(functionList[doubleClickEvent]);
 
-        int rightSlideEvent = prefs.getInt(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
+        int rightSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
         rightSlideTextView.setText(functionList[rightSlideEvent]);
 
-        int leftSlideEvent = prefs.getInt(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
+        int leftSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
         leftSlideTextView.setText(functionList[leftSlideEvent]);
 
-        int upSlideEvent = prefs.getInt(PREF_UP_SLIDE_EVENT, HOME);
+        int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
         upSlideTextView.setText(functionList[upSlideEvent]);
 
-        int downSlideEvent = prefs.getInt(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
+        int downSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
         downSlideTextView.setText(functionList[downSlideEvent]);
     }
 
@@ -366,11 +343,11 @@ public class SettingFragment extends Fragment {
     }
 
     private void sendUpdateIntentToService() {
-        Intent intent = new Intent(getActivity(), FloatingBallService.class);
-        Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
-        intent.putExtras(data);
-        getActivity().startService(intent);
+//        Intent intent = new Intent(getActivity(), FloatingBallService.class);
+//        Bundle data = new Bundle();
+//        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
+//        intent.putExtras(data);
+//        getActivity().startService(intent);
     }
 
     private void requestStoragePermission() {
@@ -424,13 +401,11 @@ public class SettingFragment extends Fragment {
         builder.setTitle(titleId)
                 .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt(prefKey, which);
-                        editor.apply();
+                        SharedPrefsUtils.setIntegerPreference( prefKey, which);
 
                         sendUpdateIntentToService();
 
-                        updateFunctionList();
+                        updateFunctionListView();
                     }
                 }).show();
     }

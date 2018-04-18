@@ -22,6 +22,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InputMethodManager;
 
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -50,12 +51,17 @@ public class FloatingBallService extends AccessibilityService {
 
     private FloatingBallManager mFloatingBallManager;
 
-    private boolean hasSoftKeyboardShow=false;
-//    boolean hasRotatedBall = false;
+    private boolean hasSoftKeyboardShow = false;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, FloatingBallService.class);
     }
+    private SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            mFloatingBallManager.updateBallViewParameter();
+        }
+    };
 
     @Override
     protected void onServiceConnected() {
@@ -64,6 +70,8 @@ public class FloatingBallService extends AccessibilityService {
         if(mFloatingBallManager == null){
             mFloatingBallManager = FloatingBallManager.getInstance();
             addBallViewAndSaveState();
+
+            SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mListener);
         }
     }
 
@@ -89,8 +97,8 @@ public class FloatingBallService extends AccessibilityService {
         // 旋转屏幕 TYPE_WINDOW_STATE_CHANGED 32 TYPE_WINDOW_CONTENT_CHANGED 2048。只有TYPE_WINDOW_CONTENT_CHANGED才能cover所有情况
         Log.d(TAG, "onAccessibilityEvent: "+event.getEventType());
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Boolean hasAddBall = prefs.getBoolean(PREF_HAS_ADDED_BALL, false);
+        Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+
         Log.d(TAG, "onAccessibilityEvent: hasAddBall "+hasAddBall);
         //没有打开悬浮球
         if(!hasAddBall)
@@ -152,11 +160,11 @@ public class FloatingBallService extends AccessibilityService {
         if(isInputing) {
             if (!hasSoftKeyboardShow)
                 mFloatingBallManager.moveBallViewUp();
-            hasSoftKeyboardShow=true;
+            hasSoftKeyboardShow = true;
         }else {
             if(hasSoftKeyboardShow)
                 mFloatingBallManager.moveBallViewDown();
-            hasSoftKeyboardShow=false;
+            hasSoftKeyboardShow = false;
         }
     }
 
@@ -184,7 +192,7 @@ public class FloatingBallService extends AccessibilityService {
                 //intent中传图片地址，也可以换为sharedPreference吧
                 if (type == TYPE_IMAGE) mFloatingBallManager.setBackgroundPic(data.getString("imagePath"));
 
-                if(type == TYPE_UPDATE_DATA) mFloatingBallManager.updateBallViewParameter();
+//                if(type == TYPE_UPDATE_DATA) mFloatingBallManager.updateBallViewParameter();
             }
         }
         return super.onStartCommand(intent, flags, startId);

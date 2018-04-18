@@ -59,9 +59,9 @@ public class FloatingBallView extends View {
     //球半径、背景半径
     private float ballRadius=25;
     private float mBackgroundRadius=ballRadius+15;
-    //View宽高
-    private int measuredWidth= (int) (mBackgroundRadius*2+20);
-    private int measuredHeight=measuredWidth;
+
+    //View宽高，是正方形
+    private int measuredSideLength = (int) (mBackgroundRadius*2+20);
 
     private int moveUpDistance;
 
@@ -193,8 +193,7 @@ public class FloatingBallView extends View {
         this.ballRadius=ballRadius;
         this.mBackgroundRadius=ballRadius+15;
         //View宽高
-        measuredWidth= (int) (mBackgroundRadius*2+20);
-        measuredHeight=measuredWidth;
+        measuredSideLength = (int) (mBackgroundRadius*2+20);
 
         //动画的参数也需要重新计算
         calcTouchAnimator();
@@ -409,6 +408,9 @@ public class FloatingBallView extends View {
                 .start();
     }
 
+    /**
+     * 向上移动动画
+     */
     public void performMoveUpAnimator() {
         ObjectAnimator animation = ObjectAnimator.ofInt (this, "mLayoutParamsY", getMLayoutParamsY(), getMLayoutParamsY()- moveUpDistance); // see this max value coming back here, we animale towards that value
         animation.setDuration (200); //in milliseconds
@@ -420,7 +422,9 @@ public class FloatingBallView extends View {
         });
         animation.start();
     }
-
+    /**
+     * 向下移动动画
+     */
     public void performMoveDownAnimator() {
         ObjectAnimator animation = ObjectAnimator.ofInt (this, "mLayoutParamsY", getMLayoutParamsY(), getMLayoutParamsY()+moveUpDistance); // see this max value coming back here, we animale towards that value
         animation.setDuration (200); //in milliseconds
@@ -436,7 +440,7 @@ public class FloatingBallView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.translate(measuredWidth/2,measuredHeight/2);
+        canvas.translate(measuredSideLength /2, measuredSideLength /2);
 
         //draw gray background
         if(useGrayBackground)
@@ -451,10 +455,11 @@ public class FloatingBallView extends View {
         if(useBackground)
             canvas.drawBitmap(bitmapCrop,-bitmapCrop.getWidth()/2+ballCenterX,-bitmapCrop.getHeight()/2+ballCenterY,mBallPaint);
     }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(measuredWidth, measuredHeight);
+        setMeasuredDimension(measuredSideLength, measuredSideLength);
     }
 
     //核心方法
@@ -595,8 +600,7 @@ public class FloatingBallView extends View {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             isScrolling=true;
-//            Log.d(TAG, "onScroll: distanceX:"+distanceX+" distanceY"+distanceY);
-//            Log.d(TAG, "onScroll: e1:"+e1.toString()+" e2:"+e2.toString());
+
             float firstScrollX = e1.getX();
             float firstScrollY = e1.getY();
 
@@ -658,7 +662,4 @@ public class FloatingBallView extends View {
             return false;
         }
     }
-
-
-
 }
