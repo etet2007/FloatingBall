@@ -121,25 +121,22 @@ public class FloatingBallView extends View {
     }
     public void setUseBackground(boolean useBackground) {
         if (this.useBackground != useBackground) {
-            refreshBackground();
+            if (useBackground) {
+                refreshBitmapRead();
+                createBitmapCropFromBitmapRead();
+            } else {
+                if (mBitmapRead != null) {
+                    mBitmapRead.recycle();
+                }
+                if (mBitmapScaled != null) {
+                    mBitmapScaled.recycle();
+                }
+            }
         }
 
         this.useBackground = useBackground;
     }
 
-    private void refreshBackground(){
-        if (useBackground) {
-            refreshBitmapRead();
-            createBitmapCropFromBitmapRead();
-        } else {
-            if (mBitmapRead != null) {
-                mBitmapRead.recycle();
-            }
-            if (mBitmapScaled != null) {
-                mBitmapScaled.recycle();
-            }
-        }
-    }
     public void setDoubleClickEventType(boolean useDoubleClick,FunctionListener doubleTapFunctionListener) {
         this.useDoubleClick = useDoubleClick;
         this.mDoubleTapFunctionListener = doubleTapFunctionListener;
@@ -208,7 +205,9 @@ public class FloatingBallView extends View {
     //改变球的半径，同时需要改变view的宽高
     public void changeFloatBallSizeWithRadius(int ballRadius){
         if(this.ballRadius!=ballRadius){
-            refreshBackground();
+            if (useBackground) {
+                createBitmapCropFromBitmapRead();
+            }
         }
         this.ballRadius = ballRadius;
         this.mBackgroundRadius = ballRadius + edge;
