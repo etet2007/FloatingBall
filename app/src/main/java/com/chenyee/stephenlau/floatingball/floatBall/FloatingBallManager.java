@@ -1,11 +1,9 @@
 package com.chenyee.stephenlau.floatingball.floatBall;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
@@ -16,6 +14,7 @@ import com.chenyee.stephenlau.floatingball.util.FunctionUtil;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.chenyee.stephenlau.floatingball.util.StaticStringUtil;
 
+import static com.chenyee.stephenlau.floatingball.util.FunctionUtil.getListener;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
@@ -33,9 +32,7 @@ public class FloatingBallManager {
 
     // FloatingBallView
     private FloatingBallView mFloatingBallView;
-    private FunctionUtil mFunctionUtil;
 
-//    private SharedPreferences defaultSharedPreferences;
     private boolean isOpenedBall;
 
     public boolean isOpenedBall() {
@@ -54,7 +51,7 @@ public class FloatingBallManager {
             WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             Point size = new Point();
             if (windowManager == null) return;
-
+            //获取size
             windowManager.getDefaultDisplay().getSize(size);
             int screenWidth = size.x;
             int screenHeight = size.y;
@@ -82,7 +79,7 @@ public class FloatingBallManager {
             //使用windowManager把ballView加进去
             windowManager.addView(mFloatingBallView, params);
 
-            mFunctionUtil=new FunctionUtil((FloatingBallService) context);
+            new FunctionUtil((FloatingBallService) context);
             updateBallViewParameter();
 
             isOpenedBall = true;
@@ -98,14 +95,15 @@ public class FloatingBallManager {
     }
 
     /**
-     *
+     * 设置背景图
+     * 复制外部路径的图片到目录中去，更新bitmapRead，再进行裁剪
      * @param imagePath 外部图片地址
      */
-    public void setBackgroundPic(String imagePath){
+    public void setBackgroundImage(String imagePath){
         if (mFloatingBallView != null) {
 
             mFloatingBallView.copyBackgroundImage(imagePath);
-            mFloatingBallView.getBitmapRead();
+            mFloatingBallView.refreshBitmapRead();
             mFloatingBallView.createBitmapCropFromBitmapRead();
             mFloatingBallView.invalidate();
         }
@@ -123,65 +121,48 @@ public class FloatingBallManager {
      */
     public void updateBallViewParameter() {
         if (mFloatingBallView != null) {
+            /* View */
             //Opacity
             mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY,125));
             //Size
             mFloatingBallView.changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE,25));
 
-            mFloatingBallView.createBitmapCropFromBitmapRead();
+            //Use background
+            mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
 
             //Use gray background
             mFloatingBallView.setUseGrayBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
-            //Use background
-            mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND,false));
 
+            //Refresh view
+            mFloatingBallView.requestLayout();
+            mFloatingBallView.invalidate();
+
+            /* Function */
             //Double click event
             int double_click_event= SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT,NONE);
-            boolean useDoubleClick=true;
-            if(double_click_event==NONE) useDoubleClick=false;
+            boolean useDoubleClick = true;
+            if(double_click_event == NONE) useDoubleClick = false;
             mFloatingBallView.setDoubleClickEventType(useDoubleClick,getListener(double_click_event));
 
             //LeftSlideEvent
-            int leftSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT,RECENT_APPS);
+            int leftSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT,RECENT_APPS);
             mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
             //RightSlideEvent
-            int rightSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT,RECENT_APPS);
+            int rightSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT,RECENT_APPS);
             mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
             //UpSlideEvent
-            int upSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT,HOME);
+            int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT,HOME);
             mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
             //DownSlideEvent
-            int downSlideEvent =SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT,NOTIFICATION);
+            int downSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT,NOTIFICATION);
             mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
 
+            //要考虑多线程么
             mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 200));
 
-            mFloatingBallView.requestLayout();
-            mFloatingBallView.invalidate();
         }
     }
 
-    private FunctionListener getListener(int key) {
-        FunctionListener functionListener = mFunctionUtil.nullFunctionListener;
-        if(key==RECENT_APPS){
-            functionListener = mFunctionUtil.recentAppsFunctionListener;
-        }else if(key==LAST_APPS){
-            functionListener = mFunctionUtil.lastAppFunctionListener;
-        } else if (key == HIDE) {
-            functionListener =  mFunctionUtil.hideFunctionListener;
-        } else if (key == NONE) {
-            functionListener =  mFunctionUtil.nullFunctionListener;
-        } else if(key==HOME){
-            functionListener =  mFunctionUtil.homeFunctionListener;
-        }else if(key ==LOCK_SCREEN){
-            functionListener =  mFunctionUtil.deviceLockFunctionListener;
-        } else if (key == ROOT_LOCK_SCREEN) {
-            functionListener =  mFunctionUtil.rootLockFunctionListener;
-        } else if (key == NOTIFICATION) {
-            functionListener =  mFunctionUtil.notificationFunctionListener;
-        }
-        return functionListener;
-    }
 
     public void moveBallViewUp() {
         if(mFloatingBallView !=null) mFloatingBallView.performMoveUpAnimator();

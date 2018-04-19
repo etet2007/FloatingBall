@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -185,12 +184,12 @@ public class FloatingBallService extends AccessibilityService {
             if (data != null) {
                 int type = data.getInt(EXTRA_TYPE);
 
-                if (type == TYPE_ADD)  addBallViewAndSaveState();
+                if (type == TYPE_ADD) addBallViewAndSaveState();
 
-                if(type== TYPE_REMOVE) removeBallViewAndSaveData();
+                if (type == TYPE_REMOVE) removeBallViewAndSaveData();
 
                 //intent中传图片地址，也可以换为sharedPreference吧
-                if (type == TYPE_IMAGE) mFloatingBallManager.setBackgroundPic(data.getString("imagePath"));
+                if (type == TYPE_IMAGE) mFloatingBallManager.setBackgroundImage(data.getString("imagePath"));
 
 //                if(type == TYPE_UPDATE_DATA) mFloatingBallManager.updateBallViewParameter();
             }

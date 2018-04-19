@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,8 +15,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Vibrator;
-
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -27,6 +24,7 @@ import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,16 +55,18 @@ public class FloatingBallView extends View {
     private int lastGestureSTATE = NONE;
 
     //球半径、背景半径
-    private float ballRadius=25;
-    private float mBackgroundRadius=ballRadius+15;
+    private final float edge = 15;
+    private float ballRadius = 25;
+    private float mBackgroundRadius = ballRadius + edge;
 
-    //View宽高，是正方形
-    private int measuredSideLength = (int) (mBackgroundRadius*2+20);
+    //View宽高 正方形 +20是为了显示动画？
+    private int frameGap = 20;
+    private int measuredSideLength = (int) (mBackgroundRadius * 2 + frameGap);
 
     private int moveUpDistance;
 
-    private float ballCenterY=0;
-    private float ballCenterX=0;
+    private float ballCenterY = 0;
+    private float ballCenterX = 0;
 
     //function
     private FunctionListener mDownFunctionListener;
@@ -76,13 +76,13 @@ public class FloatingBallView extends View {
     private FunctionListener mDoubleTapFunctionListener;
 
     //标志
-    private boolean isFirstEvent=false;
-    private boolean isScrolling=false;
-    private boolean isLongPress=false;
+    private boolean isFirstEvent = false;
+    private boolean isScrolling = false;
+    private boolean isLongPress = false;
 
-    private boolean useBackground=false;
-    private boolean useGrayBackground=true;
-    private boolean useDoubleClick=false;
+    private boolean useBackground = false;
+    private boolean useGrayBackground = true;
+    private boolean useDoubleClick = false;
 
     //上次touchEvent的位置
     private float mLastTouchEventX;
@@ -101,8 +101,8 @@ public class FloatingBallView extends View {
     //Vibrator
     private Vibrator mVibrator;
 
-    private Bitmap bitmapRead;
-    private Bitmap bitmapCrop;
+    private Bitmap mBitmapRead;
+    private Bitmap mBitmapScaled;
 
     public float getBallCenterY() {
         return ballCenterY;
@@ -120,17 +120,35 @@ public class FloatingBallView extends View {
         this.useGrayBackground = useGrayBackground;
     }
     public void setUseBackground(boolean useBackground) {
+        if (this.useBackground != useBackground) {
+            refreshBackground();
+        }
+
         this.useBackground = useBackground;
     }
 
+    private void refreshBackground(){
+        if (useBackground) {
+            refreshBitmapRead();
+            createBitmapCropFromBitmapRead();
+        } else {
+            if (mBitmapRead != null) {
+                mBitmapRead.recycle();
+            }
+            if (mBitmapScaled != null) {
+                mBitmapScaled.recycle();
+            }
+        }
+    }
     public void setDoubleClickEventType(boolean useDoubleClick,FunctionListener doubleTapFunctionListener) {
         this.useDoubleClick = useDoubleClick;
-        this.mDoubleTapFunctionListener=doubleTapFunctionListener;
+        this.mDoubleTapFunctionListener = doubleTapFunctionListener;
 
-        if(useDoubleClick)
+        if (useDoubleClick) {
             mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
-        else
+        } else {
             mDetector.setOnDoubleTapListener(null);
+        }
     }
 
     public void setMoveUpDistance(int moveUpDistance) {
@@ -170,8 +188,7 @@ public class FloatingBallView extends View {
     public int getOpacity(){
         return mBackgroundPaint.getAlpha();
     }
-
-
+    //功能
     public void setDownFunctionListener(FunctionListener downFunctionListener) {
         mDownFunctionListener = downFunctionListener;
     }
@@ -190,10 +207,13 @@ public class FloatingBallView extends View {
 
     //改变球的半径，同时需要改变view的宽高
     public void changeFloatBallSizeWithRadius(int ballRadius){
-        this.ballRadius=ballRadius;
-        this.mBackgroundRadius=ballRadius+15;
+        if(this.ballRadius!=ballRadius){
+            refreshBackground();
+        }
+        this.ballRadius = ballRadius;
+        this.mBackgroundRadius = ballRadius + edge;
         //View宽高
-        measuredSideLength = (int) (mBackgroundRadius*2+20);
+        measuredSideLength = (int) (mBackgroundRadius * 2 + frameGap);
 
         //动画的参数也需要重新计算
         calcTouchAnimator();
@@ -210,7 +230,7 @@ public class FloatingBallView extends View {
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-        mDetector =new GestureDetector(context,new SingleTapGestureListener());
+        mDetector =new GestureDetector(context,new FloatingBallGestureListener());
 
         mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -223,22 +243,20 @@ public class FloatingBallView extends View {
         PorterDuff.Mode mode = PorterDuff.Mode.CLEAR;
         mBallEmptyPaint.setXfermode(new PorterDuffXfermode(mode));
 
-        //生成BitmapRead
-        getBitmapRead();
     }
 
     /**
      * 更新bitmapRead的值
      */
-    public void getBitmapRead() {
-        //app内部目录。
+    public void refreshBitmapRead() {
+        //path为app内部目录
         String path = getContext().getFilesDir().toString();
-        bitmapRead = BitmapFactory.decodeFile(path+"/ballBackground.png");
+        mBitmapRead = BitmapFactory.decodeFile(path+"/ballBackground.png");
 
         //读取不成功就取默认图片
-        if(bitmapRead==null){
-            Resources res=getResources();
-            bitmapRead = BitmapFactory.decodeResource(res, R.drawable.joe_big);
+        if (mBitmapRead == null) {
+            Resources res = getResources();
+            mBitmapRead = BitmapFactory.decodeResource(res, R.drawable.joe_big);
         }
     }
 
@@ -247,9 +265,9 @@ public class FloatingBallView extends View {
      * @param imagePath
      */
     public void copyBackgroundImage(String imagePath) {
-        bitmapRead=BitmapFactory.decodeFile(imagePath);
-        if(bitmapRead==null){
-            Toast.makeText(getContext(), "Error", Toast.LENGTH_LONG).show();
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+        if (bitmap == null) {
+            Toast.makeText(getContext(), "Read image error", Toast.LENGTH_LONG).show();
             return;
         }
         //copy source image
@@ -258,12 +276,13 @@ public class FloatingBallView extends View {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
-            boolean isSucceed=bitmapRead.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            Log.d(TAG, "getBitmapRead: isSecceed:"+isSucceed);
+            boolean isSucceed= bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+            Log.d(TAG, "refreshBitmapRead: isSecceed:"+isSucceed);
             // PNG is a lossless format, the compression factor (100) is ignored
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            bitmap.recycle();
             try {
                 if (out != null) {
                     out.close();
@@ -275,24 +294,29 @@ public class FloatingBallView extends View {
     }
 
     public void createBitmapCropFromBitmapRead() {
-        if(bitmapRead==null||ballRadius<=0){
+        if (ballRadius <= 0) {
             return;
         }
+        //bitmapRead可能已被回收
+        if (mBitmapRead == null || mBitmapRead.isRecycled()) {
+            refreshBitmapRead();
+        }
 
-        int width=(int)ballRadius*2;
-        int height=(int)ballRadius*2;
-//        bitmapRead为读取的原图，缩放为scaledBitmap
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapRead, width, height, true);
+        int edge = (int) ballRadius * 2;
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(mBitmapRead, edge, edge, true);
         //进行裁切后的bitmapCrop
-        bitmapCrop = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmapCrop);
+        mBitmapScaled = Bitmap.createBitmap(edge, edge, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(mBitmapScaled);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-//      canvas.drawCircle(width/2, height/2, ballRadius, paint);
+        //x y r
         canvas.drawCircle(ballRadius, ballRadius, ballRadius, paint);
         paint.reset();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
+
+        scaledBitmap.recycle();
+        mBitmapRead.recycle();
     }
 
     private void calcTouchAnimator() {
@@ -326,24 +350,6 @@ public class FloatingBallView extends View {
     }
 
     private void performAddAnimator() {
-        //可以设置更加细致的动画，这里只是修改圆的半径大小，背景图没处理，适用性低。
-//        Keyframe kf0 = Keyframe.ofFloat(0f, 0);
-//        Keyframe kf1 = Keyframe.ofFloat(1f, ballRadius);
-//        PropertyValuesHolder ballRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1);
-//        Keyframe kf2 = Keyframe.ofFloat(0f, 0);
-//        Keyframe kf3 = Keyframe.ofFloat(1f, ballRadius+15);
-//        PropertyValuesHolder backgroundRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("mBackgroundRadius", kf2,kf3);
-//
-//        onAddAnimate = ObjectAnimator.ofPropertyValuesHolder(this, ballRadiusValuesHolder,backgroundRadiusValuesHolder);
-//        onAddAnimate.setDuration(400);
-//        onAddAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                        @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                invalidate();
-//            }});
-//        onAddAnimate.start();
-
-        //View自带的动画。
         setScaleX(0);
         setScaleY(0);
         animate()
@@ -353,46 +359,6 @@ public class FloatingBallView extends View {
     }
 
     public void performRemoveAnimator() {
-//        Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
-//        Keyframe kf1 = Keyframe.ofFloat(1f, 0);
-//        PropertyValuesHolder ballRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1);
-//        Keyframe kf2 = Keyframe.ofFloat(0f, mBackgroundRadius);
-//        Keyframe kf3 = Keyframe.ofFloat(1f, 0);
-//        PropertyValuesHolder backgroundRadiusValuesHolder = PropertyValuesHolder.ofKeyframe("mBackgroundRadius", kf2,kf3);
-//
-//
-//        onRemoveAnimate = ObjectAnimator.ofPropertyValuesHolder(this, ballRadiusValuesHolder,backgroundRadiusValuesHolder);
-//        onRemoveAnimate.addListener(new Animator.AnimatorListener() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-//                windowManager.removeView(BallView.this);
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//
-//            }
-//        });
-//        onRemoveAnimate.setDuration(400);
-//        onRemoveAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                invalidate();
-//            }
-//        });
-//        onRemoveAnimate.start();
-
-        //View自带的动画。
         animate()
                 .scaleY(0).scaleX(0)
                 .setDuration(200)
@@ -443,8 +409,9 @@ public class FloatingBallView extends View {
         canvas.translate(measuredSideLength /2, measuredSideLength /2);
 
         //draw gray background
-        if(useGrayBackground)
+        if (useGrayBackground) {
             canvas.drawCircle(0, 0, mBackgroundRadius, mBackgroundPaint);
+        }
 
         //clear ball
         canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallEmptyPaint);
@@ -452,8 +419,8 @@ public class FloatingBallView extends View {
         canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallPaint);
 
         //draw imageBackground
-        if(useBackground)
-            canvas.drawBitmap(bitmapCrop,-bitmapCrop.getWidth()/2+ballCenterX,-bitmapCrop.getHeight()/2+ballCenterY,mBallPaint);
+        if (useBackground)
+            canvas.drawBitmap(mBitmapScaled, -mBitmapScaled.getWidth() / 2 + ballCenterX, -mBitmapScaled.getHeight() / 2 + ballCenterY, mBallPaint);
     }
 
     @Override
@@ -486,12 +453,8 @@ public class FloatingBallView extends View {
                     mLayoutParams.x = (int) (event.getRawX() - mLastTouchEventX);
                     mLayoutParams.y = (int) (event.getRawY() - mLastTouchEventY);
 
-                    SharedPreferences defaultSharedPreferences =PreferenceManager.getDefaultSharedPreferences(getContext());
-                    SharedPreferences.Editor editor = defaultSharedPreferences.edit();
-                    editor.putInt(PREF_PARAM_X,mLayoutParams.x);
-                    editor.putInt(PREF_PARAM_Y,mLayoutParams.y);
-                    editor.apply();
-
+                    SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, mLayoutParams.x);
+                    SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, mLayoutParams.y);
                     mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
                 }
                 break;
@@ -516,7 +479,7 @@ public class FloatingBallView extends View {
     }
 
     private void doGesture() {
-        AccessibilityUtil.checkAccessibilitySetting(getContext());
+//        AccessibilityUtil.checkAccessibilitySetting(getContext());
         switch (currentGestureSTATE) {
             case UP:
                 if(mUpFunctionListener!=null)
@@ -576,9 +539,9 @@ public class FloatingBallView extends View {
     }
 
     /**
-     * 处理 单击事件、滑动事件。
+     * 处理单击事件、滑动事件、长按。
      */
-    private class SingleTapGestureListener implements GestureDetector.OnGestureListener {
+    private class FloatingBallGestureListener implements GestureDetector.OnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
             return false;
@@ -589,7 +552,7 @@ public class FloatingBallView extends View {
 
         }
 
-        //单击
+        //单击抬起
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             if(!useDoubleClick)

@@ -279,7 +279,7 @@ public class SettingFragment extends Fragment {
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPrefsUtils.setBooleanPreference( PREF_USE_BACKGROUND, isChecked);
+                SharedPrefsUtils.setBooleanPreference(PREF_USE_BACKGROUND, isChecked);
                 sendUpdateIntentToService();
             }
         });
@@ -298,8 +298,7 @@ public class SettingFragment extends Fragment {
                 .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        SharedPrefsUtils.setBooleanPreference( PREF_USE_GRAY_BACKGROUND, isChecked);
-
+                        SharedPrefsUtils.setBooleanPreference(PREF_USE_GRAY_BACKGROUND, isChecked);
                         sendUpdateIntentToService();
                     }
                 });
