@@ -18,6 +18,8 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions"/>
 
+
+
     <application
         android:allowBackup="true"
         android:name=".App"

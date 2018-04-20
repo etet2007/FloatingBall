@@ -314,7 +314,6 @@ public class FloatingBallView extends View {
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
 
         scaledBitmap.recycle();
-//        mBitmapRead.recycle();
     }
 
     private void calcTouchAnimator() {
@@ -507,24 +506,24 @@ public class FloatingBallView extends View {
         int gestureMoveDistance = 18;
         switch (currentGestureSTATE){
             case UP:
-                ballCenterX=0;
-                ballCenterY=-gestureMoveDistance;
+                ballCenterX = 0;
+                ballCenterY = -gestureMoveDistance;
                 break;
             case DOWN:
-                ballCenterY= gestureMoveDistance;
-                ballCenterX=0;
+                ballCenterY = gestureMoveDistance;
+                ballCenterX = 0;
                 break;
             case LEFT:
-                ballCenterX=-gestureMoveDistance;
-                ballCenterY=0;
+                ballCenterX = -gestureMoveDistance;
+                ballCenterY = 0;
                 break;
             case RIGHT:
-                ballCenterX= gestureMoveDistance;
-                ballCenterY=0;
+                ballCenterX = gestureMoveDistance;
+                ballCenterY = 0;
                 break;
             case NONE:
-                ballCenterX=0;
-                ballCenterY=0;
+                ballCenterX = 0;
+                ballCenterY = 0;
                 break;
         }
         invalidate();
