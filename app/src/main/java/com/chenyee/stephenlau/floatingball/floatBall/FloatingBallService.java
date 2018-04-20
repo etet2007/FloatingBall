@@ -199,7 +199,7 @@ public class FloatingBallService extends AccessibilityService {
                 //intent中传图片地址，也可以换为sharedPreference吧
                 if (type == TYPE_IMAGE) mFloatingBallManager.setBackgroundImage(data.getString("imagePath"));
 
-//                if(type == TYPE_UPDATE_DATA) mFloatingBallManager.updateBallViewParameter();
+                if(type == TYPE_UPDATE_DATA) mFloatingBallManager.clear();
             }
         }
         return super.onStartCommand(intent, flags, startId);

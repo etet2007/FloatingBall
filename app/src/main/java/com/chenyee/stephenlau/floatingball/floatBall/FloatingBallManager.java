@@ -226,5 +226,8 @@ public class FloatingBallManager {
         if(mFloatingBallView !=null) mFloatingBallView.performMoveDownAnimator();
     }
 
+    public void clear() {
+        if(mFloatingBallView !=null) mFloatingBallView.recycleBitmap();
+    }
 }
 

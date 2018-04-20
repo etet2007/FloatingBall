@@ -124,15 +124,19 @@ public class FloatingBallView extends View {
             refreshBitmapRead();
             createBitmapCropFromBitmapRead();
         } else {
-            if (mBitmapRead != null) {
-                mBitmapRead.recycle();
-            }
-            if (mBitmapScaled != null) {
-                mBitmapScaled.recycle();
-            }
+            recycleBitmap();
         }
 
         this.useBackground = useBackground;
+    }
+
+    public void recycleBitmap() {
+        if (mBitmapRead != null && !mBitmapRead.isRecycled()) {
+            mBitmapRead.recycle();
+        }
+        if (mBitmapScaled != null && !mBitmapScaled.isRecycled()) {
+            mBitmapScaled.recycle();
+        }
     }
 
     public void setDoubleClickEventType(boolean useDoubleClick,FunctionListener doubleTapFunctionListener) {
@@ -201,7 +205,7 @@ public class FloatingBallView extends View {
     }
 
     //改变球的半径，同时需要改变view的宽高
-    public void changeFloatBallSizeWithRadius(int ballRadius){
+    public void changeFloatBallSizeWithRadius(int ballRadius) {
         this.ballRadius = ballRadius;
         this.mBackgroundRadius = ballRadius + edge;
 
@@ -310,7 +314,7 @@ public class FloatingBallView extends View {
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
 
         scaledBitmap.recycle();
-        mBitmapRead.recycle();
+//        mBitmapRead.recycle();
     }
 
     private void calcTouchAnimator() {

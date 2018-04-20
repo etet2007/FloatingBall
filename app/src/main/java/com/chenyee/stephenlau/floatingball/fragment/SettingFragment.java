@@ -6,14 +6,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -111,7 +109,6 @@ public class SettingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_setting, container, false);
     }
@@ -133,7 +130,6 @@ public class SettingFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
     }
 
     @Override
@@ -150,6 +146,12 @@ public class SettingFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        sendClearIntentToService();
     }
 
     @Override
@@ -233,8 +235,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPrefsUtils.setIntegerPreference( PREF_OPACITY, value);
-
-                sendUpdateIntentToService();
             }
 
             @Override
@@ -249,7 +249,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPrefsUtils.setIntegerPreference( PREF_SIZE, value);
-                sendUpdateIntentToService();
             }
 
             @Override
@@ -265,7 +264,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPrefsUtils.setIntegerPreference( PREF_MOVE_UP_DISTANCE, value);
-                sendUpdateIntentToService();
             }
 
             @Override
@@ -280,7 +278,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPrefsUtils.setBooleanPreference(PREF_USE_BACKGROUND, isChecked);
-                sendUpdateIntentToService();
             }
         });
         choosePicButton.setOnClickListener(new View.OnClickListener() {
@@ -299,7 +296,6 @@ public class SettingFragment extends Fragment {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         SharedPrefsUtils.setBooleanPreference(PREF_USE_GRAY_BACKGROUND, isChecked);
-                        sendUpdateIntentToService();
                     }
                 });
     }
@@ -341,12 +337,12 @@ public class SettingFragment extends Fragment {
         }
     }
 
-    private void sendUpdateIntentToService() {
-//        Intent intent = new Intent(getActivity(), FloatingBallService.class);
-//        Bundle data = new Bundle();
-//        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
-//        intent.putExtras(data);
-//        getActivity().startService(intent);
+    private void sendClearIntentToService() {
+        Intent intent = new Intent(getActivity(), FloatingBallService.class);
+        Bundle data = new Bundle();
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
+        intent.putExtras(data);
+        getActivity().startService(intent);
     }
 
     private void requestStoragePermission() {
@@ -401,9 +397,6 @@ public class SettingFragment extends Fragment {
                 .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPrefsUtils.setIntegerPreference( prefKey, which);
-
-                        sendUpdateIntentToService();
-
                         updateFunctionListView();
                     }
                 }).show();
