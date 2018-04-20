@@ -120,17 +120,15 @@ public class FloatingBallView extends View {
         this.useGrayBackground = useGrayBackground;
     }
     public void setUseBackground(boolean useBackground) {
-        if (this.useBackground != useBackground) {
-            if (useBackground) {
-                refreshBitmapRead();
-                createBitmapCropFromBitmapRead();
-            } else {
-                if (mBitmapRead != null) {
-                    mBitmapRead.recycle();
-                }
-                if (mBitmapScaled != null) {
-                    mBitmapScaled.recycle();
-                }
+        if (useBackground) {
+            refreshBitmapRead();
+            createBitmapCropFromBitmapRead();
+        } else {
+            if (mBitmapRead != null) {
+                mBitmapRead.recycle();
+            }
+            if (mBitmapScaled != null) {
+                mBitmapScaled.recycle();
             }
         }
 
@@ -204,16 +202,14 @@ public class FloatingBallView extends View {
 
     //改变球的半径，同时需要改变view的宽高
     public void changeFloatBallSizeWithRadius(int ballRadius){
-        if(this.ballRadius!=ballRadius){
-            if (useBackground) {
-                createBitmapCropFromBitmapRead();
-            }
-        }
         this.ballRadius = ballRadius;
         this.mBackgroundRadius = ballRadius + edge;
+
         //View宽高
         measuredSideLength = (int) (mBackgroundRadius * 2 + frameGap);
-
+        if (useBackground) {
+            createBitmapCropFromBitmapRead();
+        }
         //动画的参数也需要重新计算
         calcTouchAnimator();
     }
@@ -241,7 +237,6 @@ public class FloatingBallView extends View {
 
         PorterDuff.Mode mode = PorterDuff.Mode.CLEAR;
         mBallEmptyPaint.setXfermode(new PorterDuffXfermode(mode));
-
     }
 
     /**

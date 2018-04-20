@@ -58,7 +58,8 @@ public class FloatingBallService extends AccessibilityService {
     private SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            mFloatingBallManager.updateBallViewParameter();
+            Log.d(TAG, "onSharedPreferenceChanged: ");
+            mFloatingBallManager.updateBallViewParameter(key);
         }
     };
 
@@ -75,9 +76,16 @@ public class FloatingBallService extends AccessibilityService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mListener);
+    }
+
+    @Override
     public void onInterrupt() {
         Log.d(TAG, "onInterrupt: ");
         if(mFloatingBallManager !=null) mFloatingBallManager.saveFloatingBallState();
+        SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(mListener);
     }
 
     @Override

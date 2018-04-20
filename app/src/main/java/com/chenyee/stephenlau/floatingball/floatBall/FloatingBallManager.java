@@ -80,11 +80,13 @@ public class FloatingBallManager {
             windowManager.addView(mFloatingBallView, params);
 
             new FunctionUtil((FloatingBallService) context);
-            updateBallViewParameter();
+            updateAllBallViewParameter();
 
             isOpenedBall = true;
         }
     }
+
+
 
     public void removeBallView() {
         if (mFloatingBallView == null) return;
@@ -119,50 +121,102 @@ public class FloatingBallManager {
     /**
      *  根据SharedPreferences中的数据更新BallView的参数。
      */
-    public void updateBallViewParameter() {
+    public void updateBallViewParameter(String key) {
+        if (mFloatingBallView != null) {
+            /* View */
+            switch (key) {
+                case PREF_OPACITY:
+                    //Opacity
+                    mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
+                    break;
+                case PREF_SIZE:
+                    //Size
+                    mFloatingBallView.changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
+                    break;
+                case PREF_USE_BACKGROUND:
+                    //Use background
+                    mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
+                    break;
+                case PREF_USE_GRAY_BACKGROUND:
+                    //Use gray background
+                    mFloatingBallView.setUseGrayBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
+                    break;
+            }
+            //Refresh view
+            mFloatingBallView.requestLayout();
+            mFloatingBallView.invalidate();
+
+            if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
+                /* Function */
+                //Double click event
+                int double_click_event = SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE);
+                boolean useDoubleClick = true;
+                if (double_click_event == NONE) useDoubleClick = false;
+                mFloatingBallView.setDoubleClickEventType(useDoubleClick, getListener(double_click_event));
+            }
+            if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
+                //LeftSlideEvent
+                int leftSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
+                mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
+            }
+            if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
+                //RightSlideEvent
+                int rightSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
+                mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
+            }
+            if (key.equals(PREF_UP_SLIDE_EVENT)) {
+                //UpSlideEvent
+                int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
+                mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
+            }
+            if(key.equals(PREF_DOWN_SLIDE_EVENT)){
+                //DownSlideEvent
+                int downSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT,NOTIFICATION);
+                mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
+            }
+            if(key.equals(PREF_MOVE_UP_DISTANCE)) {
+                //要考虑多线程么
+                mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 200));
+            }
+        }
+    }
+    private void updateAllBallViewParameter() {
         if (mFloatingBallView != null) {
             /* View */
             //Opacity
-            mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY,125));
+            mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
             //Size
-            mFloatingBallView.changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE,25));
-
+            mFloatingBallView.changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
             //Use background
             mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
-
             //Use gray background
             mFloatingBallView.setUseGrayBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
-
             //Refresh view
             mFloatingBallView.requestLayout();
             mFloatingBallView.invalidate();
 
             /* Function */
             //Double click event
-            int double_click_event= SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT,NONE);
+            int double_click_event = SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE);
             boolean useDoubleClick = true;
-            if(double_click_event == NONE) useDoubleClick = false;
-            mFloatingBallView.setDoubleClickEventType(useDoubleClick,getListener(double_click_event));
-
+            if (double_click_event == NONE) useDoubleClick = false;
+            mFloatingBallView.setDoubleClickEventType(useDoubleClick, getListener(double_click_event));
             //LeftSlideEvent
-            int leftSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT,RECENT_APPS);
+            int leftSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
             mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
             //RightSlideEvent
-            int rightSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT,RECENT_APPS);
+            int rightSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
             mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
             //UpSlideEvent
-            int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT,HOME);
+            int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
             mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
             //DownSlideEvent
-            int downSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT,NOTIFICATION);
+            int downSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
             mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
-
             //要考虑多线程么
-            mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(StaticStringUtil.PREF_MOVE_UP_DISTANCE, 200));
-
+            mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 200));
         }
     }
-
 
     public void moveBallViewUp() {
         if(mFloatingBallView !=null) mFloatingBallView.performMoveUpAnimator();
