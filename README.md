@@ -1,9 +1,13 @@
 # FloatingBall
+仿Flyme悬浮球。
 
-仿Flyme悬浮球，可以自定义透明度，大小，选择背景图片，设置软键盘检测提升高度等。
+## 特点
+- 可自定义透明度，大小
+- 可选择背景图片
+- 软键盘检测避让
+- 一键卸载
 
 ## 默认功能列表
-
 - 单击：返回
 - 双击：无
 - 长按：移动悬浮球
@@ -11,11 +15,7 @@
 - 上拉：返回桌面
 - 下拉：打开通知栏
 
-
-
-
-参考了项目HalfStackDeveloper/FloatBall。
-
+参考了项目HalfStackDeveloper/FloatBall fg607/RelaxFinger。
 
 
 #### License

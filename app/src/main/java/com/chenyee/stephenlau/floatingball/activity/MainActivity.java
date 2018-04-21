@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -38,6 +40,7 @@ import com.artitk.licensefragment.model.LicenseType;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.fragment.SettingFragment;
+import com.chenyee.stephenlau.floatingball.receiver.LockReceiver;
 import com.chenyee.stephenlau.floatingball.util.ActivityUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
@@ -198,7 +201,7 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+//        int id = item.getItemId();
 
 //        if (id == R.id.action_settings) {
 //            return true;
@@ -291,6 +294,16 @@ public class MainActivity extends AppCompatActivity
                     FragmentManager fragmentManager = getFragmentManager();
                     SettingFragment settingFragment = SettingFragment.newInstance();
                     ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment, R.id.contentFrame);
+                } else if (id == R.id.uninstall) {
+                    ComponentName componentName = new ComponentName(MainActivity.this, LockReceiver.class);
+                    DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    if (devicePolicyManager != null) {
+                        devicePolicyManager.removeActiveAdmin(componentName);
+                    }
+
+                    Uri packageUri = Uri.parse("package:"+MainActivity.this.getPackageName());
+                    Intent intent = new Intent(Intent.ACTION_DELETE,packageUri);
+                    startActivity(intent);
                 }
 
                 DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -312,7 +325,6 @@ public class MainActivity extends AppCompatActivity
         // Update views
         boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
         updateViewsState(hasAddedBall);
-
     }
 
     private void updateViewsState(boolean hasAddedBall) {
@@ -346,5 +358,4 @@ public class MainActivity extends AppCompatActivity
         intent.putExtras(data);
         startService(intent);
     }
-
 }

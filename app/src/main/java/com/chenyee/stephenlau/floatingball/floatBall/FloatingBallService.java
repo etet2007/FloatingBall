@@ -46,7 +46,7 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_ADD = 0;
     public static final int TYPE_REMOVE = 1;
     public static final int TYPE_IMAGE = 2;
-    public static final int TYPE_UPDATE_DATA = 3;
+    public static final int TYPE_CLEAR = 3;
 
     private FloatingBallManager mFloatingBallManager;
 
@@ -58,7 +58,8 @@ public class FloatingBallService extends AccessibilityService {
     private SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            mFloatingBallManager.updateBallViewParameter();
+            Log.d(TAG, "onSharedPreferenceChanged: ");
+            mFloatingBallManager.updateBallViewParameter(key);
         }
     };
 
@@ -75,9 +76,16 @@ public class FloatingBallService extends AccessibilityService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mListener);
+    }
+
+    @Override
     public void onInterrupt() {
         Log.d(TAG, "onInterrupt: ");
         if(mFloatingBallManager !=null) mFloatingBallManager.saveFloatingBallState();
+        SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(mListener);
     }
 
     @Override
@@ -191,7 +199,7 @@ public class FloatingBallService extends AccessibilityService {
                 //intent中传图片地址，也可以换为sharedPreference吧
                 if (type == TYPE_IMAGE) mFloatingBallManager.setBackgroundImage(data.getString("imagePath"));
 
-//                if(type == TYPE_UPDATE_DATA) mFloatingBallManager.updateBallViewParameter();
+                if(type == TYPE_CLEAR) mFloatingBallManager.clear();
             }
         }
         return super.onStartCommand(intent, flags, startId);

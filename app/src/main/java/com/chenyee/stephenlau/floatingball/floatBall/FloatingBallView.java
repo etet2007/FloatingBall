@@ -120,21 +120,23 @@ public class FloatingBallView extends View {
         this.useGrayBackground = useGrayBackground;
     }
     public void setUseBackground(boolean useBackground) {
-        if (this.useBackground != useBackground) {
-            if (useBackground) {
-                refreshBitmapRead();
-                createBitmapCropFromBitmapRead();
-            } else {
-                if (mBitmapRead != null) {
-                    mBitmapRead.recycle();
-                }
-                if (mBitmapScaled != null) {
-                    mBitmapScaled.recycle();
-                }
-            }
+        if (useBackground) {
+            refreshBitmapRead();
+            createBitmapCropFromBitmapRead();
+        } else {
+            recycleBitmap();
         }
 
         this.useBackground = useBackground;
+    }
+
+    public void recycleBitmap() {
+        if (mBitmapRead != null && !mBitmapRead.isRecycled()) {
+            mBitmapRead.recycle();
+        }
+        if (mBitmapScaled != null && !mBitmapScaled.isRecycled()) {
+            mBitmapScaled.recycle();
+        }
     }
 
     public void setDoubleClickEventType(boolean useDoubleClick,FunctionListener doubleTapFunctionListener) {
@@ -203,17 +205,15 @@ public class FloatingBallView extends View {
     }
 
     //改变球的半径，同时需要改变view的宽高
-    public void changeFloatBallSizeWithRadius(int ballRadius){
-        if(this.ballRadius!=ballRadius){
-            if (useBackground) {
-                createBitmapCropFromBitmapRead();
-            }
-        }
+    public void changeFloatBallSizeWithRadius(int ballRadius) {
         this.ballRadius = ballRadius;
         this.mBackgroundRadius = ballRadius + edge;
+
         //View宽高
         measuredSideLength = (int) (mBackgroundRadius * 2 + frameGap);
-
+        if (useBackground) {
+            createBitmapCropFromBitmapRead();
+        }
         //动画的参数也需要重新计算
         calcTouchAnimator();
     }
@@ -241,7 +241,6 @@ public class FloatingBallView extends View {
 
         PorterDuff.Mode mode = PorterDuff.Mode.CLEAR;
         mBallEmptyPaint.setXfermode(new PorterDuffXfermode(mode));
-
     }
 
     /**
@@ -315,7 +314,6 @@ public class FloatingBallView extends View {
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
 
         scaledBitmap.recycle();
-        mBitmapRead.recycle();
     }
 
     private void calcTouchAnimator() {
@@ -508,24 +506,24 @@ public class FloatingBallView extends View {
         int gestureMoveDistance = 18;
         switch (currentGestureSTATE){
             case UP:
-                ballCenterX=0;
-                ballCenterY=-gestureMoveDistance;
+                ballCenterX = 0;
+                ballCenterY = -gestureMoveDistance;
                 break;
             case DOWN:
-                ballCenterY= gestureMoveDistance;
-                ballCenterX=0;
+                ballCenterY = gestureMoveDistance;
+                ballCenterX = 0;
                 break;
             case LEFT:
-                ballCenterX=-gestureMoveDistance;
-                ballCenterY=0;
+                ballCenterX = -gestureMoveDistance;
+                ballCenterY = 0;
                 break;
             case RIGHT:
-                ballCenterX= gestureMoveDistance;
-                ballCenterY=0;
+                ballCenterX = gestureMoveDistance;
+                ballCenterY = 0;
                 break;
             case NONE:
-                ballCenterX=0;
-                ballCenterY=0;
+                ballCenterX = 0;
+                ballCenterY = 0;
                 break;
         }
         invalidate();

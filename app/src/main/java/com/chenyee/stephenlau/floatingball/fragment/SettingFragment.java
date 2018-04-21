@@ -6,16 +6,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -28,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
@@ -111,7 +106,6 @@ public class SettingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_setting, container, false);
     }
@@ -119,21 +113,16 @@ public class SettingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // ButterKnife bind
         mUnBinder = ButterKnife.bind(this, view);
 
         //初始化view
         initContentViews();
-        //申请DrawOverlays权限
-        requestDrawOverlaysPermission();
-
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
     }
 
     @Override
@@ -149,7 +138,12 @@ public class SettingFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        sendClearIntentToService();
     }
 
     @Override
@@ -198,24 +192,6 @@ public class SettingFragment extends Fragment {
         }
     }
 
-    private void requestDrawOverlaysPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            //Setting :The Settings provider contains global system-level device preferences.
-            //Checks if the specified context can draw on top of other apps. As of API level 23,
-            // an app cannot draw on top of other apps unless it declares the SYSTEM_ALERT_WINDOW permission
-            // in its manifest, and the user specifically grants the app this capability.
-            // To prompt the user to grant this approval, the app must send an intent with the action
-            // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
-            if (!Settings.canDrawOverlays(getActivity())) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivityForResult(intent, 1);
-                Toast.makeText(getActivity(), "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
     private void initContentViews() {
 
         opacitySeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
@@ -233,8 +209,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPrefsUtils.setIntegerPreference( PREF_OPACITY, value);
-
-                sendUpdateIntentToService();
             }
 
             @Override
@@ -249,7 +223,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPrefsUtils.setIntegerPreference( PREF_SIZE, value);
-                sendUpdateIntentToService();
             }
 
             @Override
@@ -265,7 +238,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 SharedPrefsUtils.setIntegerPreference( PREF_MOVE_UP_DISTANCE, value);
-                sendUpdateIntentToService();
             }
 
             @Override
@@ -280,7 +252,6 @@ public class SettingFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPrefsUtils.setBooleanPreference(PREF_USE_BACKGROUND, isChecked);
-                sendUpdateIntentToService();
             }
         });
         choosePicButton.setOnClickListener(new View.OnClickListener() {
@@ -299,7 +270,6 @@ public class SettingFragment extends Fragment {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         SharedPrefsUtils.setBooleanPreference(PREF_USE_GRAY_BACKGROUND, isChecked);
-                        sendUpdateIntentToService();
                     }
                 });
     }
@@ -341,12 +311,15 @@ public class SettingFragment extends Fragment {
         }
     }
 
-    private void sendUpdateIntentToService() {
-//        Intent intent = new Intent(getActivity(), FloatingBallService.class);
-//        Bundle data = new Bundle();
-//        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
-//        intent.putExtras(data);
-//        getActivity().startService(intent);
+    /**
+     * 不再对悬浮球进行设置，悬浮球可以清不需要的模块的内存。
+     */
+    private void sendClearIntentToService() {
+        Intent intent = new Intent(getActivity(), FloatingBallService.class);
+        Bundle data = new Bundle();
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_CLEAR);
+        intent.putExtras(data);
+        getActivity().startService(intent);
     }
 
     private void requestStoragePermission() {
@@ -401,9 +374,6 @@ public class SettingFragment extends Fragment {
                 .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPrefsUtils.setIntegerPreference( prefKey, which);
-
-                        sendUpdateIntentToService();
-
                         updateFunctionListView();
                     }
                 }).show();
