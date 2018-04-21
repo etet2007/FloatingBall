@@ -10,10 +10,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -26,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
@@ -116,15 +113,11 @@ public class SettingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // ButterKnife bind
         mUnBinder = ButterKnife.bind(this, view);
 
         //初始化view
         initContentViews();
-        //申请DrawOverlays权限
-        requestDrawOverlaysPermission();
-
     }
 
     @Override
@@ -145,7 +138,6 @@ public class SettingFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-
     }
 
     @Override
@@ -199,24 +191,6 @@ public class SettingFragment extends Fragment {
             //            成功继续打开图片？
         }
     }
-
-    private void requestDrawOverlaysPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            //Setting :The Settings provider contains global system-level device preferences.
-            //Checks if the specified context can draw on top of other apps. As of API level 23,
-            // an app cannot draw on top of other apps unless it declares the SYSTEM_ALERT_WINDOW permission
-            // in its manifest, and the user specifically grants the app this capability.
-            // To prompt the user to grant this approval, the app must send an intent with the action
-            // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
-            if (!Settings.canDrawOverlays(getActivity())) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivityForResult(intent, 1);
-                Toast.makeText(getActivity(), "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
 
     private void initContentViews() {
 
@@ -337,10 +311,13 @@ public class SettingFragment extends Fragment {
         }
     }
 
+    /**
+     * 不再对悬浮球进行设置，悬浮球可以清不需要的模块的内存。
+     */
     private void sendClearIntentToService() {
         Intent intent = new Intent(getActivity(), FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_UPDATE_DATA);
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_CLEAR);
         intent.putExtras(data);
         getActivity().startService(intent);
     }

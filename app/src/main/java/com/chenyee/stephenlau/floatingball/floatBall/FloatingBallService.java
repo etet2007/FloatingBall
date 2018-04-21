@@ -46,7 +46,7 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_ADD = 0;
     public static final int TYPE_REMOVE = 1;
     public static final int TYPE_IMAGE = 2;
-    public static final int TYPE_UPDATE_DATA = 3;
+    public static final int TYPE_CLEAR = 3;
 
     private FloatingBallManager mFloatingBallManager;
 
@@ -199,7 +199,7 @@ public class FloatingBallService extends AccessibilityService {
                 //intent中传图片地址，也可以换为sharedPreference吧
                 if (type == TYPE_IMAGE) mFloatingBallManager.setBackgroundImage(data.getString("imagePath"));
 
-                if(type == TYPE_UPDATE_DATA) mFloatingBallManager.clear();
+                if(type == TYPE_CLEAR) mFloatingBallManager.clear();
             }
         }
         return super.onStartCommand(intent, flags, startId);
