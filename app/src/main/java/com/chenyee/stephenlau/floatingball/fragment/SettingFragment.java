@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,11 +130,6 @@ public class SettingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        boolean hasAddBall = SharedPrefsUtils.getBooleanPreference( PREF_HAS_ADDED_BALL, false);
-        if (hasAddBall) {
-            addFloatBall();
-        }
-        updateViewsState(hasAddBall);
     }
 
     @Override
@@ -201,9 +198,9 @@ public class SettingFragment extends Fragment {
 
         updateFunctionListView();
 
-        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-        //hasAddedBall代表两种状态
-        updateViewsState(hasAddedBall);
+//        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+//        //hasAddedBall代表两种状态
+//        updateViewsState(hasAddedBall);
 
         opacitySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -96,6 +97,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        // Update views
+        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+        updateViewsState(hasAddedBall);
     }
 
     @Override
@@ -107,10 +111,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+
         System.gc();
         System.runFinalization();
 
-        Log.d(TAG, "onDestroy: ");
     }
 
     @Override
@@ -256,6 +261,7 @@ public class MainActivity extends AppCompatActivity
                     Snackbar.make(buttonView, R.string.remove_ball_hint, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }
+
                 updateViewsState(isChecked);
             }
         });
@@ -322,9 +328,6 @@ public class MainActivity extends AppCompatActivity
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        // Update views
-        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-        updateViewsState(hasAddedBall);
     }
 
     private void updateViewsState(boolean hasAddedBall) {

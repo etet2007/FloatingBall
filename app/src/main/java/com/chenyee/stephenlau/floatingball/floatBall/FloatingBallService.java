@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
@@ -95,36 +96,38 @@ public class FloatingBallService extends AccessibilityService {
         if(mFloatingBallManager !=null) mFloatingBallManager.saveFloatingBallState();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d(TAG, "onConfigurationChanged: " + newConfig.keyboard);
+        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+        if (!hasAddedBall) {
+            return;
+        }
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Log.d(TAG, "onAccessibilityEvent: removeBallView");
+            mFloatingBallManager.removeBallView();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Log.d(TAG, "onAccessibilityEvent: addBallView");
+            mFloatingBallManager.addBallView(FloatingBallService.this);
+        }
+    }
+
     /**
-     *  todo onAccessibilityEvent 中放太多逻辑会影响性能。有回调的方法解决会更好。
+     * todo onAccessibilityEvent 中放太多逻辑会影响性能。有回调的方法解决会更好。
      * @param event
      */
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        // 旋转屏幕 TYPE_WINDOW_STATE_CHANGED 32 TYPE_WINDOW_CONTENT_CHANGED 2048。只有TYPE_WINDOW_CONTENT_CHANGED才能cover所有情况
         Log.d(TAG, "onAccessibilityEvent: "+event.getEventType());
 
         Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-
         Log.d(TAG, "onAccessibilityEvent: hasAddBall "+hasAddBall);
         //没有打开悬浮球
         if(!hasAddBall)
             return;
 
         inputMethodDetect(getApplicationContext());
-
-        // Rotate screen detect
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        int currentRotation = windowManager.getDefaultDisplay().getRotation();
-
-        //这样会不断调用add方法
-        if ((Surface.ROTATION_0 == currentRotation || Surface.ROTATION_180 == currentRotation)) {
-            Log.d(TAG, "onAccessibilityEvent: addBallView");
-            mFloatingBallManager.addBallView(FloatingBallService.this);
-        } else if ((Surface.ROTATION_90 == currentRotation || Surface.ROTATION_270 == currentRotation)) {
-                Log.d(TAG, "onAccessibilityEvent: removeBallView");
-                mFloatingBallManager.removeBallView();
-        }
     }
     /**
      * According to the state of input method, move the floatingBall view.
@@ -222,6 +225,8 @@ public class FloatingBallService extends AccessibilityService {
         removeBallViewAndSaveData();
         sendNotification();
     }
+
+
 
     private void sendNotification() {
         String contentTitle = getString(R.string.hide_notification_content_title);
