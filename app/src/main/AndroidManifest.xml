@@ -23,8 +23,6 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions"/>
 
-
-
     <application
         android:allowBackup="true"
         android:name=".App"
@@ -33,28 +31,6 @@
         android:roundIcon="@mipmap/ic_launcher_app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            <!--</intent-filter>-->
-        </activity>
-
-        <!-- 全局Service -->
-        <service
-            android:name=".floatBall.FloatingBallService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService"/>
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibilityservice"/>
-        </service>
 
         <activity
             android:name=".activity.PermissionActivity"
@@ -67,8 +43,36 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <meta-data android:name="android.app.shortcuts"
-                       android:resource="@xml/shortcuts" />
+                android:resource="@xml/shortcuts" />
         </activity>
+
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
+        </activity>
+
+        <!-- 全局Service -->
+        <service
+            android:name=".floatBall.FloatingBallService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:configChanges="orientation|keyboard|keyboardHidden"
+
+            >
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibilityservice"/>
+        </service>
+
 
         <!--用于申请锁屏的权限-->
         <receiver

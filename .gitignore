@@ -35,3 +35,8 @@ captures/
 
 app/app\.iml
 FloatingBall.iml
+FloatingBall.iml
+.idea/vcs.xml
+.idea/gradle.xml
+.idea/modules.xml
+.idea/runConfigurations.xml
