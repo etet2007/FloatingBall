@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,7 @@ public class SettingFragment extends Fragment {
 //    private SharedPreferences prefs;
 
     //调用系统相册-选择图片
-    private static final int IMAGE = 1;
+    private static final int REQUEST_CODE_IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
 
     public SettingFragment() {
@@ -157,11 +158,14 @@ public class SettingFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: SettingFragment");
+
         //选取图片的回调
-        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == REQUEST_CODE_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
-            if(selectedImage==null)
+            if (selectedImage == null) {
                 return;
+            }
 
             String[] filePathColumns = {MediaStore.Images.Media.DATA};
             Cursor c = getActivity().getContentResolver().query(selectedImage, filePathColumns, null, null, null);
@@ -171,6 +175,7 @@ public class SettingFragment extends Fragment {
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
 
+            //发送Intent给FloatingBallService
             Bundle bundle = new Bundle();
             bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_IMAGE);
             bundle.putString("imagePath", imagePath);
@@ -262,7 +267,7 @@ public class SettingFragment extends Fragment {
 
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, IMAGE);//onActivityResult
+                startActivityForResult(intent, REQUEST_CODE_IMAGE);//onActivityResult
             }
         });
         useGrayBackgroundSwitch
