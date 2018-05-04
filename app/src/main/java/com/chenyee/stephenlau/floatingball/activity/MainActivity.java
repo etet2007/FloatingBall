@@ -115,36 +115,12 @@ public class MainActivity extends AppCompatActivity
 
         System.gc();
         System.runFinalization();
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: MainActivity");
-        //选取图片的回调
-//        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
-//            Uri selectedImage = data.getData();
-//            if(selectedImage==null)
-//                return;
-//
-//            String[] filePathColumns = {MediaStore.Images.Media.DATA};
-//            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
-//            if (c == null) return;
-//
-//            c.moveToFirst();
-//            int columnIndex = c.getColumnIndex(filePathColumns[0]);
-//            String imagePath = c.getString(columnIndex);
-//
-//            Bundle bundle = new Bundle();
-//            bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_IMAGE);
-//            bundle.putString("imagePath", imagePath);
-//            Intent intent = new Intent(MainActivity.this, FloatingBallService.class)
-//                    .putExtras(bundle);
-//            startService(intent);
-//
-//            c.close();
-//        }
     }
 
     @Override

@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_Y;
 
@@ -55,7 +56,7 @@ public class FloatingBallView extends View {
     private int lastGestureSTATE = NONE;
 
     //球半径、背景半径
-    private final float edge = 15;
+    private final float edge=dip2px(getContext(), 6);
     private float ballRadius = 25;
     private float mBackgroundRadius = ballRadius + edge;
 
@@ -134,7 +135,7 @@ public class FloatingBallView extends View {
         if (mBitmapRead != null && !mBitmapRead.isRecycled()) {
             mBitmapRead.recycle();
         }
-        if (mBitmapScaled != null && !mBitmapScaled.isRecycled()) {
+        if (!useBackground && mBitmapScaled != null && !mBitmapScaled.isRecycled()) {
             mBitmapScaled.recycle();
         }
     }
@@ -225,7 +226,7 @@ public class FloatingBallView extends View {
     public FloatingBallView(Context context) {
         super(context);
         performAddAnimator();
-
+        Log.d(TAG, "FloatingBallView: edge"+edge);
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 

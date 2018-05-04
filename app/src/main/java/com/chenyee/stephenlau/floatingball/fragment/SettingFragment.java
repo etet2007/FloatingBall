@@ -341,14 +341,6 @@ public class SettingFragment extends Fragment {
         }
     }
 
-    private void addFloatBall() {
-        Intent intent = new Intent(getActivity(), FloatingBallService.class);
-        Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
-        intent.putExtras(data);
-        getActivity().startService(intent);
-    }
-
     @OnClick({R.id.double_click_function,
             R.id.left_function,
             R.id.right_function,

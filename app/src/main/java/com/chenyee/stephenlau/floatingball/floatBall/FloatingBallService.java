@@ -86,7 +86,6 @@ public class FloatingBallService extends AccessibilityService {
     public void onInterrupt() {
         Log.d(TAG, "onInterrupt: ");
         if(mFloatingBallManager !=null) mFloatingBallManager.saveFloatingBallState();
-        SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(mListener);
     }
 
     @Override
@@ -94,6 +93,8 @@ public class FloatingBallService extends AccessibilityService {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
         if(mFloatingBallManager !=null) mFloatingBallManager.saveFloatingBallState();
+
+        SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(mListener);
     }
 
     @Override
