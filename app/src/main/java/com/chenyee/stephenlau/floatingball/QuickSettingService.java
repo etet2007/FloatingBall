@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.chenyee.stephenlau.floatingball.activity.MainActivity;
@@ -48,6 +49,8 @@ public class QuickSettingService extends TileService {
         } else {
             removeFloatBall();
         }
+        LocalBroadcastManager.getInstance(QuickSettingService.this).sendBroadcast(new Intent("refreshActivity"));
+
         mHasAddedBall = !mHasAddedBall;
         refreshTile();
     }

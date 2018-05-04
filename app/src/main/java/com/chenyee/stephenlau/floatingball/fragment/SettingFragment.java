@@ -38,22 +38,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HOME;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NOTIFICATION;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ADDED_BALL;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_LEFT_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_MOVE_UP_DISTANCE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_OPACITY;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_RIGHT_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_SIZE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_UP_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_BACKGROUND;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_GRAY_BACKGROUND;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.RECENT_APPS;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
+
 
 public class SettingFragment extends Fragment {
     private static final String TAG = SettingFragment.class.getSimpleName();
@@ -84,6 +70,9 @@ public class SettingFragment extends Fragment {
     AppCompatTextView downSlideTextView;
     @BindView(R.id.right_slide_textView)
     AppCompatTextView rightSlideTextView;
+
+    @BindView(R.id.vibrate_switch)
+    SwitchCompat vibrateSwitch;
     //参数
 //    private SharedPreferences prefs;
 
@@ -199,6 +188,7 @@ public class SettingFragment extends Fragment {
         sizeSeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
         backgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
         useGrayBackgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
+        vibrateSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
 
         updateFunctionListView();
 
@@ -273,6 +263,12 @@ public class SettingFragment extends Fragment {
                         SharedPrefsUtils.setBooleanPreference(PREF_USE_GRAY_BACKGROUND, isChecked);
                     }
                 });
+        vibrateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPrefsUtils.setBooleanPreference(PREF_IS_VIBRATE, isChecked);
+            }
+        });
     }
 
     private void updateFunctionListView() {
@@ -302,6 +298,7 @@ public class SettingFragment extends Fragment {
             backgroundSwitch.setEnabled(true);
             upDistanceSeekBar.setEnabled(true);
             useGrayBackgroundSwitch.setEnabled(true);
+            vibrateSwitch.setEnabled(true);
         } else {
             opacitySeekBar.setEnabled(false);
             sizeSeekBar.setEnabled(false);
@@ -309,6 +306,7 @@ public class SettingFragment extends Fragment {
             backgroundSwitch.setEnabled(false);
             upDistanceSeekBar.setEnabled(false);
             useGrayBackgroundSwitch.setEnabled(false);
+            vibrateSwitch.setEnabled(false);
         }
     }
 

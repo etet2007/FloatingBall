@@ -65,4 +65,5 @@
     <string name="remove_ball_hint">移除悬浮球</string>
     <string name="setting">设置</string>
     <string name="uninstall">卸载</string>
+    <string name="is_vibrate">长按是否震动</string>
 </resources>

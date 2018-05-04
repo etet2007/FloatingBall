@@ -281,9 +281,18 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
+            <android.support.v7.widget.SwitchCompat
+                android:text="@string/is_vibrate"
+                android:id="@+id/vibrate_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:switchPadding="40dp"
+                />
+
             <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:gravity="center_horizontal"
                 android:text="@string/upDistance"

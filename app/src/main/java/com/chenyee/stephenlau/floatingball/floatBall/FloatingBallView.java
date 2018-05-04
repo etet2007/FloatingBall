@@ -104,6 +104,7 @@ public class FloatingBallView extends View {
 
     private Bitmap mBitmapRead;
     private Bitmap mBitmapScaled;
+    private boolean mIsVirbate=true;
 
     public float getBallCenterY() {
         return ballCenterY;
@@ -536,6 +537,10 @@ public class FloatingBallView extends View {
         ObjectAnimator.ofPropertyValuesHolder(this, pvh1, pvh2).setDuration(300).start();
     }
 
+    public void setIsVibrate(boolean isVibrate) {
+        mIsVirbate = isVibrate;
+    }
+
     /**
      * 处理单击事件、滑动事件、长按。
      */
@@ -591,9 +596,12 @@ public class FloatingBallView extends View {
 
         @Override
         public void onLongPress(MotionEvent e) {
-            long[] pattern = {0, 100};
-            mVibrator.vibrate(pattern, -1);
+            if (mIsVirbate) {
+                long[] pattern = {0, 70};
+                mVibrator.vibrate(pattern, -1);
+            }
             isLongPress = true;
+
         }
 
         @Override

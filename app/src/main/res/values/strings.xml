@@ -11,7 +11,7 @@
     <string name="on_off">On/Off:</string>
     <string name="opacity">Opacity</string>
     <string name="size">Size</string>
-    <string name="use_background_picture">Use background picture?</string>
+    <string name="use_background_picture">Show background picture?</string>
     <string name="choose_picture">Choose background picture</string>
     <string name="upDistance">Move up distance</string>
 
@@ -41,7 +41,7 @@
     <string name="down_slide_title">Down slide</string>
     <string name="down_slide">Down slide:</string>
 
-    <string name="use_gray_background">Use gray background?</string>
+    <string name="use_gray_background">Show gray background?</string>
 
     <string name="home">Home</string>
     <string name="lock_screen">Lock screen</string>
@@ -65,4 +65,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="setting">Setting</string>
     <string name="uninstall">Uninstall</string>
+    <string name="is_vibrate">Vibrate</string>
 </resources>

@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -20,6 +22,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
@@ -35,6 +38,8 @@ import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.artitk.licensefragment.ScrollViewLicenseFragment;
 import com.artitk.licensefragment.model.License;
 import com.artitk.licensefragment.model.LicenseType;
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     private static final int IMAGE = 1;
     private final int mREQUEST_external_storage = 1;
 
+    private RefreshReceiver mRefreshReceiver;
     public static Intent getStartIntent(Context context) {
         return new Intent(context, MainActivity.class);
     }
@@ -92,11 +98,17 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getFragmentManager();
         SettingFragment settingFragment = SettingFragment.newInstance();
         ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment, R.id.contentFrame);
+
+        mRefreshReceiver = new RefreshReceiver(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("refreshActivity");
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(mRefreshReceiver,intentFilter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: ");
         // Update views
         boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
         updateViewsState(hasAddedBall);
@@ -112,6 +124,7 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
+        LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(mRefreshReceiver);
 
         System.gc();
         System.runFinalization();
@@ -338,4 +351,19 @@ public class MainActivity extends AppCompatActivity
         intent.putExtras(data);
         startService(intent);
     }
+
+    public class RefreshReceiver extends BroadcastReceiver {
+        MainActivity mMainActivity;
+
+        public RefreshReceiver(MainActivity mainActivity) {
+            super();
+            mMainActivity = mainActivity;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mMainActivity.onResume();
+        }
+    }
+
 }

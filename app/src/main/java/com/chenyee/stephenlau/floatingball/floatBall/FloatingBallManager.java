@@ -12,7 +12,6 @@ import android.view.WindowManager.LayoutParams;
 
 import com.chenyee.stephenlau.floatingball.util.FunctionUtil;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
-import com.chenyee.stephenlau.floatingball.util.StaticStringUtil;
 
 import static com.chenyee.stephenlau.floatingball.util.FunctionUtil.getListener;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
@@ -140,6 +139,9 @@ public class FloatingBallManager {
                 case PREF_USE_GRAY_BACKGROUND:
                     //Use gray background
                     mFloatingBallView.setUseGrayBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
+                    break;
+                case PREF_IS_VIBRATE:
+                    mFloatingBallView.setIsVibrate(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
                     break;
             }
             //Refresh view
