@@ -2,11 +2,16 @@ package com.chenyee.stephenlau.floatingball.util;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.floatBall.FunctionListener;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+
+import java.util.List;
+
+import eu.chainfire.libsuperuser.Shell;
 
 import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HIDE;
@@ -82,9 +87,9 @@ public class FunctionUtil {
         public void onClick() {
             String apkRoot="input keyevent 26";
             rootCommand(apkRoot);
+//            Shell.SU.run(apkRoot);
         }
     };
-
 
     public static FunctionListener getListener(int key) {
         FunctionListener functionListener = FunctionUtil.nullFunctionListener;
