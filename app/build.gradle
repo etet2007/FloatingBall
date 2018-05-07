@@ -67,6 +67,9 @@ dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
+    implementation 'eu.chainfire:libsuperuser:1.0.0+'
+
+
     // TODO check them out
 //    implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
 
