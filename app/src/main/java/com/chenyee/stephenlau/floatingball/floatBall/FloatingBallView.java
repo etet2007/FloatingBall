@@ -56,7 +56,7 @@ public class FloatingBallView extends View {
     private int lastGestureSTATE = NONE;
 
     //球半径、背景半径
-    private final float edge=dip2px(getContext(), 6);
+    private final float edge=dip2px(getContext(), 4);
     private float ballRadius = 25;
     private float mBackgroundRadius = ballRadius + edge;
 

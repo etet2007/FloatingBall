@@ -362,7 +362,9 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            mMainActivity.onResume();
+            if (mMainActivity != null) {
+                mMainActivity.onResume();
+            }
         }
     }
 

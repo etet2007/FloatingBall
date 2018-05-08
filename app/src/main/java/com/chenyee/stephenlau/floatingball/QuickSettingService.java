@@ -45,14 +45,17 @@ public class QuickSettingService extends TileService {
         Log.d(TAG, "onClick "+ mHasAddedBall);
 
         if (mHasAddedBall) {
-            addFloatBall();
-        } else {
             removeFloatBall();
+        } else {
+            addFloatBall();
         }
-        LocalBroadcastManager.getInstance(QuickSettingService.this).sendBroadcast(new Intent("refreshActivity"));
-
         mHasAddedBall = !mHasAddedBall;
+        SharedPrefsUtils.setBooleanPreference(PREF_HAS_ADDED_BALL, mHasAddedBall);
+
+        LocalBroadcastManager.getInstance(QuickSettingService.this).sendBroadcast(new Intent("refreshActivity"));
         refreshTile();
+
+
     }
 
 
@@ -63,6 +66,8 @@ public class QuickSettingService extends TileService {
         Log.d(TAG, "onStartListening");
         tile = getQsTile();
         mHasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+        Log.d(TAG, "onStartListening mHasAddedBall"+mHasAddedBall);
+
         refreshTile();
     }
     // 关闭下拉菜单的时候调用,当快速设置按钮并没有在编辑栏拖到设置栏中不会调用
@@ -89,9 +94,9 @@ public class QuickSettingService extends TileService {
     }
     private void refreshTile() {
         if (mHasAddedBall) {
-            tile.setState(Tile.STATE_INACTIVE);
-        } else {
             tile.setState(Tile.STATE_ACTIVE);
+        } else {
+            tile.setState(Tile.STATE_INACTIVE);
         }
         tile.updateTile();
     }
