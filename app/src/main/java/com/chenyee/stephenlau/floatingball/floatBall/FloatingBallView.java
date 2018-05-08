@@ -56,14 +56,12 @@ public class FloatingBallView extends View {
     private int lastGestureSTATE = NONE;
 
     //球半径、背景半径
-    private final float edge=dip2px(getContext(), 4);
-    private float ballRadius = 25;
-    private float mBackgroundRadius = ballRadius + edge;
+    private final float edge = dip2px(getContext(), 4);
+    private float mBallRadius;
+    private float mBackgroundRadius ;
 
-    //View宽高 正方形 +20是为了显示动画？
-    private int frameGap = 20;
-    private int measuredSideLength = (int) (mBackgroundRadius * 2 + frameGap);
-
+    private int measuredSideLength;
+    //移动距离 可以设置
     private int moveUpDistance;
 
     private float ballCenterY = 0;
@@ -104,7 +102,7 @@ public class FloatingBallView extends View {
 
     private Bitmap mBitmapRead;
     private Bitmap mBitmapScaled;
-    private boolean mIsVirbate=true;
+    private boolean mIsVibrate =true;
 
     public float getBallCenterY() {
         return ballCenterY;
@@ -171,10 +169,10 @@ public class FloatingBallView extends View {
         return mLayoutParams;
     }
     public float getBallRadius() {
-        return ballRadius;
+        return mBallRadius;
     }
     public void setBallRadius(float ballRadius) {
-        this.ballRadius = ballRadius;
+        this.mBallRadius = ballRadius;
     }
     public float getMBackgroundRadius() {
         return mBackgroundRadius;
@@ -206,17 +204,22 @@ public class FloatingBallView extends View {
         mRightFunctionListener = rightFunctionListener;
     }
 
-    //改变球的半径，同时需要改变view的宽高
+    /**
+     * 改变悬浮球大小，需要改变所有与Size相关的东西
+     * @param ballRadius
+     */
     public void changeFloatBallSizeWithRadius(int ballRadius) {
-        this.ballRadius = ballRadius;
+        this.mBallRadius = ballRadius;
         this.mBackgroundRadius = ballRadius + edge;
 
         //View宽高
-        measuredSideLength = (int) (mBackgroundRadius * 2 + frameGap);
+        final int frameGap = 10;
+        measuredSideLength = (int) (mBackgroundRadius + frameGap) * 2;
+
         if (useBackground) {
             createBitmapCropFromBitmapRead();
         }
-        //动画的参数也需要重新计算
+        //动画的参数也需计算
         calcTouchAnimator();
     }
 
@@ -226,6 +229,8 @@ public class FloatingBallView extends View {
      */
     public FloatingBallView(Context context) {
         super(context);
+        changeFloatBallSizeWithRadius(25);
+
         performAddAnimator();
         Log.d(TAG, "FloatingBallView: edge"+edge);
         mService = (AccessibilityService) context;
@@ -294,7 +299,7 @@ public class FloatingBallView extends View {
     }
 
     public void createBitmapCropFromBitmapRead() {
-        if (ballRadius <= 0) {
+        if (mBallRadius <= 0) {
             return;
         }
         //bitmapRead可能已被回收
@@ -302,7 +307,7 @@ public class FloatingBallView extends View {
             refreshBitmapRead();
         }
 
-        int edge = (int) ballRadius * 2;
+        int edge = (int) mBallRadius * 2;
 
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(mBitmapRead, edge, edge, true);
         //进行裁切后的bitmapCrop
@@ -310,7 +315,7 @@ public class FloatingBallView extends View {
         Canvas canvas = new Canvas(mBitmapScaled);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         //x y r
-        canvas.drawCircle(ballRadius, ballRadius, ballRadius, paint);
+        canvas.drawCircle(mBallRadius, mBallRadius, mBallRadius, paint);
         paint.reset();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
@@ -320,10 +325,10 @@ public class FloatingBallView extends View {
 
     private void calcTouchAnimator() {
 //        onTouchAnimate
-        Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
-        Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius+6);
-        Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius+7);
-        PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1,kf2);
+        Keyframe kf0 = Keyframe.ofFloat(0f, mBallRadius);
+        Keyframe kf1 = Keyframe.ofFloat(.7f, mBallRadius +6);
+        Keyframe kf2 = Keyframe.ofFloat(1f, mBallRadius +7);
+        PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("mBallRadius", kf0,kf1,kf2);
         onTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, onTouch);
         onTouchAnimate.setDuration(300);
         onTouchAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -334,10 +339,10 @@ public class FloatingBallView extends View {
         });
 
 //        unTouchAnimate
-        Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius+7);
-        Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius+7);
-        Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
-        PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3,kf4,kf5);
+        Keyframe kf3 = Keyframe.ofFloat(0f, mBallRadius +7);
+        Keyframe kf4 = Keyframe.ofFloat(0.3f, mBallRadius +7);
+        Keyframe kf5 = Keyframe.ofFloat(1f, mBallRadius);
+        PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("mBallRadius", kf3,kf4,kf5);
         unTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, unTouch);
         unTouchAnimate.setDuration(400);
         unTouchAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -413,9 +418,9 @@ public class FloatingBallView extends View {
         }
 
         //clear ball
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallEmptyPaint);
+        canvas.drawCircle(ballCenterX, ballCenterY, mBallRadius, mBallEmptyPaint);
         //draw ball
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallPaint);
+        canvas.drawCircle(ballCenterX, ballCenterY, mBallRadius, mBallPaint);
 
         //draw imageBackground
         if (useBackground)
@@ -501,9 +506,9 @@ public class FloatingBallView extends View {
     }
 
     /**
-     * 根据currentGestureSTATE改变显示参数
+     * 根据currentGestureSTATE改变显示参数,瞬间移动
      */
-    private void moveFloatBall() {
+    private void moveFloatingBall() {
         int gestureMoveDistance = 18;
         switch (currentGestureSTATE){
             case UP:
@@ -537,7 +542,7 @@ public class FloatingBallView extends View {
     }
 
     public void setIsVibrate(boolean isVibrate) {
-        mIsVirbate = isVibrate;
+        mIsVibrate = isVibrate;
     }
 
     /**
@@ -587,7 +592,7 @@ public class FloatingBallView extends View {
                 currentGestureSTATE = LEFT;
             }
             if (currentGestureSTATE != lastGestureSTATE) {
-                moveFloatBall();
+                moveFloatingBall();
                 lastGestureSTATE = currentGestureSTATE;
             }
             return false;
@@ -595,7 +600,7 @@ public class FloatingBallView extends View {
 
         @Override
         public void onLongPress(MotionEvent e) {
-            if (mIsVirbate) {
+            if (mIsVibrate) {
                 long[] pattern = {0, 70};
                 mVibrator.vibrate(pattern, -1);
             }

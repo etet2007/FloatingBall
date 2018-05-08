@@ -148,6 +148,7 @@ public class FloatingBallManager {
             mFloatingBallView.requestLayout();
             mFloatingBallView.invalidate();
 
+            //功能性
             if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
                 /* Function */
                 //Double click event

@@ -27,7 +27,6 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.ROOT_LOC
 public class FunctionUtil {
     public static FloatingBallService sFloatingBallService;
 
-
     public static FunctionListener nullFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
