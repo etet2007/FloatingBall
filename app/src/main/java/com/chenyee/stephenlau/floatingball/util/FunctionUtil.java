@@ -8,7 +8,6 @@ import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 
 import java.util.List;
 
-import eu.chainfire.libsuperuser.Shell;
 
 import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HIDE;

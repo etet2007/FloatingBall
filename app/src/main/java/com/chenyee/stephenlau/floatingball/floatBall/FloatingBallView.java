@@ -57,7 +57,7 @@ public class FloatingBallView extends View {
 
     //球半径、背景半径
     private final float edge = dip2px(getContext(), 4);
-    private float mBallRadius;
+    private float ballRadius;
     private float mBackgroundRadius ;
 
     private int measuredSideLength;
@@ -169,10 +169,10 @@ public class FloatingBallView extends View {
         return mLayoutParams;
     }
     public float getBallRadius() {
-        return mBallRadius;
+        return ballRadius;
     }
     public void setBallRadius(float ballRadius) {
-        this.mBallRadius = ballRadius;
+        this.ballRadius = ballRadius;
     }
     public float getMBackgroundRadius() {
         return mBackgroundRadius;
@@ -209,11 +209,12 @@ public class FloatingBallView extends View {
      * @param ballRadius
      */
     public void changeFloatBallSizeWithRadius(int ballRadius) {
-        this.mBallRadius = ballRadius;
+        this.ballRadius = ballRadius;
         this.mBackgroundRadius = ballRadius + edge;
-
-        //View宽高
-        final int frameGap = 10;
+//        final int frameGap = 10;
+        //View宽高 r+moveDistance+r在动画变大的值=r+edge+gap
+        int frameGap = (int) (18+7-edge);
+        Log.d(TAG, "changeFloatBallSizeWithRadius: frameGap "+frameGap);
         measuredSideLength = (int) (mBackgroundRadius + frameGap) * 2;
 
         if (useBackground) {
@@ -299,7 +300,7 @@ public class FloatingBallView extends View {
     }
 
     public void createBitmapCropFromBitmapRead() {
-        if (mBallRadius <= 0) {
+        if (ballRadius <= 0) {
             return;
         }
         //bitmapRead可能已被回收
@@ -307,7 +308,7 @@ public class FloatingBallView extends View {
             refreshBitmapRead();
         }
 
-        int edge = (int) mBallRadius * 2;
+        int edge = (int) ballRadius * 2;
 
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(mBitmapRead, edge, edge, true);
         //进行裁切后的bitmapCrop
@@ -315,7 +316,7 @@ public class FloatingBallView extends View {
         Canvas canvas = new Canvas(mBitmapScaled);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         //x y r
-        canvas.drawCircle(mBallRadius, mBallRadius, mBallRadius, paint);
+        canvas.drawCircle(ballRadius, ballRadius, ballRadius, paint);
         paint.reset();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
@@ -325,10 +326,10 @@ public class FloatingBallView extends View {
 
     private void calcTouchAnimator() {
 //        onTouchAnimate
-        Keyframe kf0 = Keyframe.ofFloat(0f, mBallRadius);
-        Keyframe kf1 = Keyframe.ofFloat(.7f, mBallRadius +6);
-        Keyframe kf2 = Keyframe.ofFloat(1f, mBallRadius +7);
-        PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("mBallRadius", kf0,kf1,kf2);
+        Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
+        Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius +6);
+        Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius +7);
+        PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1,kf2);
         onTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, onTouch);
         onTouchAnimate.setDuration(300);
         onTouchAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -339,10 +340,10 @@ public class FloatingBallView extends View {
         });
 
 //        unTouchAnimate
-        Keyframe kf3 = Keyframe.ofFloat(0f, mBallRadius +7);
-        Keyframe kf4 = Keyframe.ofFloat(0.3f, mBallRadius +7);
-        Keyframe kf5 = Keyframe.ofFloat(1f, mBallRadius);
-        PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("mBallRadius", kf3,kf4,kf5);
+        Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius +7);
+        Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius +7);
+        Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
+        PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3,kf4,kf5);
         unTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, unTouch);
         unTouchAnimate.setDuration(400);
         unTouchAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -418,9 +419,9 @@ public class FloatingBallView extends View {
         }
 
         //clear ball
-        canvas.drawCircle(ballCenterX, ballCenterY, mBallRadius, mBallEmptyPaint);
+        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallEmptyPaint);
         //draw ball
-        canvas.drawCircle(ballCenterX, ballCenterY, mBallRadius, mBallPaint);
+        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallPaint);
 
         //draw imageBackground
         if (useBackground)

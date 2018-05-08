@@ -7,8 +7,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-import eu.chainfire.libsuperuser.Shell;
-
 /**
  * Created by stephenlau on 18-3-13.
  */
@@ -69,33 +67,33 @@ public class RootUtil {
             @Override
             public void run( ) {
 
-//                try {
-//                    Runtime.getRuntime().exec(new String[]{"su", "-c", command});
-////                    Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
-////                    process.waitFor();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-
-
-                try{
-                    Process su = Runtime.getRuntime().exec("su");
-                    DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
-
-                    outputStream.writeBytes(command + "\n");
-                    outputStream.flush();
-
-                    outputStream.writeBytes("exit\n");
-                    outputStream.flush();
-                    try {
-                        su.waitFor();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    outputStream.close();
-                }catch(IOException e){
+                try {
+                    Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+//                    Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+//                    process.waitFor();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
+//                try{
+//                    Process su = Runtime.getRuntime().exec("su");
+//                    DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
+//
+//                    outputStream.writeBytes(command + "\n");
+//                    outputStream.flush();
+//
+//                    outputStream.writeBytes("exit\n");
+//                    outputStream.flush();
+//                    try {
+//                        su.waitFor();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    outputStream.close();
+//                }catch(IOException e){
+//                    e.printStackTrace();
+//                }
 
 
             }
