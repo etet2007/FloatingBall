@@ -478,7 +478,6 @@ public class FloatingBallView extends View {
     }
 
     private void doGesture() {
-//        AccessibilityUtil.checkAccessibilitySetting(getContext());
         switch (currentGestureSTATE) {
             case UP:
                 if(mUpFunctionListener!=null)

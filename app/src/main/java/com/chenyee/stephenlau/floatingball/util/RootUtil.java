@@ -1,5 +1,6 @@
 package com.chenyee.stephenlau.floatingball.util;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.DataOutputStream;
@@ -12,7 +13,7 @@ import eu.chainfire.libsuperuser.Shell;
  * Created by stephenlau on 18-3-13.
  */
 
-public final class RootUtil {
+public class RootUtil {
 
     private static final String TAG = RootUtil.class.getSimpleName();
 
@@ -61,10 +62,12 @@ public final class RootUtil {
         }
         return result;
     }
+
+
     public static boolean rootCommand(final String command){
         new Thread(new Runnable() {
             @Override
-            public void run() {
+            public void run( ) {
 
 //                try {
 //                    Runtime.getRuntime().exec(new String[]{"su", "-c", command});
@@ -94,10 +97,11 @@ public final class RootUtil {
                     e.printStackTrace();
                 }
 
+
             }
         }).start();
-
-
         return true;
     }
+
+
 }

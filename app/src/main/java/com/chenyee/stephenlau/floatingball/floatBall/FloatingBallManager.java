@@ -78,7 +78,7 @@ public class FloatingBallManager {
             //使用windowManager把ballView加进去
             windowManager.addView(mFloatingBallView, params);
 
-            new FunctionUtil((FloatingBallService) context);
+            FunctionUtil.sFloatingBallService=(FloatingBallService) context;
             updateAllBallViewParameter();
 
             isOpenedBall = true;
