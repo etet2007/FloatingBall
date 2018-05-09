@@ -42,8 +42,20 @@ public class FunctionUtil {
     public static FunctionListener lastAppFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
-            sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
-            sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+            final boolean isOk= sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(isOk)
+                        sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+                }
+            }.start();
         }
     };
 

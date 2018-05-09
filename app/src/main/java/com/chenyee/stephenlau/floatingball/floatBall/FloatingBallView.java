@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.util.DimensionUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import java.io.File;
@@ -57,7 +58,10 @@ public class FloatingBallView extends View {
 
     //球半径、背景半径
     private final float edge = dip2px(getContext(), 4);
-    private float ballRadius;
+    private final float ballRadiusDetlaMax = 7;
+    private final int gestureMoveDistance = 18;//18pix
+
+    private float ballRadius; //不能改名字，用了反射
     private float mBackgroundRadius ;
 
     private int measuredSideLength;
@@ -213,8 +217,10 @@ public class FloatingBallView extends View {
         this.mBackgroundRadius = ballRadius + edge;
 //        final int frameGap = 10;
         //View宽高 r+moveDistance+r在动画变大的值=r+edge+gap
-        int frameGap = (int) (18+7-edge);
-        Log.d(TAG, "changeFloatBallSizeWithRadius: frameGap "+frameGap);
+        int frameGap = (int) (gestureMoveDistance + ballRadiusDetlaMax - edge);
+
+
+
         measuredSideLength = (int) (mBackgroundRadius + frameGap) * 2;
 
         if (useBackground) {
@@ -233,7 +239,6 @@ public class FloatingBallView extends View {
         changeFloatBallSizeWithRadius(25);
 
         performAddAnimator();
-        Log.d(TAG, "FloatingBallView: edge"+edge);
         mService = (AccessibilityService) context;
         mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
@@ -249,6 +254,11 @@ public class FloatingBallView extends View {
 
         PorterDuff.Mode mode = PorterDuff.Mode.CLEAR;
         mBallEmptyPaint.setXfermode(new PorterDuffXfermode(mode));
+
+        Log.d(TAG, "FloatingBallView: gestureMoveDistance " + gestureMoveDistance);
+        Log.d(TAG, "FloatingBallView: ballRadiusDetlaMax " + ballRadiusDetlaMax);
+
+
     }
 
     /**
@@ -327,8 +337,8 @@ public class FloatingBallView extends View {
     private void calcTouchAnimator() {
 //        onTouchAnimate
         Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
-        Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius +6);
-        Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius +7);
+        Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + ballRadiusDetlaMax - 1);
+        Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + ballRadiusDetlaMax);
         PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1,kf2);
         onTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, onTouch);
         onTouchAnimate.setDuration(300);
@@ -340,8 +350,8 @@ public class FloatingBallView extends View {
         });
 
 //        unTouchAnimate
-        Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius +7);
-        Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius +7);
+        Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius +ballRadiusDetlaMax);
+        Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius +ballRadiusDetlaMax);
         Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
         PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3,kf4,kf5);
         unTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, unTouch);
@@ -510,7 +520,6 @@ public class FloatingBallView extends View {
      * 根据currentGestureSTATE改变显示参数,瞬间移动
      */
     private void moveFloatingBall() {
-        int gestureMoveDistance = 18;
         switch (currentGestureSTATE){
             case UP:
                 ballCenterX = 0;
