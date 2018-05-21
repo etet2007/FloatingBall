@@ -107,6 +107,7 @@ public class FloatingBallView extends View {
     private Bitmap mBitmapRead;
     private Bitmap mBitmapScaled;
     private boolean mIsVibrate =true;
+    private int mBaseOpacity;
 
     public float getBallCenterY() {
         return ballCenterY;
@@ -187,6 +188,7 @@ public class FloatingBallView extends View {
     public void setOpacity(int opacity){
         mBackgroundPaint.setAlpha(opacity);
         mBallPaint.setAlpha(opacity);
+        mBaseOpacity = opacity;
     }
     public int getOpacity(){
         return mBackgroundPaint.getAlpha();
@@ -257,8 +259,6 @@ public class FloatingBallView extends View {
 
         Log.d(TAG, "FloatingBallView: gestureMoveDistance " + gestureMoveDistance);
         Log.d(TAG, "FloatingBallView: ballRadiusDetlaMax " + ballRadiusDetlaMax);
-
-
     }
 
     /**
@@ -451,17 +451,19 @@ public class FloatingBallView extends View {
         mDetector.onTouchEvent(event);
 
         switch (event.getAction()) {
-            //任何接触，球都放大。
+            //任何接触，球都放大。 Opacity reset.
             case MotionEvent.ACTION_DOWN:
                 onTouchAnimate.start();//球放大动画
-                //处理移动模式
+                // todo 重置透明度值，不需要动画
+                setOpacity(mBaseOpacity);
+                // 处理移动模式
             case MotionEvent.ACTION_MOVE:
-                //移动模式
+                // 移动模式
                 if (isLongPress){
                     //getX()、getY()返回的则是触摸点相对于View的位置。
                     //getRawX()、getRawY()返回的是触摸点相对于屏幕的位置
-                    if(!isFirstEvent){
-                        isFirstEvent=true;
+                    if (!isFirstEvent) {
+                        isFirstEvent = true;
                         mLastTouchEventX = event.getX();
                         mLastTouchEventY = event.getY();
                     }
@@ -486,6 +488,11 @@ public class FloatingBallView extends View {
                     lastGestureSTATE = NONE;
                     isScrolling=false;
                 }
+                // todo 过一段时间后降低透明度，透明度带有动画。
+//                setAlpha(0.5f);
+                animate().alpha(0.5f).setDuration(200).start();
+
+                //reset flag value.
                 isLongPress=false;
                 isFirstEvent=false;
                 break;
