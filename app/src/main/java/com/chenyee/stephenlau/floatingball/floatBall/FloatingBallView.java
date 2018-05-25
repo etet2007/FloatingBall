@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.DimensionUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import java.io.File;
@@ -58,7 +57,7 @@ public class FloatingBallView extends View {
 
     //球半径、背景半径
     private final float edge = dip2px(getContext(), 4);
-    private final float ballRadiusDetlaMax = 7;
+    private final float ballRadiusDeltaMax = 7;
     private final int gestureMoveDistance = 18;//18pix
 
     private float ballRadius; //不能改名字，用了反射
@@ -100,6 +99,8 @@ public class FloatingBallView extends View {
     //接触时动画
     private ObjectAnimator onTouchAnimate;
     private ObjectAnimator unTouchAnimate;
+
+    private ObjectAnimator reduceAnimate;
 
     //Vibrator
     private Vibrator mVibrator;
@@ -185,11 +186,37 @@ public class FloatingBallView extends View {
     public void setMBackgroundRadius(float mBackgroundRadius) {
         this.mBackgroundRadius = mBackgroundRadius;
     }
+    public void setPaintAlpha(int opacity) {
+        mBackgroundPaint.setAlpha(opacity);
+        mBallPaint.setAlpha(opacity);
+    }
     public void setOpacity(int opacity){
         mBackgroundPaint.setAlpha(opacity);
         mBallPaint.setAlpha(opacity);
         mBaseOpacity = opacity;
+
+        // 自动降低透明度的逻辑
+        calcReduceAnimation(opacity);
+        if (reduceAnimate != null) {
+            reduceAnimate.start();
+        }
     }
+
+    private void calcReduceAnimation(int opacity) {
+        Keyframe kf1 = Keyframe.ofInt(0f, opacity);
+        Keyframe kf2 = Keyframe.ofInt(0.5f, opacity);
+        Keyframe kf3 = Keyframe.ofInt(1f, (int) (opacity * 0.6));
+        PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1,kf2,kf3);
+        reduceAnimate = ObjectAnimator.ofPropertyValuesHolder(this, pVH);
+        reduceAnimate.setDuration(3000);
+        reduceAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                invalidate();
+            }
+        });
+    }
+
     public int getOpacity(){
         return mBackgroundPaint.getAlpha();
     }
@@ -219,7 +246,7 @@ public class FloatingBallView extends View {
         this.mBackgroundRadius = ballRadius + edge;
 //        final int frameGap = 10;
         //View宽高 r+moveDistance+r在动画变大的值=r+edge+gap
-        int frameGap = (int) (gestureMoveDistance + ballRadiusDetlaMax - edge);
+        int frameGap = (int) (gestureMoveDistance + ballRadiusDeltaMax - edge);
 
 
 
@@ -257,8 +284,8 @@ public class FloatingBallView extends View {
         PorterDuff.Mode mode = PorterDuff.Mode.CLEAR;
         mBallEmptyPaint.setXfermode(new PorterDuffXfermode(mode));
 
-        Log.d(TAG, "FloatingBallView: gestureMoveDistance " + gestureMoveDistance);
-        Log.d(TAG, "FloatingBallView: ballRadiusDetlaMax " + ballRadiusDetlaMax);
+
+
     }
 
     /**
@@ -337,8 +364,8 @@ public class FloatingBallView extends View {
     private void calcTouchAnimator() {
 //        onTouchAnimate
         Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
-        Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + ballRadiusDetlaMax - 1);
-        Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + ballRadiusDetlaMax);
+        Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + ballRadiusDeltaMax - 1);
+        Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + ballRadiusDeltaMax);
         PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0,kf1,kf2);
         onTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, onTouch);
         onTouchAnimate.setDuration(300);
@@ -350,8 +377,8 @@ public class FloatingBallView extends View {
         });
 
 //        unTouchAnimate
-        Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius +ballRadiusDetlaMax);
-        Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius +ballRadiusDetlaMax);
+        Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius + ballRadiusDeltaMax);
+        Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius + ballRadiusDeltaMax);
         Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
         PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3,kf4,kf5);
         unTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, unTouch);
@@ -454,7 +481,7 @@ public class FloatingBallView extends View {
             //任何接触，球都放大。 Opacity reset.
             case MotionEvent.ACTION_DOWN:
                 onTouchAnimate.start();//球放大动画
-                // todo 重置透明度值，不需要动画
+                // 自动降低透明度的逻辑
                 setOpacity(mBaseOpacity);
                 // 处理移动模式
             case MotionEvent.ACTION_MOVE:
@@ -488,9 +515,10 @@ public class FloatingBallView extends View {
                     lastGestureSTATE = NONE;
                     isScrolling=false;
                 }
-                // todo 过一段时间后降低透明度，透明度带有动画。
-//                setAlpha(0.5f);
-                animate().alpha(0.5f).setDuration(200).start();
+                // 自动降低透明度的逻辑
+                if (reduceAnimate != null) {
+                    reduceAnimate.start();
+                }
 
                 //reset flag value.
                 isLongPress=false;
