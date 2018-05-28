@@ -51,6 +51,8 @@ public class SettingFragment extends Fragment {
     DiscreteSeekBar opacitySeekBar;
     @BindView(R.id.size_seekbar)
     DiscreteSeekBar sizeSeekBar;
+    @BindView(R.id.opacity_mode_textView)
+    AppCompatTextView opacityModeTextView;
     @BindView(R.id.choosePic_button)
     Button choosePicButton;
     @BindView(R.id.background_switch)
@@ -190,6 +192,11 @@ public class SettingFragment extends Fragment {
         useGrayBackgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
         vibrateSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
 
+        Resources res = getResources();
+        String[] opacityModeList = res.getStringArray(R.array.opacity_mode);
+        int opacityMode = SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE,OPACITY_NONE);
+        opacityModeTextView.setText(opacityModeList[opacityMode]);
+
         updateFunctionListView();
 
 //        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
@@ -228,7 +235,7 @@ public class SettingFragment extends Fragment {
         upDistanceSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPrefsUtils.setIntegerPreference( PREF_MOVE_UP_DISTANCE, value);
+                SharedPrefsUtils.setIntegerPreference(PREF_MOVE_UP_DISTANCE, value);
             }
 
             @Override
@@ -365,6 +372,18 @@ public class SettingFragment extends Fragment {
                 .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPrefsUtils.setIntegerPreference( prefKey, which);
+                        updateFunctionListView();
+                    }
+                }).show();
+    }
+
+    @OnClick(R.id.opacity_mode_textView)
+    public void onOpacityModeClicked(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.opacity_mode)
+                .setItems(R.array.opacity_mode, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
                         updateFunctionListView();
                     }
                 }).show();

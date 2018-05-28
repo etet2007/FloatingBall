@@ -1,7 +1,5 @@
 package com.chenyee.stephenlau.floatingball.activity;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.admin.DevicePolicyManager;
@@ -12,16 +10,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SwitchCompat;
@@ -38,7 +32,6 @@ import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.artitk.licensefragment.ScrollViewLicenseFragment;
 import com.artitk.licensefragment.model.License;
@@ -314,7 +307,7 @@ public class MainActivity extends AppCompatActivity
             String version = pi.versionName;
             TextView versionTextView = navigationView.getHeaderView(0)
                     .findViewById(R.id.version_textView);
-            versionTextView.setText(String.format(getString(R.string.version_textview), version));
+            versionTextView.setText(String.format(getString(R.string.version_textView), version));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

@@ -57,13 +57,16 @@
     <string name="hide_notification_content_title">Hiding</string>
     <string name="hideNotificationContentText">Click to bring it back.</string>
 
-    <string name="version_textview">Version:%s</string>
+    <string name="version_textView">Version:%s</string>
     <string name="add_ball_hint">Add floating ball.</string>
     <string name="remove_ball_hint">Remove floating ball.</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="setting">Setting</string>
     <string name="uninstall">Uninstall</string>
     <string name="is_vibrate">Vibrate</string>
+    <string name="opacity_mode">Opacity mode</string>
+    <string name="reduce">Reduce</string>
+    <string name="breathing">Breathing</string>
+
 </resources>

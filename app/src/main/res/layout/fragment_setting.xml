@@ -64,13 +64,37 @@
                 app:dsb_progressColor="@color/colorAccent"
                 app:dsb_indicatorColor="@color/colorAccent"
                 />
-            <!--<android.support.v7.widget.AppCompatTextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--android:text="是否显示灰色背景？"-->
-            <!--android:layout_marginBottom="10dp"-->
-            <!--/>-->
+
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/opacity_mode_relativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                >
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/opacity_mode"
+                    android:textSize="18sp"
+                    />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/opacity_mode_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="30dp"
+                    android:text="@string/none"
+                    android:textColor="@color/colorPrimaryDark"/>
+            </RelativeLayout>
+
             <android.support.v7.widget.SwitchCompat
                 android:text="@string/use_gray_background"
                 android:id="@+id/use_gray_background_switch"

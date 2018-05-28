@@ -59,11 +59,16 @@
     <string name="hide_notification_content_title">隐藏中</string>
     <string name="hideNotificationContentText">点击重启。</string>
 
-    <string name="version_textview">版本:%s</string>
+    <string name="version_textView">版本:%s</string>
 
     <string name="add_ball_hint">添加悬浮球</string>
     <string name="remove_ball_hint">移除悬浮球</string>
     <string name="setting">设置</string>
     <string name="uninstall">卸载</string>
     <string name="is_vibrate">长按是否震动</string>
+    <string name="opacity_mode">透明度模式</string>
+
+    <string name="reduce">渐变减少</string>
+    <string name="breathing">呼吸</string>
+
 </resources>
