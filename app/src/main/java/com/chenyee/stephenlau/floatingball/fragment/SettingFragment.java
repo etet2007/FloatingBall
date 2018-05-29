@@ -377,7 +377,7 @@ public class SettingFragment extends Fragment {
                 }).show();
     }
 
-    @OnClick(R.id.opacity_mode_textView)
+    @OnClick(R.id.opacity_mode_relativeLayout)
     public void onOpacityModeClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.opacity_mode)

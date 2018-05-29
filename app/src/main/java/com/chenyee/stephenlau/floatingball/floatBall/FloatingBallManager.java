@@ -129,7 +129,7 @@ public class FloatingBallManager {
                     mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
                     break;
                 case PREF_OPACITY_MODE:
-                    
+                    mFloatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
                     break;
                 case PREF_SIZE:
                     //Size
