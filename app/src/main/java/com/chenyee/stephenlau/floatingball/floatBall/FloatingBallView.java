@@ -31,9 +31,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_Y;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.REDUCE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
 
 /**
  * Created by stephenlau on 2017/12/5.
@@ -111,6 +113,7 @@ public class FloatingBallView extends View {
     private boolean mIsVibrate =true;
     private int mBaseOpacity;
     private int mOpacityMode;
+    private ObjectAnimator breathingAnimate;
 
     public float getBallCenterY() {
         return ballCenterY;
@@ -188,25 +191,60 @@ public class FloatingBallView extends View {
     public void setMBackgroundRadius(float mBackgroundRadius) {
         this.mBackgroundRadius = mBackgroundRadius;
     }
-    public void setPaintAlpha(int opacity) {
-        mBackgroundPaint.setAlpha(opacity);
-        mBallPaint.setAlpha(opacity);
-    }
-    public void setOpacity(int opacity){
-        mBackgroundPaint.setAlpha(opacity);
-        mBallPaint.setAlpha(opacity);
-        mBaseOpacity = opacity;
 
-        if(mOpacityMode==REDUCE){
-            // 自动降低透明度的逻辑
-            calcReduceAnimation(opacity);
+    public void setIsVibrate(boolean isVibrate) {
+        mIsVibrate = isVibrate;
+    }
+
+    public void setOpacityMode(int mOpacityMode) {
+        this.mOpacityMode = mOpacityMode;
+
+        refreshOpacityMode();
+    }
+
+    private void refreshOpacityMode() {
+        if (mOpacityMode == OPACITY_NONE) {
+            setPaintAlpha(mBaseOpacity);
+        }
+        if(mOpacityMode == OPACITY_REDUCE) {
+            calcReduceAnimation(mBaseOpacity);
             if (reduceAnimate != null) {
                 reduceAnimate.start();
             }
         }
 
+        if (mOpacityMode == OPACITY_BREATHING) {
+            calcBreathingAnimation(mBaseOpacity);
+            breathingAnimate.start();
+        } else {
+            if (breathingAnimate != null) {
+                breathingAnimate.cancel();
+            }
+        }
     }
 
+    public int getOpacityMode() {
+        return mOpacityMode;
+    }
+
+    public void setPaintAlpha(int opacity) {
+        mBackgroundPaint.setAlpha(opacity);
+        mBallPaint.setAlpha(opacity);
+    }
+
+    public void setOpacity(int opacity){
+        mBackgroundPaint.setAlpha(opacity);
+        mBallPaint.setAlpha(opacity);
+        mBaseOpacity = opacity;
+
+        refreshOpacityMode();
+
+    }
+
+    /**
+     *
+     * @param opacity opacity正常值，会自动将为0.6倍
+     */
     private void calcReduceAnimation(int opacity) {
         Keyframe kf1 = Keyframe.ofInt(0f, opacity);
         Keyframe kf2 = Keyframe.ofInt(0.5f, opacity);
@@ -215,6 +253,24 @@ public class FloatingBallView extends View {
         reduceAnimate = ObjectAnimator.ofPropertyValuesHolder(this, pVH);
         reduceAnimate.setDuration(3000);
         reduceAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                invalidate();
+            }
+        });
+    }
+    private void calcBreathingAnimation(int opacity){
+        Keyframe kf1 = Keyframe.ofInt(0f, (int) (opacity*0.4));
+        Keyframe kf2 = Keyframe.ofInt(0.35f, opacity);
+        Keyframe kf3 = Keyframe.ofInt(0.5f, opacity);
+        Keyframe kf4 = Keyframe.ofInt(0.65f, opacity);
+        Keyframe kf5 = Keyframe.ofInt(1f, (int) (opacity*0.4));
+        PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1,kf2,kf3,kf4,kf5);
+        breathingAnimate = ObjectAnimator.ofPropertyValuesHolder(this, pVH);
+        breathingAnimate.setRepeatCount(ValueAnimator.INFINITE);
+        breathingAnimate.setRepeatMode(ValueAnimator.RESTART);
+        breathingAnimate.setDuration(4000);
+        breathingAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 invalidate();
@@ -289,7 +345,7 @@ public class FloatingBallView extends View {
         PorterDuff.Mode mode = PorterDuff.Mode.CLEAR;
         mBallEmptyPaint.setXfermode(new PorterDuffXfermode(mode));
 
-
+        refreshOpacityMode();
 
     }
 
@@ -455,21 +511,8 @@ public class FloatingBallView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.translate(measuredSideLength /2, measuredSideLength /2);
+        Log.d(TAG, "onDraw: " + mOpacityMode);
 
-
-//        if(breathingRise){
-//            opacityStart++;
-//            setPaintAlpha(opacityStart);
-//            if(opacityStart==mBaseOpacity){
-//                breathingRise=false;
-//            }
-//        }else if(!breathingRise) {
-//            opacityStart--;
-//            setPaintAlpha(opacityStart);
-//            if(opacityStart>=0){
-//                breathingRise=true;
-//            }
-//        }
         //draw gray background
         if (useGrayBackground) {
             canvas.drawCircle(0, 0, mBackgroundRadius, mBackgroundPaint);
@@ -501,9 +544,9 @@ public class FloatingBallView extends View {
             //任何接触，球都放大。 Opacity reset.
             case MotionEvent.ACTION_DOWN:
                 onTouchAnimate.start();//球放大动画
-                if(mOpacityMode==REDUCE){
-                // 自动降低透明度的逻辑
-                setOpacity(mBaseOpacity);
+                if(mOpacityMode == OPACITY_REDUCE){
+                    // 自动降低透明度的逻辑
+                    setPaintAlpha(mBaseOpacity);
                 }
 
                 // 处理移动模式
@@ -538,7 +581,7 @@ public class FloatingBallView extends View {
                     lastGestureSTATE = NONE;
                     isScrolling=false;
                 }
-                if (mOpacityMode == REDUCE) {
+                if (mOpacityMode == OPACITY_REDUCE) {
                     // 自动降低透明度的逻辑
                     if (reduceAnimate != null) {
                         reduceAnimate.start();
@@ -610,17 +653,6 @@ public class FloatingBallView extends View {
         ObjectAnimator.ofPropertyValuesHolder(this, pvh1, pvh2).setDuration(300).start();
     }
 
-    public void setIsVibrate(boolean isVibrate) {
-        mIsVibrate = isVibrate;
-    }
-
-    public void setOpacityMode(int mOpacityMode) {
-        this.mOpacityMode = mOpacityMode;
-    }
-
-    public int getOpacityMode() {
-        return mOpacityMode;
-    }
 
     /**
      * 处理单击事件、滑动事件、长按。

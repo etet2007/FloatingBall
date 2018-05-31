@@ -66,7 +66,7 @@
     <string name="setting">设置</string>
     <string name="uninstall">卸载</string>
     <string name="is_vibrate">长按是否震动</string>
-    <string name="opacity_mode">透明度模式</string>
+    <string name="opacity_mode">透明度模式：</string>
 
     <string name="reduce">渐变减少</string>
     <string name="breathing">呼吸</string>

@@ -94,7 +94,7 @@ public class PermissionActivity extends AppCompatActivity {
         }
 
         if (hasDrawPermission & hasAccessibilityPermission & hasLockScreenPermission) {
-            startActivity(MainActivity.getStartIntent(this));
+            startActivity(MainActivity.getStartIntent(getApplicationContext()));
             finish();
         }
     }

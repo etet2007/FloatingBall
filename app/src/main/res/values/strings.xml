@@ -65,7 +65,7 @@
     <string name="setting">Setting</string>
     <string name="uninstall">Uninstall</string>
     <string name="is_vibrate">Vibrate</string>
-    <string name="opacity_mode">Opacity mode</string>
+    <string name="opacity_mode">Opacity mode:</string>
     <string name="reduce">Reduce</string>
     <string name="breathing">Breathing</string>
 

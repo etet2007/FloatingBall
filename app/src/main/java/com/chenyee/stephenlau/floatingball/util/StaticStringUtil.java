@@ -43,7 +43,7 @@ public class StaticStringUtil {
     public static final int NOTIFICATION = 7;
 
   public static final int OPACITY_NONE = 0;
-  public static final int REDUCE = 1;
-  public static final int BREATHING = 2;
+  public static final int OPACITY_REDUCE = 1;
+  public static final int OPACITY_BREATHING = 2;
 
 }

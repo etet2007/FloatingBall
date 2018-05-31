@@ -63,6 +63,7 @@
                 app:dsb_value="40"
                 app:dsb_progressColor="@color/colorAccent"
                 app:dsb_indicatorColor="@color/colorAccent"
+                android:layout_marginBottom="20dp"
                 />
 
             <RelativeLayout
@@ -74,6 +75,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="10dp"
+
                 >
 
                 <android.support.v7.widget.AppCompatTextView

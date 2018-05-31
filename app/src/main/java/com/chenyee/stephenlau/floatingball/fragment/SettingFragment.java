@@ -138,7 +138,6 @@ public class SettingFragment extends Fragment {
     public void onDestroy() {
         // ButterKnife unbind
         mUnBinder.unbind();
-
         super.onDestroy();
     }
 
@@ -185,19 +184,14 @@ public class SettingFragment extends Fragment {
     }
 
     private void initContentViews() {
-
         opacitySeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
         sizeSeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
         backgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
         useGrayBackgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
         vibrateSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
 
-        Resources res = getResources();
-        String[] opacityModeList = res.getStringArray(R.array.opacity_mode);
-        int opacityMode = SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE,OPACITY_NONE);
-        opacityModeTextView.setText(opacityModeList[opacityMode]);
-
         updateFunctionListView();
+        updateOpacityModeView();
 
 //        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
 //        //hasAddedBall代表两种状态
@@ -297,7 +291,15 @@ public class SettingFragment extends Fragment {
         downSlideTextView.setText(functionList[downSlideEvent]);
     }
 
+    private void updateOpacityModeView() {
+        Resources res = getResources();
+        String[] opacityModeList = res.getStringArray(R.array.opacity_mode);
+        int opacityMode = SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE,OPACITY_NONE);
+        opacityModeTextView.setText(opacityModeList[opacityMode]);
+    }
+
     public void updateViewsState(boolean hasAddedBall) {
+        //应该改成遍历
         if (hasAddedBall) {
             opacitySeekBar.setEnabled(true);
             sizeSeekBar.setEnabled(true);
@@ -384,7 +386,7 @@ public class SettingFragment extends Fragment {
                 .setItems(R.array.opacity_mode, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
-                        updateFunctionListView();
+                        updateOpacityModeView();
                     }
                 }).show();
     }
