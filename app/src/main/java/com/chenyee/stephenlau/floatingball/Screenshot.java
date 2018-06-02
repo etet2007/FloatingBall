@@ -4,7 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Point;
+import android.graphics.PixelFormat;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
@@ -20,32 +20,30 @@ import java.nio.ByteBuffer;
  * Created by omerjerk on 17/2/16.
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
-public class Screenshotter implements ImageReader.OnImageAvailableListener {
-    private static final String TAG = "Screenshotter";
-    private static Screenshotter mInstance;
+public class Screenshot implements ImageReader.OnImageAvailableListener {
+    private static final String TAG = "Screenshot";
+    private static Screenshot mInstance;
 
     private VirtualDisplay virtualDisplay;
     private int width;
     private int height;
-    private int mScreenDensity = 0;
 
     private ScreenshotCallback cb;
     private ImageReader mImageReader;
     private MediaProjection mMediaProjection;
 
     /**
-     * Get the single instance of the Screenshotter class.
+     * Get the single instance of the Screenshot class.
      * @return the instance
      */
-    public static Screenshotter getInstance() {
+    public static Screenshot getInstance() {
         if (mInstance == null) {
-            mInstance = new Screenshotter();
+            mInstance = new Screenshot();
         }
-
         return mInstance;
     }
 
-    private Screenshotter() {}
+    public Screenshot() {}
 
     /**
      * Takes the screenshot of whatever currently is on the default display.
@@ -53,37 +51,27 @@ public class Screenshotter implements ImageReader.OnImageAvailableListener {
      * @param data The intent returned by the same request
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Screenshotter takeScreenshot(Context context, int resultCode, Intent data, final ScreenshotCallback cb) {
-//        Context context1 = context;
+    public Screenshot takeScreenshot(Context context, int resultCode, Intent data, ScreenshotCallback cb) {
         this.cb = cb;
-
-//        int resultCode1 = resultCode;
-//        Intent data1 = data;
-
         //get width and height
         WindowManager windowManager = (WindowManager) App.getApplication().getSystemService(Context.WINDOW_SERVICE);
-//        Point size = new Point();
-//        windowManager.getDefaultDisplay().getSize(size);
-//        width = size.x;//1080
-//        height = size.y;//2034
-        //get dpi
         DisplayMetrics metrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getRealMetrics(metrics);
-        mScreenDensity = metrics.densityDpi;
+        int screenDensity = metrics.densityDpi;
         width = metrics.widthPixels;
         height = metrics.heightPixels;
 
-        //ImageReader
-        mImageReader = ImageReader.newInstance(width, height, 0x1,1);
-        mImageReader.setOnImageAvailableListener(Screenshotter.this, null);
+        //create ImageReader
+        mImageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888,1);
+        mImageReader.setOnImageAvailableListener(Screenshot.this, null);
 
         MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) context
                 .getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         mMediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
         try {
-            //VirtualDisplay
-            virtualDisplay = mMediaProjection.createVirtualDisplay("Screenshotter",
-                    width, height, mScreenDensity,
+            //create virtualDisplay
+            virtualDisplay = mMediaProjection.createVirtualDisplay("screenshot",
+                    width, height, screenDensity,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     mImageReader.getSurface(), null, null);
         } catch (Exception e) {
@@ -99,7 +87,7 @@ public class Screenshotter implements ImageReader.OnImageAvailableListener {
      * @param height height of the request bitmap
      * @return the singleton instance
      */
-    public Screenshotter setSize(int width, int height) {
+    public Screenshot setSize(int width, int height) {
         this.width = width;
         this.height = height;
         return this;
@@ -108,7 +96,7 @@ public class Screenshotter implements ImageReader.OnImageAvailableListener {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onImageAvailable(ImageReader reader) {
-        Image image = null;
+        Image image;
         try {
             image = reader.acquireLatestImage();
         }catch (UnsupportedOperationException e){
@@ -134,6 +122,8 @@ public class Screenshotter implements ImageReader.OnImageAvailableListener {
         Bitmap bitmap = Bitmap.createBitmap(width+rowPadding/pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
         bitmap = Bitmap.createBitmap(bitmap, 0, 0,width, height);
+        image.close();
+
         //回调
         cb.onScreenshot(bitmap);
 
@@ -145,7 +135,7 @@ public class Screenshotter implements ImageReader.OnImageAvailableListener {
             mMediaProjection.stop();
             mMediaProjection = null;
         }
-        image.close();
         mImageReader = null;
+
     }
 }

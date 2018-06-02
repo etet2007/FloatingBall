@@ -64,8 +64,14 @@
     <string name="setting">Setting</string>
     <string name="uninstall">Uninstall</string>
     <string name="is_vibrate">Vibrate</string>
+    <string name="is_rotate_hide">Hide when rotate screen</string>
     <string name="opacity_mode">Opacity mode:</string>
     <string name="reduce">Reduce</string>
     <string name="breathing">Breathing</string>
+
+    <string name="no_support_screenshot">Your system is not supported.</string>
+    <string name="screenshot_fail">Failed to store a screenshot.</string>
+    <string name="screenshot_succeed">Screenshot succeed!</string>
+
 
 </resources>

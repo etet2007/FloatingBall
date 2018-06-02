@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <android.support.v7.widget.LinearLayoutCompat
+    android:id="@+id/root_linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -306,20 +307,31 @@
             android:layout_margin="10dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
+            <android.support.v7.widget.SwitchCompat
+                android:text="@string/is_rotate_hide"
+                android:id="@+id/is_rotate_hide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:switchPadding="40dp"
+                />
 
             <android.support.v7.widget.SwitchCompat
                 android:text="@string/is_vibrate"
                 android:id="@+id/vibrate_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 app:switchPadding="40dp"
                 />
 
             <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:gravity="center_horizontal"
                 android:text="@string/upDistance"
                 />

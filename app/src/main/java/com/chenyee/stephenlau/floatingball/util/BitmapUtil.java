@@ -1,7 +1,14 @@
 package com.chenyee.stephenlau.floatingball.util;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+
+import com.chenyee.stephenlau.floatingball.App;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -27,7 +34,7 @@ public class BitmapUtil {
         return isSucceed;
     }
 
-    public static boolean copyImageToExterl(Bitmap bitmap,String path,String fileName){
+    public static boolean copyImageToExternal(Bitmap bitmap, String path, String fileName){
         File file = new File(path);
         if (!file.exists()) {
             file.mkdir();
@@ -37,8 +44,8 @@ public class BitmapUtil {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
-            isSucceed= bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            // PNG is a lossless format, the compression factor (100) is ignored
+            isSucceed= bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out); // bmp is your Bitmap instance
+//            out.flush();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -48,9 +55,19 @@ public class BitmapUtil {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
-                return isSucceed;
             }
         }
+        // 把文件插入到系统图库
+//        try {
+//            MediaStore.Images.Media.insertImage(App.getApplication().getContentResolver(),
+//                    path, fileName, null);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+        // 最后通知图库更新
+        App.getApplication().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                Uri.fromFile(file)));
+
+        return isSucceed;
     }
 }

@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.util;
+package com.chenyee.stephenlau.floatingball.activity;
 /*
  * Copyright (C) 2014 The Android Open Source Project
  *
@@ -17,11 +17,7 @@ package com.chenyee.stephenlau.floatingball.util;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.ComponentName;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,47 +25,27 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.display.DisplayManager;
-import android.hardware.display.VirtualDisplay;
-import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Environment;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.support.annotation.RequiresApi;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.ScreenshotCallback;
-import com.chenyee.stephenlau.floatingball.Screenshotter;
+import com.chenyee.stephenlau.floatingball.Screenshot;
+import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.util.BitmapUtil;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.PixelFormat;
-import android.graphics.Point;
-import android.media.Image;
-import android.media.ImageReader;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.Display;
-import android.view.OrientationEventListener;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
+
 public class ScreenCaptureImageActivity extends Activity {
     public static final String TAG = ScreenCaptureImageActivity.class.getSimpleName();
 
@@ -81,10 +57,7 @@ public class ScreenCaptureImageActivity extends Activity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    private boolean mIsExist =false;
-    private Handler mHandler = new Handler();
-
-    private Messenger mMessenger = null;
+//    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,26 +68,18 @@ public class ScreenCaptureImageActivity extends Activity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             takeScreenshot();
         } else {
-            Toast.makeText(this, "当前系统不支持快捷截屏!", Toast.LENGTH_SHORT).show();
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    finish();
-                }
-            }, 500);
+            Toast.makeText(getApplicationContext(), getString(R.string.no_support_screenshot), Toast.LENGTH_SHORT).show();
+            finish();
         }
-
-
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void takeScreenshot() {
+        //隐藏悬浮球
+        setBallIsHide(true);
+
         MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)
                 getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        //隐藏悬浮球
-//        sendMsg(Config.HIDE_BALL, "hide", true);
-
         if (mediaProjectionManager != null) {
             startActivityForResult(
                     mediaProjectionManager.createScreenCaptureIntent(),
@@ -122,16 +87,23 @@ public class ScreenCaptureImageActivity extends Activity {
         }
     }
 
+    /**
+     * 处理回调的信息。
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_MEDIA_PROJECTION) {
             if (resultCode == RESULT_OK) {
-                Screenshotter.getInstance()
-                        .takeScreenshot(this, resultCode, data, new ScreenshotCallback() {
+                //返回的数据在data中
+                Screenshot.getInstance()//其实不懂为什么要使用单例子？
+                        .takeScreenshot(getApplicationContext(), resultCode, data, new ScreenshotCallback() {
                             @Override
                             public void onScreenshot(final Bitmap bitmap) {
-                                Log.d(TAG, "onScreenshot: bitmap "+bitmap);
 
+                                //文件处理 另开线程
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -140,32 +112,27 @@ public class ScreenCaptureImageActivity extends Activity {
                                         String strDate = dateFormat.format(date);
                                         String dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Pictures/Screenshots/";
 
-                                        BitmapUtil.copyImageToExterl(bitmap,dir,strDate+".png");
+                                        String fileName = strDate + ".jpg";
+
+                                        BitmapUtil.copyImageToExternal(bitmap, dir, fileName);
+
                                         bitmap.recycle();
                                     }
                                 }).start();
-                                Toast.makeText(ScreenCaptureImageActivity.this, "截图成功！", Toast.LENGTH_SHORT).show();
 
-//                                if(!mIsExist){
-//                                    sendMsg(Config.HIDE_BALL, "hide", false);
-//                                        Toast.makeText(ScreenCaptureImageActivity.this, "截图失败！", Toast.LENGTH_SHORT).show();
-//                                    mIsExist = true;
-//                                }
-
-//                                unbindFloatService();
-
+                                Toast.makeText(getApplicationContext(), getString(R.string.screenshot_succeed), Toast.LENGTH_SHORT).show();
+                                setBallIsHide(false);
                                 finish();
                             }
                         });
             }else {
-                Toast.makeText(ScreenCaptureImageActivity.this, "截图失败！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ScreenCaptureImageActivity.this, getString(R.string.screenshot_fail), Toast.LENGTH_SHORT).show();
             }
 
         } else {
-            Toast.makeText(this, "You denied the permission.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.screenshot_fail), Toast.LENGTH_SHORT).show();
         }
     }
-
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -185,11 +152,12 @@ public class ScreenCaptureImageActivity extends Activity {
         moveTaskToBack(false);
     }
 
-    public  void sendMsg(int what,String name,boolean action) {
-        Intent intent = new Intent();
-        intent.putExtra("what",what);
-        intent.putExtra(name, action);
-//        intent.setClass(this, FloatService.class);
+    private void setBallIsHide(boolean isHide) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_HIDE);
+        bundle.putBoolean("isHide",isHide);
+        Intent intent = new Intent(this, FloatingBallService.class)
+                .putExtras(bundle);
         startService(intent);
     }
 }

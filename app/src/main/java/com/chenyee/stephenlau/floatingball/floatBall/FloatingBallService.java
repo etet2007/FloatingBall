@@ -16,8 +16,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.Surface;
-import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.InputMethodManager;
 
@@ -29,6 +27,7 @@ import java.util.List;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ADDED_BALL;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ROTATE_HIDE;
 
 
 /**
@@ -48,6 +47,7 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_REMOVE = 1;
     public static final int TYPE_IMAGE = 2;
     public static final int TYPE_CLEAR = 3;
+    public static final int TYPE_HIDE = 4;
 
     private FloatingBallManager mFloatingBallManager;
 
@@ -101,16 +101,18 @@ public class FloatingBallService extends AccessibilityService {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Log.d(TAG, "onConfigurationChanged: " + newConfig.keyboard);
-        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-        if (!hasAddedBall) {
-            return;
-        }
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Log.d(TAG, "onAccessibilityEvent: removeBallView");
-            mFloatingBallManager.removeBallView();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Log.d(TAG, "onAccessibilityEvent: addBallView");
-            mFloatingBallManager.addBallView(FloatingBallService.this);
+        if(SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE,true)) {
+            boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+            if (!hasAddedBall) {
+                return;
+            }
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                Log.d(TAG, "onAccessibilityEvent: removeBallView");
+                mFloatingBallManager.removeBallView();
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                Log.d(TAG, "onAccessibilityEvent: addBallView");
+                mFloatingBallManager.addBallView(FloatingBallService.this);
+            }
         }
     }
 
@@ -199,6 +201,8 @@ public class FloatingBallService extends AccessibilityService {
                 if (type == TYPE_ADD) addBallViewAndSaveState();
 
                 if (type == TYPE_REMOVE) removeBallViewAndSaveData();
+
+                if (type == TYPE_HIDE) mFloatingBallManager.setVisibility(data.getBoolean("isHide"));
 
                 //intent中传图片地址，也可以换为sharedPreference吧
                 if (type == TYPE_IMAGE) mFloatingBallManager.setBackgroundImage(data.getString("imagePath"));

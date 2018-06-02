@@ -109,7 +109,7 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".util.ScreenCaptureImageActivity"
+        <activity android:name=".activity.ScreenCaptureImageActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.Transparent"

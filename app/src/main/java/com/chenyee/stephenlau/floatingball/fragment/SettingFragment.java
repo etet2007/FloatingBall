@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +32,8 @@ import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import java.util.ArrayDeque;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +49,8 @@ public class SettingFragment extends Fragment {
     private Unbinder mUnBinder;
 
     //控件
+    @BindView(R.id.root_linearLayout)
+    LinearLayoutCompat rootLinearLayout;
     @BindView(R.id.opacity_seekbar)
     DiscreteSeekBar opacitySeekBar;
     @BindView(R.id.size_seekbar)
@@ -72,7 +76,8 @@ public class SettingFragment extends Fragment {
     AppCompatTextView downSlideTextView;
     @BindView(R.id.right_slide_textView)
     AppCompatTextView rightSlideTextView;
-
+    @BindView(R.id.is_rotate_hide)
+    SwitchCompat isRotateHideSwitch;
     @BindView(R.id.vibrate_switch)
     SwitchCompat vibrateSwitch;
     //参数
@@ -189,7 +194,7 @@ public class SettingFragment extends Fragment {
         backgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
         useGrayBackgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
         vibrateSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
-
+        isRotateHideSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE,true));
         updateFunctionListView();
         updateOpacityModeView();
 
@@ -264,6 +269,12 @@ public class SettingFragment extends Fragment {
                         SharedPrefsUtils.setBooleanPreference(PREF_USE_GRAY_BACKGROUND, isChecked);
                     }
                 });
+        isRotateHideSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                SharedPrefsUtils.setBooleanPreference(PREF_IS_ROTATE_HIDE, isChecked);
+            }
+        });
         vibrateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -300,25 +311,34 @@ public class SettingFragment extends Fragment {
 
     public void updateViewsState(boolean hasAddedBall) {
         //应该改成遍历
+
         if (hasAddedBall) {
-            opacitySeekBar.setEnabled(true);
-            sizeSeekBar.setEnabled(true);
-            choosePicButton.setEnabled(true);
-            backgroundSwitch.setEnabled(true);
-            upDistanceSeekBar.setEnabled(true);
-            useGrayBackgroundSwitch.setEnabled(true);
-            vibrateSwitch.setEnabled(true);
+            enableAll(rootLinearLayout, true);
         } else {
-            opacitySeekBar.setEnabled(false);
-            sizeSeekBar.setEnabled(false);
-            choosePicButton.setEnabled(false);
-            backgroundSwitch.setEnabled(false);
-            upDistanceSeekBar.setEnabled(false);
-            useGrayBackgroundSwitch.setEnabled(false);
-            vibrateSwitch.setEnabled(false);
+            enableAll(rootLinearLayout, false);
         }
     }
+    private void enableAll(View root,boolean enanbled) {
+        ArrayDeque stack = new ArrayDeque();
+        stack.addLast(root);
+        while (!stack.isEmpty()) {
+            //取得栈顶
+            View top = (View) stack.getLast();
+            //出栈
+            stack.pollLast();
+            //如果为viewGroup则使子节点入栈
+            if (top instanceof ViewGroup) {
+                int childCount = ((ViewGroup) top).getChildCount();
+                for (int i = childCount - 1; i >= 0; i--) {
+                    stack.addLast(((ViewGroup) top).getChildAt(i));
+                }
+            }
+            //如果栈顶为View类型，输出
+            else if (top instanceof View)
+                top.setEnabled(enanbled);
 
+        }
+    }
     /**
      * 不再对悬浮球进行设置，悬浮球可以清不需要的模块的内存。
      */

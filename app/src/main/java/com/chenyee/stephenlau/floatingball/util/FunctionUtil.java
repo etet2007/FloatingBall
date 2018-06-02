@@ -2,9 +2,9 @@ package com.chenyee.stephenlau.floatingball.util;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.chenyee.stephenlau.floatingball.activity.ScreenCaptureImageActivity;
 import com.chenyee.stephenlau.floatingball.floatBall.FunctionListener;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 
@@ -62,7 +62,7 @@ public class FunctionUtil {
     public static FunctionListener hideFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
-            Toast.makeText(sFloatingBallService, "hide", Toast.LENGTH_LONG).show();
+            Toast.makeText(sFloatingBallService, "setVisibility", Toast.LENGTH_LONG).show();
             sFloatingBallService.hideBall();
         }
     };
