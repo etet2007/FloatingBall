@@ -45,8 +45,6 @@ public class RomUtil {
     private static final String KEY_VERSION_GIONEE = "ro.gn.sv.version";
     private static final String KEY_VERSION_LENOVO = "ro.lenovo.lvp.version";
 
-
-
     private static String sName;
     private static String sVersion;
 
@@ -144,15 +142,4 @@ public class RomUtil {
         }
         return line;
     }
-// private static Properties props = new Properties();
-// static {
-// try {
-// props.load(new FileInputStream(new File("/system/build.prop")));
-// } catch (IOException e) {
-//
-// }
-// }
-// public static String getProp(String name) {
-// return props.getProperty(name, Build.UNKNOWN);
-// }
 }

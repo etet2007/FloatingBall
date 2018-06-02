@@ -22,7 +22,6 @@
     <string name="share">Share the release link</string>
     <string name="license">License</string>
 
-    <!--<string name="title_activity_permission">PermissionActivity</string>-->
     <string name="drawoverlays_permission">DrawOverlays permission</string>
     <string name="request_accessibility">Request accessibility</string>
 
@@ -42,7 +41,7 @@
     <string name="down_slide">Down slide:</string>
 
     <string name="use_gray_background">Show gray background?</string>
-
+    <!--function list-->
     <string name="home">Home</string>
     <string name="lock_screen">Lock screen</string>
     <string name="rootLockScreen">Root lock screen</string>
@@ -51,9 +50,9 @@
     <string name="last_app">Last app</string>
     <string name="hide">Hide</string>
     <string name="notification">Expand notifications</string>
+    <string name="screen_shot">Screenshot</string>
 
 
-    <!--<string name="compose_shortcut_short_label1">1</string>-->
     <string name="hide_notification_content_title">Hiding</string>
     <string name="hideNotificationContentText">Click to bring it back.</string>
 

@@ -9,6 +9,7 @@
         <item>@string/lock_screen</item>
         <item>@string/rootLockScreen</item>
         <item>@string/notification</item>
+        <item>@string/screen_shot</item>
     </string-array>
 
     <string-array name="opacity_mode">

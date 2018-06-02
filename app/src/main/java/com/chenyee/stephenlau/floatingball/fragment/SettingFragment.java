@@ -373,7 +373,7 @@ public class SettingFragment extends Fragment {
         builder.setTitle(titleId)
                 .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        SharedPrefsUtils.setIntegerPreference( prefKey, which);
+                        SharedPrefsUtils.setIntegerPreference(prefKey, which);
                         updateFunctionListView();
                     }
                 }).show();

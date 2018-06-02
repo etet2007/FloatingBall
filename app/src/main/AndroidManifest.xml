@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.chenyee.stephenlau.floatingball"
-          android:installLocation="internalOnly"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.chenyee.stephenlau.floatingball"
+    android:installLocation="internalOnly">
 
-
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <!-- 悬浮窗需要SYSTEM_ALERT_WINDOW权限 -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- 震动 -->
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <!-- 读写外部文件，用户获取图片 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- 开机启动 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- 卸载 -->
@@ -21,17 +19,16 @@
 
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions"/>
+        tools:ignore="ProtectedPermissions" />
 
     <application
-        android:allowBackup="true"
         android:name=".App"
+        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_app"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".activity.PermissionActivity"
             android:label="@string/app_name"
@@ -39,77 +36,87 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.shortcuts"
+
+            <meta-data
+                android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-
         <activity
             android:name=".activity.MainActivity"
-            android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            <!--</intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN"/> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
+            <!-- </intent-filter> -->
         </activity>
 
         <!-- 全局Service -->
         <service
             android:name=".floatBall.FloatingBallService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:configChanges="orientation|keyboard|keyboardHidden"
-
-            >
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService"/>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accessibilityservice"
-                android:resource="@xml/accessibilityservice"/>
+                android:resource="@xml/accessibilityservice" />
         </service>
 
-
-        <!--用于申请锁屏的权限-->
+        <!-- 用于申请锁屏的权限 -->
         <receiver
             android:name=".receiver.LockReceiver"
             android:description="@string/app_name"
             android:label="@string/app_name"
-            android:permission="android.permission.BIND_DEVICE_ADMIN" >
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/lock_screen" />
+
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
 
-        <!--用于自启动-->
+        <!-- 用于自启动 -->
         <receiver android:name=".receiver.StartServiceAtBootReceiver">
             <intent-filter android:priority="2147483647">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <!--<receiver android:name=".activity.MainActivity$RefreshReceiver">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="refreshActivity" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-        <service android:name=".QuickSettingService"
-                 android:label="@string/app_name"
-                 android:icon="@drawable/ic_floating_button_quick_setting"
-                 android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+        <!-- <receiver android:name=".activity.MainActivity$RefreshReceiver"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="refreshActivity" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <service
+            android:name=".QuickSettingService"
+            android:icon="@drawable/ic_floating_button_quick_setting"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE"/>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-
         </service>
 
+        <activity android:name=".util.ScreenCaptureImageActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.Transparent"
+            >
+
+
+        </activity>
     </application>
 
 </manifest>

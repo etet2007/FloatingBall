@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.util.BitmapUtil;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import java.io.File;
@@ -55,15 +56,17 @@ public class FloatingBallView extends View {
     private static final int RIGHT = 4;
     private static final int NONE = 5;
 
-    private int currentGestureSTATE;
-    private int lastGestureSTATE = NONE;
+    private int currentGestureState;
+    private int lastGestureState = NONE;
 
     //球半径、背景半径
     private final float edge = dip2px(getContext(), 4);
     private final float ballRadiusDeltaMax = 7;
-    private final int gestureMoveDistance = 18;//18pix
+    private final int gestureMoveDistance = 18;
 
+    //白球半径
     private float ballRadius; //不能改名字，用了反射
+    //灰色背景半径
     private float mBackgroundRadius ;
 
     private int measuredSideLength;
@@ -73,14 +76,14 @@ public class FloatingBallView extends View {
     private float ballCenterY = 0;
     private float ballCenterX = 0;
 
-    //function
+    //function list
     private FunctionListener mDownFunctionListener;
     private FunctionListener mUpFunctionListener;
     private FunctionListener mLeftFunctionListener;
     private FunctionListener mRightFunctionListener;
     private FunctionListener mDoubleTapFunctionListener;
 
-    //标志
+    //标志位
     private boolean isFirstEvent = false;
     private boolean isScrolling = false;
     private boolean isLongPress = false;
@@ -88,6 +91,8 @@ public class FloatingBallView extends View {
     private boolean useBackground = false;
     private boolean useGrayBackground = true;
     private boolean useDoubleClick = false;
+
+    private boolean mIsVibrate =true;
 
     //上次touchEvent的位置
     private float mLastTouchEventX;
@@ -103,17 +108,20 @@ public class FloatingBallView extends View {
     private ObjectAnimator onTouchAnimate;
     private ObjectAnimator unTouchAnimate;
 
-    private ObjectAnimator reduceAnimate;
-
     //Vibrator
     private Vibrator mVibrator;
 
     private Bitmap mBitmapRead;
     private Bitmap mBitmapScaled;
-    private boolean mIsVibrate =true;
+
+    //基础透明度值
     private int mBaseOpacity;
+    //透明度模式
     private int mOpacityMode;
+    //透明度呼吸动画
     private ObjectAnimator breathingAnimate;
+    //透明度减少动画
+    private ObjectAnimator reduceAnimate;
 
     public float getBallCenterY() {
         return ballCenterY;
@@ -196,9 +204,12 @@ public class FloatingBallView extends View {
         mIsVibrate = isVibrate;
     }
 
+    /**
+     * 设置透明度的模式，设置完后需要立刻刷新起效。
+     * @param mOpacityMode
+     */
     public void setOpacityMode(int mOpacityMode) {
         this.mOpacityMode = mOpacityMode;
-
         refreshOpacityMode();
     }
 
@@ -206,7 +217,8 @@ public class FloatingBallView extends View {
         if (mOpacityMode == OPACITY_NONE) {
             setPaintAlpha(mBaseOpacity);
         }
-        if(mOpacityMode == OPACITY_REDUCE) {
+
+        if (mOpacityMode == OPACITY_REDUCE) {
             calcReduceAnimation(mBaseOpacity);
             if (reduceAnimate != null) {
                 reduceAnimate.start();
@@ -233,12 +245,11 @@ public class FloatingBallView extends View {
     }
 
     public void setOpacity(int opacity){
-        mBackgroundPaint.setAlpha(opacity);
-        mBallPaint.setAlpha(opacity);
+        setPaintAlpha(opacity);
+        //记录下用户设置的透明度
         mBaseOpacity = opacity;
 
         refreshOpacityMode();
-
     }
 
     /**
@@ -376,25 +387,8 @@ public class FloatingBallView extends View {
         }
         //copy source image
         String path = getContext().getFilesDir().toString();
-        File file = new File(path, "ballBackground.png");
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-            boolean isSucceed= bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            Log.d(TAG, "refreshBitmapRead: isSecceed:"+isSucceed);
-            // PNG is a lossless format, the compression factor (100) is ignored
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            bitmap.recycle();
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        BitmapUtil.copyImage(bitmap,path,"ballBackground.png");
+        bitmap.recycle();
     }
 
     public void createBitmapCropFromBitmapRead() {
@@ -577,8 +571,8 @@ public class FloatingBallView extends View {
                     doGesture();
                     //球移动动画
                     moveFloatBallBack();
-                    currentGestureSTATE = NONE;
-                    lastGestureSTATE = NONE;
+                    currentGestureState = NONE;
+                    lastGestureState = NONE;
                     isScrolling=false;
                 }
                 if (mOpacityMode == OPACITY_REDUCE) {
@@ -596,7 +590,7 @@ public class FloatingBallView extends View {
     }
 
     private void doGesture() {
-        switch (currentGestureSTATE) {
+        switch (currentGestureState) {
             case UP:
                 if(mUpFunctionListener!=null)
                     mUpFunctionListener.onClick();
@@ -622,7 +616,7 @@ public class FloatingBallView extends View {
      * 根据currentGestureSTATE改变显示参数,瞬间移动
      */
     private void moveFloatingBall() {
-        switch (currentGestureSTATE){
+        switch (currentGestureState){
             case UP:
                 ballCenterX = 0;
                 ballCenterY = -gestureMoveDistance;
@@ -692,17 +686,17 @@ public class FloatingBallView extends View {
             double angle = Math.atan2(deltaY, deltaX);
             //判断currentGestureSTATE
             if (angle > -Math.PI/4 && angle < Math.PI/4) {
-                currentGestureSTATE = RIGHT;
+                currentGestureState = RIGHT;
             } else if (angle > Math.PI/4 && angle < Math.PI*3/4) {
-                currentGestureSTATE = DOWN;
+                currentGestureState = DOWN;
             } else  if (angle > -Math.PI*3/4 && angle < -Math.PI/4) {
-                currentGestureSTATE = UP;
+                currentGestureState = UP;
             } else{
-                currentGestureSTATE = LEFT;
+                currentGestureState = LEFT;
             }
-            if (currentGestureSTATE != lastGestureSTATE) {
+            if (currentGestureState != lastGestureState) {
                 moveFloatingBall();
-                lastGestureSTATE = currentGestureSTATE;
+                lastGestureState = currentGestureState;
             }
             return false;
         }

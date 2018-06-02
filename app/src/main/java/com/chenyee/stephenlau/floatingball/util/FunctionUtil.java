@@ -1,32 +1,25 @@
 package com.chenyee.stephenlau.floatingball.util;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.floatBall.FunctionListener;
 import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
 
-import java.util.List;
-
-
 import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HIDE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HOME;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.LAST_APPS;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.LOCK_SCREEN;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NOTIFICATION;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.RECENT_APPS;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.ROOT_LOCK_SCREEN;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
  * Created by stephenlau on 18-3-13.
  */
 
 public class FunctionUtil {
+    public static final String TAG = FunctionUtil.class.getSimpleName();
     public static FloatingBallService sFloatingBallService;
 
-    public static FunctionListener nullFunctionListener=new FunctionListener() {
+    public static FunctionListener nullFunctionListener = new FunctionListener() {
         @Override
         public void onClick() {
         }
@@ -96,6 +89,13 @@ public class FunctionUtil {
         }
     };
 
+    public static FunctionListener screenshotFunctionListener=new FunctionListener() {
+        @Override
+        public void onClick() {
+            sFloatingBallService.startActivity(new Intent(sFloatingBallService.getApplicationContext(),ScreenCaptureImageActivity.class));
+        }
+    };
+
     public static FunctionListener getListener(int key) {
         FunctionListener functionListener = FunctionUtil.nullFunctionListener;
         if (key == RECENT_APPS) {
@@ -114,7 +114,10 @@ public class FunctionUtil {
             functionListener = FunctionUtil.rootLockFunctionListener;
         } else if (key == NOTIFICATION) {
             functionListener = FunctionUtil.notificationFunctionListener;
+        }else if(key==SCREEN_SHOT){
+            functionListener = FunctionUtil.screenshotFunctionListener;
         }
+
         return functionListener;
     }
 }
