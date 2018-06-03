@@ -9,8 +9,7 @@ import android.service.quicksettings.TileService;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.chenyee.stephenlau.floatingball.activity.MainActivity;
-import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;

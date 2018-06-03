@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.activity.ScreenCaptureImageActivity;
-import com.chenyee.stephenlau.floatingball.floatBall.FunctionListener;
-import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.FunctionListener;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 
 import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
@@ -15,24 +15,26 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
  * Created by stephenlau on 18-3-13.
  */
 
-public class FunctionUtil {
-    public static final String TAG = FunctionUtil.class.getSimpleName();
+public class FunctionUtils {
+    public static final String TAG = FunctionUtils.class.getSimpleName();
+
     public static FloatingBallService sFloatingBallService;
 
-    public static FunctionListener nullFunctionListener = new FunctionListener() {
+    //静态内部类 只需要一个
+    private static FunctionListener nullFunctionListener = new FunctionListener() {
         @Override
         public void onClick() {
         }
     };
 
-    public static FunctionListener recentAppsFunctionListener=new FunctionListener() {
+    private static FunctionListener recentAppsFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
             sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
         }
     };
 
-    public static FunctionListener lastAppFunctionListener=new FunctionListener() {
+    private static FunctionListener lastAppFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
             final boolean isOk= sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
@@ -52,14 +54,14 @@ public class FunctionUtil {
         }
     };
 
-    public static FunctionListener homeFunctionListener=new FunctionListener() {
+    private static FunctionListener homeFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
-            AccessibilityUtil.doHome(sFloatingBallService);
+            AccessibilityUtils.doHome(sFloatingBallService);
         }
     };
 
-    public static FunctionListener hideFunctionListener=new FunctionListener() {
+    private static FunctionListener hideFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
             Toast.makeText(sFloatingBallService, "setVisibility", Toast.LENGTH_LONG).show();
@@ -67,20 +69,20 @@ public class FunctionUtil {
         }
     };
 
-    public static FunctionListener notificationFunctionListener=new FunctionListener() {
+    private static FunctionListener notificationFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
             sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);
         }
     };
 
-    public static FunctionListener deviceLockFunctionListener=new FunctionListener() {
+    private static FunctionListener deviceLockFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
-            LockScreenUtil.lockScreen(sFloatingBallService);
+            LockScreenUtils.lockScreen(sFloatingBallService);
         }
     };
-    public static FunctionListener rootLockFunctionListener=new FunctionListener() {
+    private static FunctionListener rootLockFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
             String apkRoot="input keyevent 26";
@@ -89,7 +91,7 @@ public class FunctionUtil {
         }
     };
 
-    public static FunctionListener screenshotFunctionListener=new FunctionListener() {
+    private static FunctionListener screenshotFunctionListener=new FunctionListener() {
         @Override
         public void onClick() {
             sFloatingBallService.startActivity(new Intent(sFloatingBallService.getApplicationContext(),ScreenCaptureImageActivity.class));
@@ -97,25 +99,25 @@ public class FunctionUtil {
     };
 
     public static FunctionListener getListener(int key) {
-        FunctionListener functionListener = FunctionUtil.nullFunctionListener;
+        FunctionListener functionListener = FunctionUtils.nullFunctionListener;
         if (key == RECENT_APPS) {
-            functionListener = FunctionUtil.recentAppsFunctionListener;
+            functionListener = FunctionUtils.recentAppsFunctionListener;
         } else if (key == LAST_APPS) {
-            functionListener = FunctionUtil.lastAppFunctionListener;
+            functionListener = FunctionUtils.lastAppFunctionListener;
         } else if (key == HIDE) {
-            functionListener = FunctionUtil.hideFunctionListener;
+            functionListener = FunctionUtils.hideFunctionListener;
         } else if (key == NONE) {
-            functionListener = FunctionUtil.nullFunctionListener;
+            functionListener = FunctionUtils.nullFunctionListener;
         } else if (key == HOME) {
-            functionListener = FunctionUtil.homeFunctionListener;
+            functionListener = FunctionUtils.homeFunctionListener;
         } else if (key == LOCK_SCREEN) {
-            functionListener = FunctionUtil.deviceLockFunctionListener;
+            functionListener = FunctionUtils.deviceLockFunctionListener;
         } else if (key == ROOT_LOCK_SCREEN) {
-            functionListener = FunctionUtil.rootLockFunctionListener;
+            functionListener = FunctionUtils.rootLockFunctionListener;
         } else if (key == NOTIFICATION) {
-            functionListener = FunctionUtil.notificationFunctionListener;
+            functionListener = FunctionUtils.notificationFunctionListener;
         }else if(key==SCREEN_SHOT){
-            functionListener = FunctionUtil.screenshotFunctionListener;
+            functionListener = FunctionUtils.screenshotFunctionListener;
         }
 
         return functionListener;

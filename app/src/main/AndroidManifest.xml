@@ -60,7 +60,7 @@
 
         <!-- 全局Service -->
         <service
-            android:name=".floatBall.FloatingBallService"
+            android:name=".floatingBall.FloatingBallService"
             android:configChanges="orientation|keyboard|keyboardHidden"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>

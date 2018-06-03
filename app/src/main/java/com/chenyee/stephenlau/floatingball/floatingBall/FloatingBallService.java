@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.floatBall;
+package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.ActivityManager;

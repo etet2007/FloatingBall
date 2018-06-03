@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.util;
 
 import android.graphics.Bitmap;
 

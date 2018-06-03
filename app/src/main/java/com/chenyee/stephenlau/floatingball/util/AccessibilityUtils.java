@@ -17,8 +17,8 @@ import com.chenyee.stephenlau.floatingball.R;
 
 import java.lang.reflect.Method;
 
-public class AccessibilityUtil {
-    private static final String TAG = "AccessibilityUtil";
+public class AccessibilityUtils {
+    private static final String TAG = "AccessibilityUtils";
     /**
      * 单击返回功能
      * @param service

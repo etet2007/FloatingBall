@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.floatBall;
+package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.accessibilityservice.AccessibilityService;
 import android.animation.Keyframe;
@@ -22,14 +22,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
+import com.chenyee.stephenlau.floatingball.util.AccessibilityUtils;
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.BitmapUtil;
+import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
@@ -387,7 +383,7 @@ public class FloatingBallView extends View {
         }
         //copy source image
         String path = getContext().getFilesDir().toString();
-        BitmapUtil.copyImage(bitmap,path,"ballBackground.png");
+        BitmapUtils.copyImage(bitmap,path,"ballBackground.png");
         bitmap.recycle();
     }
 
@@ -666,7 +662,7 @@ public class FloatingBallView extends View {
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             if(!useDoubleClick)
-                AccessibilityUtil.doBack(mService);
+                AccessibilityUtils.doBack(mService);
             return false;
         }
 
@@ -721,7 +717,7 @@ public class FloatingBallView extends View {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             Log.d(TAG, "onSingleTapConfirmed: " + e);
-            AccessibilityUtil.doBack(mService);
+            AccessibilityUtils.doBack(mService);
             return false;
         }
 

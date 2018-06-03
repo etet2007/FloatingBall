@@ -18,7 +18,6 @@ package com.chenyee.stephenlau.floatingball.activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -27,20 +26,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.ScreenshotCallback;
-import com.chenyee.stephenlau.floatingball.Screenshot;
-import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
-import com.chenyee.stephenlau.floatingball.util.BitmapUtil;
+import com.chenyee.stephenlau.floatingball.util.ScreenshotCallback;
+import com.chenyee.stephenlau.floatingball.util.Screenshot;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
 
 import android.graphics.Bitmap;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -98,11 +94,10 @@ public class ScreenCaptureImageActivity extends Activity {
         if(requestCode == REQUEST_MEDIA_PROJECTION) {
             if (resultCode == RESULT_OK) {
                 //返回的数据在data中
-                Screenshot.getInstance()//其实不懂为什么要使用单例子？
+                Screenshot.getInstance()//其实不懂为什么要使用单例？
                         .takeScreenshot(getApplicationContext(), resultCode, data, new ScreenshotCallback() {
                             @Override
                             public void onScreenshot(final Bitmap bitmap) {
-
                                 //文件处理 另开线程
                                 new Thread(new Runnable() {
                                     @Override
@@ -110,11 +105,11 @@ public class ScreenCaptureImageActivity extends Activity {
                                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hhmmss");
                                         Date date = new Date();
                                         String strDate = dateFormat.format(date);
-                                        String dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Pictures/Screenshots/";
-
                                         String fileName = strDate + ".jpg";
 
-                                        BitmapUtil.copyImageToExternal(bitmap, dir, fileName);
+                                        String dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Pictures/Screenshots/";
+
+                                        BitmapUtils.copyImageToExternal(bitmap, dir, fileName);
 
                                         bitmap.recycle();
                                     }

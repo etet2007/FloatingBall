@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.floatBall;
+package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -11,10 +11,10 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 
-import com.chenyee.stephenlau.floatingball.util.FunctionUtil;
+import com.chenyee.stephenlau.floatingball.util.FunctionUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
-import static com.chenyee.stephenlau.floatingball.util.FunctionUtil.getListener;
+import static com.chenyee.stephenlau.floatingball.util.FunctionUtils.getListener;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
@@ -79,7 +79,7 @@ public class FloatingBallManager {
             //使用windowManager把ballView加进去
             windowManager.addView(mFloatingBallView, params);
 
-            FunctionUtil.sFloatingBallService=(FloatingBallService) context;
+            FunctionUtils.sFloatingBallService=(FloatingBallService) context;
             updateAllBallViewParameter();
 
             isOpenedBall = true;

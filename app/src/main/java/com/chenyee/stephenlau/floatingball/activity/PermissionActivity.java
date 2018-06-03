@@ -8,17 +8,20 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.receiver.LockReceiver;
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.AccessibilityUtil;
-import com.chenyee.stephenlau.floatingball.util.LockScreenUtil;
+import com.chenyee.stephenlau.floatingball.util.AccessibilityUtils;
+import com.chenyee.stephenlau.floatingball.util.LockScreenUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.px2dip;
 
 public class PermissionActivity extends AppCompatActivity {
     private static final String TAG =PermissionActivity.class.getSimpleName();
@@ -33,8 +36,9 @@ public class PermissionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
         ButterKnife.bind(this);
+//      The vertical position of this view relative to its top position, in pixels.
 
-        logoImageView.animate().translationYBy(300).setDuration(3000).start();
+        logoImageView.animate().translationYBy(dip2px(getApplicationContext(),100)).setDuration(3000).start();
 
         drawOverlaysButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +51,7 @@ public class PermissionActivity extends AppCompatActivity {
         accessibilityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AccessibilityUtil.checkAccessibilitySetting(PermissionActivity.this);
+                AccessibilityUtils.checkAccessibilitySetting(PermissionActivity.this);
 
             }
         });
@@ -83,12 +87,12 @@ public class PermissionActivity extends AppCompatActivity {
             hasDrawPermission = true;
         }
         //Accessibility
-        if (AccessibilityUtil.isAccessibilitySettingsOn(this)) {
+        if (AccessibilityUtils.isAccessibilitySettingsOn(this)) {
             accessibilityButton.setEnabled(false);
             hasAccessibilityPermission = true;
         }
         //LockScreen
-        if (LockScreenUtil.canLockScreen(PermissionActivity.this)) {
+        if (LockScreenUtils.canLockScreen(PermissionActivity.this)) {
             lockScreenButton.setEnabled(false);
             hasLockScreenPermission = true;
         }

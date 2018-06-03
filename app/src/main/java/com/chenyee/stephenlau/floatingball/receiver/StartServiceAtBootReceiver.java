@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 

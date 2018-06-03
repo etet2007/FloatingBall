@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -12,9 +12,15 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
+import com.chenyee.stephenlau.floatingball.App;
+
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by omerjerk on 17/2/16.

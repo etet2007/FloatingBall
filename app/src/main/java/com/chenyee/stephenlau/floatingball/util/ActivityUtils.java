@@ -34,8 +34,6 @@ public class ActivityUtils {
      */
     public static void addFragmentToActivity (@NonNull FragmentManager fragmentManager,
                                               @NonNull Fragment fragment, int frameId) {
-//        checkNotNull(fragmentManager);
-//        checkNotNull(fragment);
         fragmentManager
                 .beginTransaction()
                 .replace(frameId, fragment)

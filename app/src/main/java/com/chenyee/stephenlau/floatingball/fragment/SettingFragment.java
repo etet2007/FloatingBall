@@ -28,7 +28,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;

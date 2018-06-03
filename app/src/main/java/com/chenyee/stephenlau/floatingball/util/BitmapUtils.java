@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class BitmapUtil {
+public class BitmapUtils {
     public static boolean copyImage(Bitmap bitmap,String path,String fileName){
         File file = new File(path, fileName);
         boolean isSucceed = false;

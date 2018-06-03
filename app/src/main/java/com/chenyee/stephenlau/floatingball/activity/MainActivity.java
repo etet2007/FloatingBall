@@ -36,7 +36,7 @@ import android.widget.TextView;
 import com.artitk.licensefragment.ScrollViewLicenseFragment;
 import com.artitk.licensefragment.model.License;
 import com.artitk.licensefragment.model.LicenseType;
-import com.chenyee.stephenlau.floatingball.floatBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.fragment.SettingFragment;
 import com.chenyee.stephenlau.floatingball.receiver.LockReceiver;

@@ -12,7 +12,7 @@ import com.chenyee.stephenlau.floatingball.R;
  * Created by lqtian on 2018/2/7.
  */
 
-public class LockScreenUtil {
+public class LockScreenUtils {
 
     public static boolean canLockScreen(Context context){
         DevicePolicyManager policyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
