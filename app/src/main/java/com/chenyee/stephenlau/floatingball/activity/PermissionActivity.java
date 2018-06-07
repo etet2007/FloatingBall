@@ -51,7 +51,7 @@ public class PermissionActivity extends AppCompatActivity {
         accessibilityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AccessibilityUtils.checkAccessibilitySetting(PermissionActivity.this);
+                AccessibilityUtils.checkAccessibilitySetting();
 
             }
         });
@@ -87,7 +87,7 @@ public class PermissionActivity extends AppCompatActivity {
             hasDrawPermission = true;
         }
         //Accessibility
-        if (AccessibilityUtils.isAccessibilitySettingsOn(this)) {
+        if (AccessibilityUtils.isAccessibilitySettingsOn()) {
             accessibilityButton.setEnabled(false);
             hasAccessibilityPermission = true;
         }

@@ -13,6 +13,7 @@ import android.view.InputEvent;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.R;
 
 import java.lang.reflect.Method;
@@ -80,10 +81,10 @@ public class AccessibilityUtils {
 
     /**
      * 判断辅助功能是否开启
-     * @param context
      * @return
      */
-    public static boolean isAccessibilitySettingsOn(Context context) {
+    public static boolean isAccessibilitySettingsOn() {
+        Context context = App.getApplication();
         int accessibilityEnabled = 0;
         //If accessibility is enabled，使用Content Provider读取Setting中Secure的配置。
         try {
@@ -109,14 +110,14 @@ public class AccessibilityUtils {
     }
     /**
      * 判断辅助功能是否开启，并开启设置
-     * @param context
      * @return
      */
-    public static void checkAccessibilitySetting(Context context) {
-        if(!isAccessibilitySettingsOn(context)){
+    public static void checkAccessibilitySetting() {
+        Context context=App.getApplication();
+        if (!isAccessibilitySettingsOn()) {
             // 引导至辅助功能设置页面
-            context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK ));
-            Toast.makeText(context,context.getString(R.string.openAccessibility) , Toast.LENGTH_SHORT).show();
+            context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            Toast.makeText(context, context.getString(R.string.openAccessibility), Toast.LENGTH_SHORT).show();
         }
     }
 
