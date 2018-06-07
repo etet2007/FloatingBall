@@ -37,6 +37,7 @@ import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
 import android.graphics.Bitmap;
 import android.widget.Toast;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,7 +45,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TY
 
 public class ScreenCaptureImageActivity extends Activity {
     public static final String TAG = ScreenCaptureImageActivity.class.getSimpleName();
-
+    private WeakReference<Activity> weakReference;
     private static final int REQUEST_MEDIA_PROJECTION = 1;
     private static final int REQUEST_EXTERNAL_STORAGE = 2;
 
@@ -112,12 +113,16 @@ public class ScreenCaptureImageActivity extends Activity {
                                         BitmapUtils.copyImageToExternal(bitmap, dir, fileName);
 
                                         bitmap.recycle();
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(getApplicationContext(), getString(R.string.screenshot_succeed), Toast.LENGTH_SHORT).show();
+                                                setBallIsHide(false);
+                                                finish();
+                                            }
+                                        });
                                     }
                                 }).start();
-
-                                Toast.makeText(getApplicationContext(), getString(R.string.screenshot_succeed), Toast.LENGTH_SHORT).show();
-                                setBallIsHide(false);
-                                finish();
                             }
                         });
             }else {
