@@ -122,14 +122,12 @@ public class FloatingBallService extends AccessibilityService {
      */
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        Log.d(TAG, "onAccessibilityEvent: "+event.getEventType());
-
+//        Log.d(TAG, "onAccessibilityEvent: "+event.getEventType());
         Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-        Log.d(TAG, "onAccessibilityEvent: hasAddBall "+hasAddBall);
+//        Log.d(TAG, "onAccessibilityEvent: hasAddBall "+hasAddBall);
         //没有打开悬浮球
         if(!hasAddBall)
             return;
-
         inputMethodDetect(getApplicationContext());
     }
     /**
@@ -230,8 +228,6 @@ public class FloatingBallService extends AccessibilityService {
         removeBallViewAndSaveData();
         sendNotification();
     }
-
-
 
     private void sendNotification() {
         String contentTitle = getString(R.string.hide_notification_content_title);

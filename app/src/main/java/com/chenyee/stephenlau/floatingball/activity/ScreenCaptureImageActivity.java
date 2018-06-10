@@ -17,27 +17,25 @@ package com.chenyee.stephenlau.floatingball.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.media.projection.MediaProjectionManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
-
-import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.ScreenshotCallback;
-import com.chenyee.stephenlau.floatingball.util.Screenshot;
-import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
-import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
-
-import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
+import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
+import com.chenyee.stephenlau.floatingball.util.ScreenshotCallback;
+import com.chenyee.stephenlau.floatingball.util.ScreenshotUtil;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -45,7 +43,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TY
 
 public class ScreenCaptureImageActivity extends Activity {
     public static final String TAG = ScreenCaptureImageActivity.class.getSimpleName();
-    private WeakReference<Activity> weakReference;
+
     private static final int REQUEST_MEDIA_PROJECTION = 1;
     private static final int REQUEST_EXTERNAL_STORAGE = 2;
 
@@ -53,8 +51,6 @@ public class ScreenCaptureImageActivity extends Activity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-
-//    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,49 +82,46 @@ public class ScreenCaptureImageActivity extends Activity {
 
     /**
      * 处理回调的信息。
+     *
      * @param requestCode
      * @param resultCode
      * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_MEDIA_PROJECTION) {
+        if (requestCode == REQUEST_MEDIA_PROJECTION) {
             if (resultCode == RESULT_OK) {
+
                 //返回的数据在data中
-                Screenshot.getInstance()//其实不懂为什么要使用单例？
+                ScreenshotUtil.sInstance//其实不懂为什么要使用单例？
                         .takeScreenshot(getApplicationContext(), resultCode, data, new ScreenshotCallback() {
                             @Override
                             public void onScreenshot(final Bitmap bitmap) {
-                                //文件处理 另开线程
-                                new Thread(new Runnable() {
+                                Log.d(TAG, "onScreenshot: ");
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hhmmss");
+                                Date date = new Date();
+                                String strDate = dateFormat.format(date);
+                                String fileName = strDate + ".jpg";
+
+                                String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/Screenshots/";
+
+                                BitmapUtils.copyImageToExternal(bitmap, dir, fileName);
+                                bitmap.recycle();
+
+
+                                runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hhmmss");
-                                        Date date = new Date();
-                                        String strDate = dateFormat.format(date);
-                                        String fileName = strDate + ".jpg";
-
-                                        String dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Pictures/Screenshots/";
-
-                                        BitmapUtils.copyImageToExternal(bitmap, dir, fileName);
-
-                                        bitmap.recycle();
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(getApplicationContext(), getString(R.string.screenshot_succeed), Toast.LENGTH_SHORT).show();
-                                                setBallIsHide(false);
-                                                finish();
-                                            }
-                                        });
+                                        setBallIsHide(false);
+                                        Toast.makeText(getApplicationContext(), getString(R.string.screenshot_succeed), Toast.LENGTH_SHORT).show();
+                                        finish();
                                     }
-                                }).start();
+                                });
                             }
                         });
-            }else {
+            } else {
                 Toast.makeText(ScreenCaptureImageActivity.this, getString(R.string.screenshot_fail), Toast.LENGTH_SHORT).show();
             }
-
         } else {
             Toast.makeText(this, getString(R.string.screenshot_fail), Toast.LENGTH_SHORT).show();
         }
@@ -155,7 +148,7 @@ public class ScreenCaptureImageActivity extends Activity {
     private void setBallIsHide(boolean isHide) {
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_HIDE);
-        bundle.putBoolean("isHide",isHide);
+        bundle.putBoolean("isHide", isHide);
         Intent intent = new Intent(this, FloatingBallService.class)
                 .putExtras(bundle);
         startService(intent);
