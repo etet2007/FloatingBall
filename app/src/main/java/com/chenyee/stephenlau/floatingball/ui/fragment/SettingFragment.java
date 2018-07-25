@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.fragment;
+package com.chenyee.stephenlau.floatingball.ui.fragment;
 
 import android.Manifest;
 import android.app.Activity;

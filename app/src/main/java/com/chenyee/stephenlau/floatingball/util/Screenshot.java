@@ -24,6 +24,7 @@ import java.util.Date;
 
 /**
  * Created by omerjerk on 17/2/16.
+ * Modify by lqt
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class Screenshot implements ImageReader.OnImageAvailableListener {
