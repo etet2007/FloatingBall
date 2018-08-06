@@ -4,7 +4,7 @@ import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.activity.ScreenCaptureImageActivity;
+import com.chenyee.stephenlau.floatingball.ui.activity.ScreenCaptureImageActivity;
 import com.chenyee.stephenlau.floatingball.floatingBall.FunctionListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 

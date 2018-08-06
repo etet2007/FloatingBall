@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.activity;
+package com.chenyee.stephenlau.floatingball.ui.activity;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -21,7 +20,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
-import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.px2dip;
 
 public class PermissionActivity extends AppCompatActivity {
     private static final String TAG =PermissionActivity.class.getSimpleName();

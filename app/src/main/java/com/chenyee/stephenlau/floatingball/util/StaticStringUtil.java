@@ -23,8 +23,6 @@ public class StaticStringUtil {
     public static final String PREF_IS_VIBRATE = "PREF_IS_VIBRATE";
     public static final String PREF_IS_ROTATE_HIDE = "PREF_IS_ROTATE_HIDE";
 
-    public static final String PREF_MOVE_UP_DISTANCE = "PREF_MOVE_UP_DISTANCE";
-
     public static final String PREF_DOUBLE_CLICK_EVENT = "DOUBLE_CLICK_EVENT";
     public static final String PREF_RIGHT_SLIDE_EVENT = "RIGHT_SLIDE_EVENT";
     public static final String PREF_LEFT_SLIDE_EVENT = "LEFT_SLIDE_EVENT";
