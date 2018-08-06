@@ -61,8 +61,6 @@ public class SettingFragment extends Fragment {
     Button choosePicButton;
     @BindView(R.id.background_switch)
     SwitchCompat backgroundSwitch;
-    @BindView(R.id.upDistance_seekbar)
-    DiscreteSeekBar upDistanceSeekBar;
     @BindView(R.id.use_gray_background_switch)
     SwitchCompat useGrayBackgroundSwitch;
 
@@ -231,20 +229,6 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        upDistanceSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-            @Override
-            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                SharedPrefsUtils.setIntegerPreference(PREF_MOVE_UP_DISTANCE, value);
-            }
-
-            @Override
-            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-            }
-        });
         backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
