@@ -122,7 +122,6 @@ public class FloatingBallView extends View {
   //透明度减少动画
   private ObjectAnimator reduceAnimate;
   private int lastLayoutParamsY;
-  private boolean isMoveUp = false;
 
   public float getBallCenterY() {
     return ballCenterY;
@@ -497,11 +496,16 @@ public class FloatingBallView extends View {
     startParamsYAnimationTo(getMLayoutParamsY() + moveUpDistance);
   }
 
-  int inputMethodWindowHeight;
+  public int inputMethodWindowHeight;
+  private boolean isMoveUp = false;
+  private boolean isKeyboardShow = false;
+
   /**
-   * 移动到键盘顶部
+   * 移动到键盘顶部，移动前记录
    */
   public void moveToKeyboardTop() {
+    isKeyboardShow = true;
+
     int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
 
     int gap = 8;
@@ -509,14 +513,16 @@ public class FloatingBallView extends View {
     if (ballBottomYPlusGap < keyboardTopY) {
       return;
     }
-
-    isMoveUp = true;
     lastLayoutParamsY = getMLayoutParamsY();
 
     startParamsYAnimationTo(keyboardTopY - measuredSideLength - gap);
+    isMoveUp = true;
+
   }
 
   public void moveBackWhenKeyboardDisappear() {
+    isKeyboardShow = false;
+
     if (isMoveUp) {
       isMoveUp = false;
 
@@ -622,8 +628,20 @@ public class FloatingBallView extends View {
         //reset flag value.
         if (isLongPress) {
           isLongPress = false;
-          if (isMoveUp) {
-            moveToKeyboardTop();
+          if (isKeyboardShow) {
+            //键盘弹起，移动到键盘下要避开
+
+            int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
+
+            int gap = 8;
+            int ballBottomYPlusGap = getMLayoutParamsY() + measuredSideLength + gap;
+            if (ballBottomYPlusGap >= keyboardTopY) {
+              lastLayoutParamsY = getMLayoutParamsY();
+              startParamsYAnimationTo(keyboardTopY - measuredSideLength - gap);
+            } else {
+              isMoveUp = false;
+            }
+
           }
 
         }
