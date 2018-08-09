@@ -1,22 +1,21 @@
 # FloatingBall
-Inspired by smart touch in Flyme OS.
-A simple and animated gesture tools to relaxed your thumb. 
+仿Flyme悬浮球。
 
-## Feature
-- Customizable opacity and size
-- Background image
-- Soft keyboard avoid
-- One-click uninstall
+## 特点
+- 可自定义透明度，大小
+- 可选择背景图片
+- 软键盘检测避让
+- 一键卸载
 
-## Default function
-- Click：Back
-- Double click：Nothing
-- Long press：Move floating ball
-- Left and right slide：Recent apps
-- Up slide：Home
-- Down slide：Notification
+## 默认功能列表
+- 单击：返回
+- 双击：无
+- 长按：移动悬浮球
+- 左滑右滑：打开最近应用程序列表
+- 上拉：返回桌面
+- 下拉：打开通知栏
 
-Refer to HalfStackDeveloper/FloatBall fg607/RelaxFinger。
+参考了项目HalfStackDeveloper/FloatBall fg607/RelaxFinger。
 
 
 #### License
