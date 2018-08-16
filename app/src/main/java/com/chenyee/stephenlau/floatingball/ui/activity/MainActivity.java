@@ -52,25 +52,23 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 public class MainActivity extends AppCompatActivity
     implements AppBarLayout.OnOffsetChangedListener {
+
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  //头像
+  //App Icon
   private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 40;
   private boolean mIsAvatarShown = true;
   private int mMaxScrollSize;
 
-  //控件
+  //Widgets
   @BindView(R.id.logo_fab)
-  FloatingActionButton fab;
+  FloatingActionButton mFloatingActionButton;
   @BindView(R.id.start_switch)
   SwitchCompat ballSwitch;
   @BindView(R.id.materialup_profile_image)
   ImageView mProfileImage;
-
-  //调用系统相册-选择图片
-  private static final int IMAGE = 1;
-  private final int mREQUEST_external_storage = 1;
-
+  @BindView(R.id.materialup_toolbar)
+  Toolbar toolbar;
   private RefreshReceiver mRefreshReceiver;
 
   public static Intent getStartIntent(Context context) {
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity
     ButterKnife.bind(this);
 
     //初始化toolbar等
-    initFrameViews();
+    initViews();
 
     FragmentManager fragmentManager = getFragmentManager();
     SettingFragment settingFragment = SettingFragment.newInstance();
@@ -98,6 +96,108 @@ public class MainActivity extends AppCompatActivity
         .registerReceiver(mRefreshReceiver, intentFilter);
   }
 
+
+  private void initViews() {
+    // Set up the toolbar. 工具栏。
+    setupToolbar();
+
+    // Set up the appBarLayout.
+    AppBarLayout appbarLayout = findViewById(R.id.materialup_appbar);
+    appbarLayout.addOnOffsetChangedListener(this);
+    mMaxScrollSize = appbarLayout.getTotalScrollRange();
+
+    // Set up the FloatingActionButton.
+    mFloatingActionButton.setUseCompatPadding(false);
+    mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        ballSwitch.toggle();
+      }
+    });
+
+    // Set up the switch.
+    ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+          addFloatBall();
+          Snackbar.make(buttonView, R.string.add_ball_hint, Snackbar.LENGTH_SHORT)
+              .setAction("Action", null).show();
+        } else {
+          removeFloatBall();
+          Snackbar.make(buttonView, R.string.remove_ball_hint, Snackbar.LENGTH_SHORT)
+              .setAction("Action", null).show();
+        }
+        updateViewsState(isChecked);
+      }
+    });
+
+    // Set up the ActionBarDrawerToggle. 工具栏抽屉的开关。
+    DrawerLayout drawer = findViewById(R.id.drawer_layout);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+    drawer.addDrawerListener(toggle);
+    toggle.syncState();
+
+    // Set up the navigation drawer.导航抽屉。
+    NavigationView navigationView = findViewById(R.id.nav_view);
+    navigationView.setNavigationItemSelectedListener(
+        new NavigationView.OnNavigationItemSelectedListener() {
+          @Override
+          public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            int id = item.getItemId();
+            if (id == R.id.nav_license) {
+              addLicenseFragment();
+            } else if (id == R.id.setting) {
+              FragmentManager fragmentManager = getFragmentManager();
+              SettingFragment settingFragment = SettingFragment.newInstance();
+              ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment,
+                  R.id.contentFrame);
+            } else if (id == R.id.uninstall) {
+              uninstall();
+            }
+
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+
+            return true;
+          }
+        });
+
+    // Update versionTextView
+    try {
+      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+      String version = pi.versionName;
+      TextView versionTextView = navigationView.getHeaderView(0)
+          .findViewById(R.id.version_textView);
+      versionTextView.setText(String.format(getString(R.string.version_textView), version));
+    } catch (PackageManager.NameNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+
+
+  private void setupToolbar() {
+    setSupportActionBar(toolbar);//顺序会有影响
+
+    ActionBar ab = getSupportActionBar();
+    ab.setHomeButtonEnabled(true);
+    ab.setDisplayHomeAsUpEnabled(true);
+    ab.setDisplayShowTitleEnabled(false);
+
+    toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+      @Override
+      public boolean onMenuItemClick(MenuItem item) {
+        //只有一个，所以不用判断
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+            Uri.parse(getString(R.string.GITHUB_REPO_URL)));
+        startActivity(browserIntent);
+        return true;
+      }
+    });
+  }
+
+
   @Override
   protected void onResume() {
     super.onResume();
@@ -108,12 +208,6 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override
-  protected void onStop() {
-    super.onStop();
-    Log.d(TAG, "onStop: ");
-  }
-
-  @Override
   protected void onDestroy() {
     super.onDestroy();
     Log.d(TAG, "onDestroy: ");
@@ -121,12 +215,6 @@ public class MainActivity extends AppCompatActivity
 
     System.gc();
     System.runFinalization();
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    Log.d(TAG, "onActivityResult: MainActivity");
   }
 
   @Override
@@ -156,20 +244,13 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-      @NonNull int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    if (requestCode == mREQUEST_external_storage) {
-      //判断是否成功
-      //            成功继续打开图片？
-    }
-  }
-
-  // 模板的代码
+  /**
+   * 点击返回键
+   */
   @Override
   public void onBackPressed() {
     DrawerLayout drawer = findViewById(R.id.drawer_layout);
+    //如果打开了drawer则关闭，未打开则调用父类。
     if (drawer.isDrawerOpen(GravityCompat.START)) {
       drawer.closeDrawer(GravityCompat.START);
     } else {
@@ -177,6 +258,9 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
+  /**
+   * Option Menu 选项菜单
+   */
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
@@ -184,154 +268,12 @@ public class MainActivity extends AppCompatActivity
     return true;
   }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    //        int id = item.getItemId();
-
-    //        if (id == R.id.action_settings) {
-    //            return true;
-    //        }
-    return super.onOptionsItemSelected(item);
-  }
-
-  private void initFrameViews() {
-    // Set up the toolbar. 工具栏。
-    Toolbar toolbar = findViewById(R.id.materialup_toolbar);
-    setSupportActionBar(toolbar);//顺序会有影响
-    ActionBar ab = getSupportActionBar();
-    ab.setHomeButtonEnabled(true);
-    ab.setDisplayHomeAsUpEnabled(true);
-    ab.setDisplayShowTitleEnabled(false);
-
-    toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-      @Override
-      public boolean onMenuItemClick(MenuItem item) {
-        //只有一个，所以不用判断
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-            Uri.parse(getString(R.string.GITHUB_REPO_URL)));
-        startActivity(browserIntent);
-        return true;
-      }
-    });
-
-    //Set up the appBarLayout.
-    AppBarLayout appbarLayout = findViewById(R.id.materialup_appbar);
-    appbarLayout.addOnOffsetChangedListener(this);
-    mMaxScrollSize = appbarLayout.getTotalScrollRange();
-
-    // Set up the FloatingActionButton.
-    fab.setUseCompatPadding(false);
-    fab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        ballSwitch.toggle();
-      }
-    });
-
-    //悬浮球的开关
-    ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
-          addFloatBall();
-          Snackbar.make(buttonView, R.string.add_ball_hint, Snackbar.LENGTH_SHORT)
-              .setAction("Action", null).show();
-        } else {
-          removeFloatBall();
-          Snackbar.make(buttonView, R.string.remove_ball_hint, Snackbar.LENGTH_SHORT)
-              .setAction("Action", null).show();
-        }
-
-        updateViewsState(isChecked);
-      }
-    });
-
-    // Set up the ActionBarDrawerToggle.
-    DrawerLayout drawer = findViewById(R.id.drawer_layout);
-    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-        this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-    drawer.addDrawerListener(toggle);
-    toggle.syncState();
-
-    // Set up the navigation drawer.左侧滑出的菜单。
-    NavigationView navigationView = findViewById(R.id.nav_view);
-    navigationView.setNavigationItemSelectedListener(
-        new NavigationView.OnNavigationItemSelectedListener() {
-          @Override
-          public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            // Handle navigation view item clicks here.
-            int id = item.getItemId();
-            if (id == R.id.nav_share) {
-              Intent textIntent = new Intent(Intent.ACTION_SEND)
-                  .setType("text/plain")
-                  .putExtra(Intent.EXTRA_TEXT, getString(R.string.GITHUB_REPO_RELEASE_URL));
-              startActivity(Intent.createChooser(textIntent, "shared"));
-            } else if (id == R.id.nav_license) {
-              FragmentManager fragmentManager = getFragmentManager();
-              ScrollViewLicenseFragment recyclerViewLicenseFragment =
-                  ScrollViewLicenseFragment.newInstance();
-              ArrayList<License> customLicenses = new ArrayList<>();
-              customLicenses.add(
-                  new License(MainActivity.this, "Butter Knife", LicenseType.APACHE_LICENSE_20,
-                      "2013", "Jake Wharton"));
-              customLicenses.add(new License(MainActivity.this, "Material Animated Switch",
-                  LicenseType.APACHE_LICENSE_20, "2015", "Adrián García Lomas"));
-              customLicenses.add(
-                  new License(MainActivity.this, "DiscreteSeekBar", LicenseType.APACHE_LICENSE_20,
-                      "2014", "Gustavo Claramunt (Ander Webbs)"));
-              customLicenses.add(
-                  new License(MainActivity.this, "CircleImageView", LicenseType.APACHE_LICENSE_20,
-                      "2014-2018", "Henning Dodenhof"));
-              recyclerViewLicenseFragment.addCustomLicense(customLicenses);
-
-              ActivityUtils.addFragmentToActivity(fragmentManager, recyclerViewLicenseFragment,
-                  R.id.contentFrame);
-            } else if (id == R.id.setting) {
-              FragmentManager fragmentManager = getFragmentManager();
-              SettingFragment settingFragment = SettingFragment.newInstance();
-              ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment,
-                  R.id.contentFrame);
-            } else if (id == R.id.uninstall) {
-              ComponentName componentName =
-                  new ComponentName(MainActivity.this, LockReceiver.class);
-              DevicePolicyManager devicePolicyManager =
-                  (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-              if (devicePolicyManager != null) {
-                devicePolicyManager.removeActiveAdmin(componentName);
-              }
-
-              Uri packageUri = Uri.parse("package:" + MainActivity.this.getPackageName());
-              Intent intent = new Intent(Intent.ACTION_DELETE, packageUri);
-              startActivity(intent);
-            }
-
-            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-
-            return true;
-          }
-        });
-    // Update versionTextView
-    try {
-      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-      String version = pi.versionName;
-      TextView versionTextView = navigationView.getHeaderView(0)
-          .findViewById(R.id.version_textView);
-      versionTextView.setText(String.format(getString(R.string.version_textView), version));
-    } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
-
   private void updateViewsState(boolean hasAddedBall) {
     if (hasAddedBall) {
-      fab.setImageAlpha(255);
+      mFloatingActionButton.setImageAlpha(255);
       ballSwitch.setChecked(true);
     } else {
-      fab.setImageAlpha(40);
+      mFloatingActionButton.setImageAlpha(40);
       ballSwitch.setChecked(false);
     }
     FragmentManager fragmentManager = getFragmentManager();
@@ -342,6 +284,9 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
+  /**
+   * Sent intent to FloatingBallService
+   */
   private void addFloatBall() {
     Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
     Bundle data = new Bundle();
@@ -358,7 +303,49 @@ public class MainActivity extends AppCompatActivity
     startService(intent);
   }
 
+//Function methods
+  private void addLicenseFragment() {
+    FragmentManager fragmentManager = getFragmentManager();
+    ScrollViewLicenseFragment recyclerViewLicenseFragment =
+        ScrollViewLicenseFragment.newInstance();
+    ArrayList<License> customLicenses = new ArrayList<>();
+    customLicenses.add(
+        new License(MainActivity.this, "Butter Knife", LicenseType.APACHE_LICENSE_20,
+            "2013", "Jake Wharton"));
+    customLicenses.add(new License(MainActivity.this, "Material Animated Switch",
+        LicenseType.APACHE_LICENSE_20, "2015", "Adrián García Lomas"));
+    customLicenses.add(
+        new License(MainActivity.this, "DiscreteSeekBar", LicenseType.APACHE_LICENSE_20,
+            "2014", "Gustavo Claramunt (Ander Webbs)"));
+    customLicenses.add(
+        new License(MainActivity.this, "CircleImageView", LicenseType.APACHE_LICENSE_20,
+            "2014-2018", "Henning Dodenhof"));
+    recyclerViewLicenseFragment.addCustomLicense(customLicenses);
+
+    ActivityUtils.addFragmentToActivity(fragmentManager, recyclerViewLicenseFragment,
+        R.id.contentFrame);
+  }
+
+  private void uninstall() {
+    ComponentName componentName =
+        new ComponentName(MainActivity.this, LockReceiver.class);
+    DevicePolicyManager devicePolicyManager =
+        (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+    if (devicePolicyManager != null) {
+      devicePolicyManager.removeActiveAdmin(componentName);
+    }
+
+    Uri packageUri = Uri.parse("package:" + MainActivity.this.getPackageName());
+    Intent intent = new Intent(Intent.ACTION_DELETE, packageUri);
+    startActivity(intent);
+  }
+
+
+  /**
+   * BroadcastReceiver
+   */
   public class RefreshReceiver extends BroadcastReceiver {
+
     MainActivity mMainActivity;
 
     public RefreshReceiver(MainActivity mainActivity) {

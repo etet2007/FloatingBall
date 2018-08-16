@@ -16,7 +16,6 @@ import com.squareup.leakcanary.LeakCanary;
 public class App extends Application {
 
   private static App mInstance;
-  private static Context mApplicationContext;
 
   public static int gScreenWidth;
   public static int gScreenHeight;
@@ -24,6 +23,9 @@ public class App extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    mInstance = this;
+
     SharedPrefsUtils.setApplicationContext(getApplicationContext());
 
     WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -41,8 +43,6 @@ public class App extends Application {
     }
     LeakCanary.install(this);
     // Normal app init code...
-    mInstance = this;
-    mApplicationContext = getApplicationContext();
   }
 
   public static App getApplication() {

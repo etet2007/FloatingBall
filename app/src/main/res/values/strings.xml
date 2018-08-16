@@ -19,7 +19,6 @@
     <string name="active_device_administrator">Active device administrator</string>
 
     <string name="communicate">Communicate</string>
-    <string name="share">Share the release link</string>
     <string name="license">License</string>
 
     <string name="drawoverlays_permission">DrawOverlays permission</string>

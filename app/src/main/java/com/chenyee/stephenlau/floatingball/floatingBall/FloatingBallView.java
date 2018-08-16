@@ -545,9 +545,14 @@ public class FloatingBallView extends View {
     animation.start();
   }
 
+  /**
+   * 绘制
+   * @param canvas
+   */
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
+    //移动到View的中心进行绘制
     canvas.translate(measuredSideLength / 2, measuredSideLength / 2);
     //draw gray background
     if (useGrayBackground) {
@@ -566,6 +571,11 @@ public class FloatingBallView extends View {
     }
   }
 
+  /**
+   * 布局，改变View的大小
+   * @param widthMeasureSpec
+   * @param heightMeasureSpec
+   */
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);

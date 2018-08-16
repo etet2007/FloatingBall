@@ -35,11 +35,9 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_
  * devices and apps. Such a service can optionally随意地 request the capability能力 for querying the
  * content of the active window.
  *
- * Accept the intent from Main activity, Created by wangxiandeng on 2016/11/25.
  */
 
 public class FloatingBallService extends AccessibilityService {
-
   private static final String TAG = FloatingBallService.class.getSimpleName();
 
   public static final int TYPE_ADD = 0;
@@ -49,7 +47,6 @@ public class FloatingBallService extends AccessibilityService {
   public static final int TYPE_HIDE = 4;
 
   private FloatingBallManager mFloatingBallManager;
-
 
   public static Intent getStartIntent(Context context) {
     return new Intent(context, FloatingBallService.class);
@@ -63,6 +60,9 @@ public class FloatingBallService extends AccessibilityService {
     }
   };
 
+  /**
+   * 初始化
+   */
   @Override
   protected void onServiceConnected() {
     super.onServiceConnected();
@@ -121,13 +121,8 @@ public class FloatingBallService extends AccessibilityService {
     }
   }
 
-  /**
-   * todo onAccessibilityEvent 中执行太多代码应该会影响性能。有回调的方法会更好。
-   */
   @Override
   public void onAccessibilityEvent(AccessibilityEvent event) {
-//        Log.d(TAG, "onAccessibilityEvent: "+event.getEventType());
-
     Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
     //没有打开悬浮球
     if (!hasAddBall || mFloatingBallManager == null) {
@@ -138,7 +133,7 @@ public class FloatingBallService extends AccessibilityService {
   }
 
 
-  //    Called by the system every time a client explicitly starts the service by calling startService(Intent),
+  // Called by the system every time a client explicitly starts the service by calling startService(Intent),
   // providing the arguments it supplied and a unique integer token representing the start request.
   // Do not call this method directly.
   @Override
@@ -199,7 +194,9 @@ public class FloatingBallService extends AccessibilityService {
     sendNotification();
   }
 
-
+  /**
+   * send notification when hiding
+   */
   private void sendNotification() {
     String contentTitle = getString(R.string.hide_notification_content_title);
     String contentText = getString(R.string.hideNotificationContentText);

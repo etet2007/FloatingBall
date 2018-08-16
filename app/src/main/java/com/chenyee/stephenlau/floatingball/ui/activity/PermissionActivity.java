@@ -34,7 +34,6 @@ public class PermissionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
         ButterKnife.bind(this);
-//      The vertical position of this view relative to its top position, in pixels.
 
         logoImageView.animate().translationYBy(dip2px(getApplicationContext(),100)).setDuration(3000).start();
 
@@ -70,9 +69,9 @@ public class PermissionActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        boolean hasDrawPermission=false;
-        boolean hasAccessibilityPermission=false;
-        boolean hasLockScreenPermission=false;
+        boolean hasDrawPermission = false;
+        boolean hasAccessibilityPermission = false;
+        boolean hasLockScreenPermission = false;
 
         //canDrawOverlays
         if (Build.VERSION.SDK_INT >= 23) {
@@ -81,7 +80,7 @@ public class PermissionActivity extends AppCompatActivity {
                 hasDrawPermission = true;
             }
         } else {//SDK_INT < 23 没方法
-            drawOverlaysButton.setEnabled(false);
+            drawOverlaysButton.setVisibility(View.GONE);
             hasDrawPermission = true;
         }
         //Accessibility

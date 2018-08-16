@@ -30,9 +30,8 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
  * 管理FloatingBall的类。 单例，因为只需要一个FloatingBallView
  */
 public class FloatingBallManager {
-
   private static final String TAG = FloatingBallManager.class.getSimpleName();
-
+  //加载类时已经new好了
   private static FloatingBallManager sFloatingBallManager = new FloatingBallManager();
 
   private FloatingBallManager() {
@@ -42,12 +41,10 @@ public class FloatingBallManager {
     return sFloatingBallManager;
   }
 
-  // FloatingBallView
   private FloatingBallView mFloatingBallView;
 
   private boolean isOpenedBall;
   private boolean hasSoftKeyboardShow = false;
-
 
   // 创建BallView
   public void addBallView(Context context) {
@@ -302,11 +299,7 @@ public class FloatingBallManager {
       hasSoftKeyboardShow = true;
     } else {// 键盘不再显示
       if (hasSoftKeyboardShow) {// 键盘第一次消失
-//        mFloatingBallManager.moveBallViewDown();
-        Log.d(TAG, "notifyBallViewKeyboardDisappear call");
-
         mFloatingBallView.moveBackWhenKeyboardDisappear();
-
       }
       hasSoftKeyboardShow = false;
     }

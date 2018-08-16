@@ -5,6 +5,7 @@ A simple and animated gesture tools to relaxed your thumb.
 ## Feature
 - Customizable opacity and size
 - Background image
+- With smooth animation
 - Soft keyboard avoid
 - One-click uninstall
 
