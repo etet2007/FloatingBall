@@ -15,7 +15,6 @@ import android.view.WindowManager.LayoutParams;
 
 import android.view.inputmethod.InputMethodManager;
 import com.chenyee.stephenlau.floatingball.App;
-import com.chenyee.stephenlau.floatingball.util.FunctionUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -23,15 +22,16 @@ import java.util.List;
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
 import static com.chenyee.stephenlau.floatingball.App.gScreenWidth;
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
-import static com.chenyee.stephenlau.floatingball.util.FunctionUtils.getListener;
+import static com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils.getListener;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
  * 管理FloatingBall的类。 单例，因为只需要一个FloatingBallView
  */
 public class FloatingBallManager {
+
   private static final String TAG = FloatingBallManager.class.getSimpleName();
-  //加载类时已经new好了
+  //单例 加载类时已经new好了
   private static FloatingBallManager sFloatingBallManager = new FloatingBallManager();
 
   private FloatingBallManager() {
@@ -46,43 +46,46 @@ public class FloatingBallManager {
   private boolean isOpenedBall;
   private boolean hasSoftKeyboardShow = false;
 
-  // 创建BallView
+  /**
+   * create floatingBallView and add to WindowManager
+   */
   public void addBallView(Context context) {
-    Log.d(TAG, "FloatingBallManager addBallView: ");
+    if (isOpenedBall) {
+      return;
+    }
     if (mFloatingBallView == null) {
       mFloatingBallView = new FloatingBallView(context);
-
-      WindowManager windowManager = (WindowManager) context
-          .getSystemService(Context.WINDOW_SERVICE);
-
-      LayoutParams params = new LayoutParams();
-      //位置
-      params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X, gScreenWidth / 2);
-      params.y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y, gScreenHeight / 2);
-      params.width = LayoutParams.WRAP_CONTENT;
-      params.height = LayoutParams.WRAP_CONTENT;
-      params.gravity = Gravity.START | Gravity.TOP;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
-      } else {
-        params.type = LayoutParams.TYPE_SYSTEM_ALERT;
-      }
-      params.format = PixelFormat.RGBA_8888;
-      params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
-          | LayoutParams.FLAG_NOT_FOCUSABLE
-          | LayoutParams.FLAG_LAYOUT_IN_SCREEN
-          | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
-
-      //把引用传进去
-      mFloatingBallView.setLayoutParams(params);
-      //使用windowManager把ballView加进去
-      windowManager.addView(mFloatingBallView, params);
-
-      FunctionUtils.sFloatingBallService = (FloatingBallService) context;
-      updateAllBallViewParameter();
-
-      isOpenedBall = true;
     }
+    WindowManager windowManager = (WindowManager) App.getApplication().getApplicationContext()
+        .getSystemService(Context.WINDOW_SERVICE);
+    if (windowManager == null) {
+      return;
+    }
+    // use code to initialize layout parameters
+    LayoutParams params = new LayoutParams();
+    params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X, gScreenWidth / 2);
+    params.y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y, gScreenHeight / 2);
+    params.width = LayoutParams.WRAP_CONTENT;
+    params.height = LayoutParams.WRAP_CONTENT;
+    params.gravity = Gravity.START | Gravity.TOP;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
+    } else {
+      params.type = LayoutParams.TYPE_SYSTEM_ALERT;
+    }
+    params.format = PixelFormat.RGBA_8888;
+    params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+        | LayoutParams.FLAG_NOT_FOCUSABLE
+        | LayoutParams.FLAG_LAYOUT_IN_SCREEN
+        | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
+
+    mFloatingBallView.setLayoutParams(params);
+
+    windowManager.addView(mFloatingBallView, params);
+
+    updateParameter();
+
+    isOpenedBall = true;
   }
 
 
@@ -196,7 +199,10 @@ public class FloatingBallManager {
     }
   }
 
-  private void updateAllBallViewParameter() {
+  /**
+   * Use sharedPreference data to update the parameter
+   */
+  private void updateParameter() {
     if (mFloatingBallView != null) {
       /* View */
       //Opacity
@@ -237,6 +243,8 @@ public class FloatingBallManager {
       int downSlideEvent = SharedPrefsUtils
           .getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
       mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
+
+      mFloatingBallView.setmSingleTapFunctionListener(getListener(BACK));
 
     }
   }

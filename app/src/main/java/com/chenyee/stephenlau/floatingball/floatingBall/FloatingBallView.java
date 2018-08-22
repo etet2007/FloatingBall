@@ -15,7 +15,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -76,6 +75,7 @@ public class FloatingBallView extends View {
   private float ballCenterX = 0;
 
   //function list
+  private FunctionListener mSingleTapFunctionListener;
   private FunctionListener mDownFunctionListener;
   private FunctionListener mUpFunctionListener;
   private FunctionListener mLeftFunctionListener;
@@ -94,13 +94,12 @@ public class FloatingBallView extends View {
   private boolean mIsVibrate = true;
 
   //上次touchEvent的位置
-  private float mLastTouchEventX;
-  private float mLastTouchEventY;
+  private float mLastTouchEventPositionX;
+  private float mLastTouchEventPositionY;
 
-  private WindowManager.LayoutParams mLayoutParams;
+  private WindowManager.LayoutParams mViewLayoutParams;
 
   private GestureDetector mDetector;
-  private AccessibilityService mService;
 
   private WindowManager mWindowManager;
   //接触时动画
@@ -163,8 +162,7 @@ public class FloatingBallView extends View {
     }
   }
 
-  public void setDoubleClickEventType(boolean useDoubleClick,
-      FunctionListener doubleTapFunctionListener) {
+  public void setDoubleClickEventType(boolean useDoubleClick, FunctionListener doubleTapFunctionListener) {
     this.useDoubleClick = useDoubleClick;
     this.mDoubleTapFunctionListener = doubleTapFunctionListener;
 
@@ -175,23 +173,22 @@ public class FloatingBallView extends View {
     }
   }
 
-
   private int mLayoutParamsY;//动画用到
 
   private int getMLayoutParamsY() {
-    return mLayoutParams.y;
+    return mViewLayoutParams.y;
   }
 
   private void setMLayoutParamsY(int y) {
-    mLayoutParams.y = y;
+    mViewLayoutParams.y = y;
   }
 
   public void setLayoutParams(WindowManager.LayoutParams params) {
-    mLayoutParams = params;
+    mViewLayoutParams = params;
   }
 
   public WindowManager.LayoutParams getLayoutParams() {
-    return mLayoutParams;
+    return mViewLayoutParams;
   }
 
   public float getBallRadius() {
@@ -313,6 +310,10 @@ public class FloatingBallView extends View {
     mRightFunctionListener = rightFunctionListener;
   }
 
+  public void setmSingleTapFunctionListener(FunctionListener singleTapFunctionListener) {
+    mSingleTapFunctionListener = singleTapFunctionListener;
+  }
+
   /**
    * 改变悬浮球大小，需要改变所有与Size相关的东西
    */
@@ -340,11 +341,9 @@ public class FloatingBallView extends View {
     changeFloatBallSizeWithRadius(25);
 
     performAddAnimator();
-    mService = (AccessibilityService) context;
+
     mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-
     mDetector = new GestureDetector(context, new FloatingBallGestureListener());
-
     mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
     mBackgroundPaint.setColor(Color.GRAY);
@@ -483,7 +482,7 @@ public class FloatingBallView extends View {
     animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
-        mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
+        mWindowManager.updateViewLayout(FloatingBallView.this, mViewLayoutParams);
       }
     });
     animation.start();
@@ -539,7 +538,7 @@ public class FloatingBallView extends View {
     animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
-        mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
+        mWindowManager.updateViewLayout(FloatingBallView.this, mViewLayoutParams);
       }
     });
     animation.start();
@@ -547,7 +546,6 @@ public class FloatingBallView extends View {
 
   /**
    * 绘制
-   * @param canvas
    */
   @Override
   protected void onDraw(Canvas canvas) {
@@ -573,8 +571,6 @@ public class FloatingBallView extends View {
 
   /**
    * 布局，改变View的大小
-   * @param widthMeasureSpec
-   * @param heightMeasureSpec
    */
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -604,15 +600,15 @@ public class FloatingBallView extends View {
           //getRawX()、getRawY()返回的是触摸点相对于屏幕的位置
           if (!isFirstEvent) {
             isFirstEvent = true;
-            mLastTouchEventX = event.getX();
-            mLastTouchEventY = event.getY();
+            mLastTouchEventPositionX = event.getX();
+            mLastTouchEventPositionY = event.getY();
           }
-          mLayoutParams.x = (int) (event.getRawX() - mLastTouchEventX);
-          mLayoutParams.y = (int) (event.getRawY() - mLastTouchEventY);
+          mViewLayoutParams.x = (int) (event.getRawX() - mLastTouchEventPositionX);
+          mViewLayoutParams.y = (int) (event.getRawY() - mLastTouchEventPositionY);
 
-          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, mLayoutParams.x);
-          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, mLayoutParams.y);
-          mWindowManager.updateViewLayout(FloatingBallView.this, mLayoutParams);
+          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, mViewLayoutParams.x);
+          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, mViewLayoutParams.y);
+          mWindowManager.updateViewLayout(FloatingBallView.this, mViewLayoutParams);
 
         }
         break;
@@ -665,22 +661,22 @@ public class FloatingBallView extends View {
     switch (currentGestureState) {
       case UP:
         if (mUpFunctionListener != null) {
-          mUpFunctionListener.onClick();
+          mUpFunctionListener.onFunction();
         }
         break;
       case DOWN:
         if (mUpFunctionListener != null) {
-          mDownFunctionListener.onClick();
+          mDownFunctionListener.onFunction();
         }
         break;
       case LEFT:
         if (mLeftFunctionListener != null) {
-          mLeftFunctionListener.onClick();
+          mLeftFunctionListener.onFunction();
         }
         break;
       case RIGHT:
         if (mRightFunctionListener != null) {
-          mRightFunctionListener.onClick();
+          mRightFunctionListener.onFunction();
         }
         break;
       case NONE:
@@ -743,7 +739,10 @@ public class FloatingBallView extends View {
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
       if (!useDoubleClick) {
-        AccessibilityUtils.doBack(mService);
+        if (mSingleTapFunctionListener != null) {
+          mSingleTapFunctionListener.onFunction();
+        }
+
       }
       return false;
     }
@@ -799,15 +798,16 @@ public class FloatingBallView extends View {
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-      Log.d(TAG, "onSingleTapConfirmed: " + e);
-      AccessibilityUtils.doBack(mService);
+      if (mSingleTapFunctionListener != null) {
+        mSingleTapFunctionListener.onFunction();
+      }
       return false;
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
       if (mDoubleTapFunctionListener != null) {
-        mDoubleTapFunctionListener.onClick();
+        mDoubleTapFunctionListener.onFunction();
       }
       return false;
     }

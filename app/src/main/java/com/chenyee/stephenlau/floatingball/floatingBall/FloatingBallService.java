@@ -1,7 +1,6 @@
 package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.accessibilityservice.AccessibilityService;
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,17 +12,13 @@ import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.inputmethod.InputMethodManager;
 
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
-
-import java.lang.reflect.Method;
-import java.util.List;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ADDED_BALL;
@@ -31,13 +26,12 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_
 
 
 /**
- * Accessibility services should only be used to assist users with disabilities in using Android
- * devices and apps. Such a service can optionally随意地 request the capability能力 for querying the
- * content of the active window.
- *
+ * Accessibility services should only be used to assist users with disabilities in using Android devices and apps. Such
+ * a service can optionally随意地 request the capability能力 for querying the content of the active window.
  */
 
 public class FloatingBallService extends AccessibilityService {
+
   private static final String TAG = FloatingBallService.class.getSimpleName();
 
   public static final int TYPE_ADD = 0;
@@ -52,7 +46,7 @@ public class FloatingBallService extends AccessibilityService {
     return new Intent(context, FloatingBallService.class);
   }
 
-  private SharedPreferences.OnSharedPreferenceChangeListener mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+  private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
       Log.d(TAG, "onSharedPreferenceChanged: ");
@@ -69,21 +63,24 @@ public class FloatingBallService extends AccessibilityService {
     Log.d(TAG, "onServiceConnected: ");
     if (mFloatingBallManager == null) {
       mFloatingBallManager = FloatingBallManager.getInstance();
-      addBallViewAndSaveState();
-
-      SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mListener);
     }
+
+    // init FunctionInterfaceUtils
+    FunctionInterfaceUtils.sFloatingBallService = this;
+
+    addBallViewAndSaveState();
+
+    SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
   public void onCreate() {
     super.onCreate();
-    SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mListener);
+    SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
   public void onInterrupt() {
-    Log.d(TAG, "onInterrupt: ");
     if (mFloatingBallManager != null) {
       mFloatingBallManager.saveFloatingBallState();
     }
@@ -92,30 +89,26 @@ public class FloatingBallService extends AccessibilityService {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    Log.d(TAG, "onDestroy: ");
     if (mFloatingBallManager != null) {
       mFloatingBallManager.saveFloatingBallState();
     }
 
-    SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(mListener);
+    SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(
+        mOnSharedPreferenceChangeListener);
   }
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
+    boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+    if (!hasAddedBall) {
+      return;
+    }
 
     if (SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE, true)) {
-      boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-      if (!hasAddedBall) {
-        return;
-      }
       if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        Log.d(TAG, "onAccessibilityEvent: removeBallView");
         mFloatingBallManager.removeBallView();
-
       } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-
-        Log.d(TAG, "onAccessibilityEvent: addBallView");
         mFloatingBallManager.addBallView(FloatingBallService.this);
       }
     }
@@ -124,18 +117,15 @@ public class FloatingBallService extends AccessibilityService {
   @Override
   public void onAccessibilityEvent(AccessibilityEvent event) {
     Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-    //没有打开悬浮球
+
     if (!hasAddBall || mFloatingBallManager == null) {
+      //do nothing
       return;
     }
     //触发输入法检测
     mFloatingBallManager.inputMethodDetect();
   }
 
-
-  // Called by the system every time a client explicitly starts the service by calling startService(Intent),
-  // providing the arguments it supplied and a unique integer token representing the start request.
-  // Do not call this method directly.
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(TAG, "onStartCommand");

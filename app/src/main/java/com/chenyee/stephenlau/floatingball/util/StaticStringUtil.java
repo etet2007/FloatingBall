@@ -41,6 +41,8 @@ public class StaticStringUtil {
     public static final int ROOT_LOCK_SCREEN = 6;
     public static final int NOTIFICATION = 7;
     public static final int SCREEN_SHOT = 8;
+    public static final int BACK = 9;
+
 
     public static final int OPACITY_NONE = 0;
     public static final int OPACITY_REDUCE = 1;

@@ -25,9 +25,8 @@ public class AccessibilityUtils {
   /**
    * 单击返回功能
    */
-  public static void doBack(AccessibilityService service) {
-    boolean success = service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
-    Log.d(TAG, "doBack: " + success);
+  public static boolean doBack(AccessibilityService service) {
+    return service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
   }
 
   /**

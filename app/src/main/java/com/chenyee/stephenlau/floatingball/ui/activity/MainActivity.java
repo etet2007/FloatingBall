@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity
     startService(intent);
   }
 
-//Function methods
+  // Function methods
   private void addLicenseFragment() {
     FragmentManager fragmentManager = getFragmentManager();
     ScrollViewLicenseFragment recyclerViewLicenseFragment =
