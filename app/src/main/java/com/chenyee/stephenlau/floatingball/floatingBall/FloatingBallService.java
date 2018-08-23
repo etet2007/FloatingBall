@@ -21,7 +21,7 @@ import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ADDED_BALL;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ROTATE_HIDE;
 
 
@@ -40,7 +40,7 @@ public class FloatingBallService extends AccessibilityService {
   public static final int TYPE_CLEAR = 3;
   public static final int TYPE_HIDE = 4;
 
-  private FloatingBallManager mFloatingBallManager;
+  private FloatingBallController mFloatingBallController;
 
   public static Intent getStartIntent(Context context) {
     return new Intent(context, FloatingBallService.class);
@@ -50,7 +50,7 @@ public class FloatingBallService extends AccessibilityService {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
       Log.d(TAG, "onSharedPreferenceChanged: ");
-      mFloatingBallManager.updateBallViewParameter(key);
+      mFloatingBallController.updateSpecificParameter(key);
     }
   };
 
@@ -61,14 +61,11 @@ public class FloatingBallService extends AccessibilityService {
   protected void onServiceConnected() {
     super.onServiceConnected();
     Log.d(TAG, "onServiceConnected: ");
-    if (mFloatingBallManager == null) {
-      mFloatingBallManager = FloatingBallManager.getInstance();
+    if (mFloatingBallController == null) {
+      mFloatingBallController = FloatingBallController.getInstance();
     }
 
-    // init FunctionInterfaceUtils
-    FunctionInterfaceUtils.sFloatingBallService = this;
-
-    addBallViewAndSaveState();
+    mFloatingBallController.addBallView(FloatingBallService.this);
 
     SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
   }
@@ -81,49 +78,44 @@ public class FloatingBallService extends AccessibilityService {
 
   @Override
   public void onInterrupt() {
-    if (mFloatingBallManager != null) {
-      mFloatingBallManager.saveFloatingBallState();
-    }
+
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    if (mFloatingBallManager != null) {
-      mFloatingBallManager.saveFloatingBallState();
-    }
 
-    SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(
-        mOnSharedPreferenceChangeListener);
+    SharedPrefsUtils.getSharedPreferences()
+        .unregisterOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
-    if (!hasAddedBall) {
+    boolean isAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
+    if (!isAddedBall) {
       return;
     }
 
     if (SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE, true)) {
       if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        mFloatingBallManager.removeBallView();
+        mFloatingBallController.removeBallView();
       } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-        mFloatingBallManager.addBallView(FloatingBallService.this);
+        mFloatingBallController.addBallView(FloatingBallService.this);
       }
     }
   }
 
   @Override
   public void onAccessibilityEvent(AccessibilityEvent event) {
-    Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+    Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
 
-    if (!hasAddBall || mFloatingBallManager == null) {
+    if (!hasAddBall || mFloatingBallController == null) {
       //do nothing
       return;
     }
     //触发输入法检测
-    mFloatingBallManager.inputMethodDetect();
+    mFloatingBallController.inputMethodDetect();
   }
 
   @Override
@@ -132,8 +124,8 @@ public class FloatingBallService extends AccessibilityService {
 
     if (intent != null) {
       //mFloatBallManager的判断是因为生命周期有时候有问题
-      if (mFloatingBallManager == null) {
-        mFloatingBallManager = FloatingBallManager.getInstance();
+      if (mFloatingBallController == null) {
+        mFloatingBallController = FloatingBallController.getInstance();
       }
 
       Bundle data = intent.getExtras();
@@ -141,46 +133,37 @@ public class FloatingBallService extends AccessibilityService {
         int type = data.getInt(EXTRA_TYPE);
 
         if (type == TYPE_ADD) {
-          addBallViewAndSaveState();
+          mFloatingBallController.addBallView(FloatingBallService.this);
         }
 
         if (type == TYPE_REMOVE) {
-          removeBallViewAndSaveData();
+          mFloatingBallController.removeBallView();
         }
 
         if (type == TYPE_HIDE) {
-          mFloatingBallManager.setVisibility(data.getBoolean("isHide"));
+          mFloatingBallController.setVisibility(data.getBoolean("isHide"));
         }
 
         //intent中传图片地址，也可以换为sharedPreference吧
         if (type == TYPE_IMAGE) {
-          mFloatingBallManager.setBackgroundImage(data.getString("imagePath"));
+          mFloatingBallController.setBackgroundImage(data.getString("imagePath"));
         }
 
         if (type == TYPE_CLEAR) {
-          mFloatingBallManager.clear();
+          mFloatingBallController.clear();
         }
       }
     }
     return super.onStartCommand(intent, flags, startId);
   }
 
-  private void addBallViewAndSaveState() {
-    mFloatingBallManager.addBallView(FloatingBallService.this);
-    mFloatingBallManager.saveFloatingBallState();
-  }
-
-  private void removeBallViewAndSaveData() {
-    mFloatingBallManager.removeBallView();
-    mFloatingBallManager.saveFloatingBallState();
-  }
-
   public void hideBall() {
-    if (mFloatingBallManager == null) {
-      mFloatingBallManager = FloatingBallManager.getInstance();
+    if (mFloatingBallController == null) {
+      mFloatingBallController = FloatingBallController.getInstance();
     }
 
-    removeBallViewAndSaveData();
+    mFloatingBallController.removeBallView();
+
     sendNotification();
   }
 

@@ -1,6 +1,5 @@
 package com.chenyee.stephenlau.floatingball.floatingBall;
 
-import android.accessibilityservice.AccessibilityService;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -21,13 +20,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.chenyee.stephenlau.floatingball.util.AccessibilityUtils;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
+import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
@@ -89,7 +89,7 @@ public class FloatingBallView extends View {
 
   private boolean useBackground = false;
   private boolean useGrayBackground = true;
-  private boolean useDoubleClick = false;
+  private boolean isUseDoubleClick = false;
 
   private boolean mIsVibrate = true;
 
@@ -162,11 +162,12 @@ public class FloatingBallView extends View {
     }
   }
 
-  public void setDoubleClickEventType(boolean useDoubleClick, FunctionListener doubleTapFunctionListener) {
-    this.useDoubleClick = useDoubleClick;
-    this.mDoubleTapFunctionListener = doubleTapFunctionListener;
+  public void setDoubleClickEventType(int doubleClickEventType) {
+    mDoubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
 
-    if (useDoubleClick) {
+    isUseDoubleClick =  mDoubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
+
+    if (isUseDoubleClick) {
       mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
     } else {
       mDetector.setOnDoubleTapListener(null);
@@ -738,7 +739,7 @@ public class FloatingBallView extends View {
     //单击抬起
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-      if (!useDoubleClick) {
+      if (!isUseDoubleClick) {
         if (mSingleTapFunctionListener != null) {
           mSingleTapFunctionListener.onFunction();
         }

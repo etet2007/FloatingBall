@@ -183,7 +183,7 @@ public class SettingFragment extends Fragment {
     updateFunctionListView();
     updateOpacityModeView();
 
-//        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ADDED_BALL, false);
+//        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
 //        //hasAddedBall代表两种状态
 //        updateViewsState(hasAddedBall);
 
@@ -282,8 +282,6 @@ public class SettingFragment extends Fragment {
   }
 
   public void updateViewsState(boolean hasAddedBall) {
-    //应该改成遍历
-
     if (hasAddedBall) {
       enableAll(rootLinearLayout, true);
     } else {

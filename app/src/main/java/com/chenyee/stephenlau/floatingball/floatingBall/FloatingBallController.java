@@ -15,6 +15,7 @@ import android.view.WindowManager.LayoutParams;
 
 import android.view.inputmethod.InputMethodManager;
 import com.chenyee.stephenlau.floatingball.App;
+import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -28,29 +29,34 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 /**
  * 管理FloatingBall的类。 单例，因为只需要一个FloatingBallView
  */
-public class FloatingBallManager {
+public class FloatingBallController {
 
-  private static final String TAG = FloatingBallManager.class.getSimpleName();
-  //单例 加载类时已经new好了
-  private static FloatingBallManager sFloatingBallManager = new FloatingBallManager();
+  private static final String TAG = FloatingBallController.class.getSimpleName();
+  //Single
+  private static FloatingBallController sFloatingBallController = new FloatingBallController();
 
-  private FloatingBallManager() {
-  }
-
-  public static FloatingBallManager getInstance() {
-    return sFloatingBallManager;
-  }
-
+  /**
+   * View
+   */
   private FloatingBallView mFloatingBallView;
 
-  private boolean isOpenedBall;
-  private boolean hasSoftKeyboardShow = false;
+  private boolean isSoftKeyboardShow = false;
+  private boolean isAddedBall = false;
+
+
+  private FloatingBallController() {
+  }
+
+  public static FloatingBallController getInstance() {
+    return sFloatingBallController;
+  }
+
 
   /**
    * create floatingBallView and add to WindowManager
    */
   public void addBallView(Context context) {
-    if (isOpenedBall) {
+    if (isAddedBall) {
       return;
     }
     if (mFloatingBallView == null) {
@@ -61,6 +67,7 @@ public class FloatingBallManager {
     if (windowManager == null) {
       return;
     }
+
     // use code to initialize layout parameters
     LayoutParams params = new LayoutParams();
     params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X, gScreenWidth / 2);
@@ -80,23 +87,28 @@ public class FloatingBallManager {
         | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
 
     mFloatingBallView.setLayoutParams(params);
-
     windowManager.addView(mFloatingBallView, params);
 
     updateParameter();
 
-    isOpenedBall = true;
+
+    // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
+    FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
+
+    isAddedBall = true;
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL, true);
   }
 
 
   public void removeBallView() {
+    isAddedBall = false;
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL, false);
+
     if (mFloatingBallView == null) {
       return;
     }
-    //动画
     mFloatingBallView.performRemoveAnimator();
     mFloatingBallView = null;
-    isOpenedBall = false;
   }
 
   /**
@@ -115,138 +127,102 @@ public class FloatingBallManager {
   }
 
   /**
-   * 保存打开状态
+   * No use
+   * @param key
    */
-  public void saveFloatingBallState() {
-    SharedPrefsUtils.setBooleanPreference(PREF_HAS_ADDED_BALL, isOpenedBall);
-  }
-
-  /**
-   * 根据SharedPreferences中的数据更新BallView的参数。
-   */
-  public void updateBallViewParameter(String key) {
-    if (mFloatingBallView != null) {
-      /* View */
-      switch (key) {
-        case PREF_OPACITY:
-          //Opacity
-          mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
-          break;
-        case PREF_OPACITY_MODE:
-          mFloatingBallView.setOpacityMode(
-              SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
-          break;
-        case PREF_SIZE:
-          //Size
-          mFloatingBallView
-              .changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
-          break;
-        case PREF_USE_BACKGROUND:
-          //Use background
-          mFloatingBallView
-              .setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
-          break;
-        case PREF_USE_GRAY_BACKGROUND:
-          //Use gray background
-          mFloatingBallView.setUseGrayBackground(
-              SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
-          break;
-        case PREF_IS_VIBRATE:
-          mFloatingBallView
-              .setIsVibrate(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
-          break;
-      }
-      //Refresh view
-      mFloatingBallView.requestLayout();
-      mFloatingBallView.invalidate();
-
-      //功能性
-      if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
-        /* Function */
-        //Double click event
-        int double_click_event = SharedPrefsUtils
-            .getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE);
-        boolean useDoubleClick = true;
-        if (double_click_event == NONE) {
-          useDoubleClick = false;
-        }
-        mFloatingBallView.setDoubleClickEventType(useDoubleClick, getListener(double_click_event));
-      }
-      if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
-        //LeftSlideEvent
-        int leftSlideEvent = SharedPrefsUtils
-            .getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
-        mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
-      }
-      if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
-        //RightSlideEvent
-        int rightSlideEvent = SharedPrefsUtils
-            .getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
-        mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
-      }
-      if (key.equals(PREF_UP_SLIDE_EVENT)) {
-        //UpSlideEvent
-        int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
-        mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
-      }
-      if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
-        //DownSlideEvent
-        int downSlideEvent = SharedPrefsUtils
-            .getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
-        mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
-      }
-
+  public void updateSpecificParameter(String key) {
+    if (mFloatingBallView == null) {
+      return;
     }
-  }
+    switch (key) {
+      case PREF_OPACITY:
+        mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
+        break;
+      case PREF_OPACITY_MODE:
+        mFloatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
+        break;
+      case PREF_SIZE:
+        mFloatingBallView.changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
+        break;
+      case PREF_USE_BACKGROUND:
+        mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
+        break;
+      case PREF_USE_GRAY_BACKGROUND:
+        mFloatingBallView.setUseGrayBackground(
+            SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
+        break;
+      case PREF_IS_VIBRATE:
+        mFloatingBallView
+            .setIsVibrate(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
+        break;
+    }
+    //refresh the layout and draw the view
+    mFloatingBallView.requestLayout();
+    mFloatingBallView.invalidate();
 
-  /**
-   * Use sharedPreference data to update the parameter
-   */
-  private void updateParameter() {
-    if (mFloatingBallView != null) {
-      /* View */
-      //Opacity
-      mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
-      //Size
-      mFloatingBallView
-          .changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
-      //Use background
-      mFloatingBallView
-          .setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
-      //Use gray background
-      mFloatingBallView.setUseGrayBackground(
-          SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
-      //Refresh view
-      mFloatingBallView.requestLayout();
-      mFloatingBallView.invalidate();
-
-      /* Function */
-      //Double click event
-      int double_click_event = SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE);
-      boolean useDoubleClick = true;
-      if (double_click_event == NONE) {
-        useDoubleClick = false;
-      }
-      mFloatingBallView.setDoubleClickEventType(useDoubleClick, getListener(double_click_event));
+    if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
+      mFloatingBallView.setDoubleClickEventType(SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE));
+    }
+    if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
       //LeftSlideEvent
       int leftSlideEvent = SharedPrefsUtils
           .getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
       mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
+    }
+    if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
       //RightSlideEvent
       int rightSlideEvent = SharedPrefsUtils
           .getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
       mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
+    }
+    if (key.equals(PREF_UP_SLIDE_EVENT)) {
       //UpSlideEvent
       int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
       mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
+    }
+    if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
       //DownSlideEvent
       int downSlideEvent = SharedPrefsUtils
           .getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
       mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
-
-      mFloatingBallView.setmSingleTapFunctionListener(getListener(BACK));
-
     }
+
+  }
+
+  /**
+   * Use sharedPreference data to update all parameter
+   */
+  private void updateParameter() {
+    if (mFloatingBallView == null) {
+      return;
+    }
+    /* View */
+    mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
+    mFloatingBallView
+        .changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
+    mFloatingBallView
+        .setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
+    mFloatingBallView.setUseGrayBackground(
+        SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
+
+    mFloatingBallView.requestLayout();
+    mFloatingBallView.invalidate();
+
+    /* Function */
+    mFloatingBallView.setDoubleClickEventType(SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE));
+    int leftSlideEvent = SharedPrefsUtils
+        .getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
+    mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
+    int rightSlideEvent = SharedPrefsUtils
+        .getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
+    mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
+    int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
+    mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
+    int downSlideEvent = SharedPrefsUtils
+        .getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
+    mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
+
+    mFloatingBallView.setmSingleTapFunctionListener(getListener(BACK));
   }
 
   /**
@@ -297,19 +273,19 @@ public class FloatingBallManager {
     }
     //过滤掉100以下的了
     if (isInputing) {// 键盘正在显示
-      if (!hasSoftKeyboardShow) {// 键盘第一次显示
+      if (!isSoftKeyboardShow) {// 键盘第一次显示
 //        mFloatingBallManager.moveBallViewUp();
         Log.d(TAG, "notifyBallViewKeyboardShow call");
         mFloatingBallView.inputMethodWindowHeight = inputMethodWindowHeight;
         mFloatingBallView.moveToKeyboardTop();
 
       }
-      hasSoftKeyboardShow = true;
+      isSoftKeyboardShow = true;
     } else {// 键盘不再显示
-      if (hasSoftKeyboardShow) {// 键盘第一次消失
+      if (isSoftKeyboardShow) {// 键盘第一次消失
         mFloatingBallView.moveBackWhenKeyboardDisappear();
       }
-      hasSoftKeyboardShow = false;
+      isSoftKeyboardShow = false;
     }
   }
 

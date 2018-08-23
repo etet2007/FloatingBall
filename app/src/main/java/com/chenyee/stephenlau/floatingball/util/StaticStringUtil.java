@@ -16,7 +16,7 @@ public class StaticStringUtil {
 
     public static final String PREF_OPACITY_MODE = "PREF_OPACITY_MODE";
 
-    public static final String PREF_HAS_ADDED_BALL = "PREF_HAS_ADDED_BALL";
+    public static final String PREF_IS_ADDED_BALL = "PREF_IS_ADDED_BALL";
     public static final String PREF_HAS_ROTATE_HIDE_BALL = "PREF_HAS_ROTATE_HIDE_BALL";
     public static final String PREF_PARAM_X = "PREF_PARAM_X";
     public static final String PREF_PARAM_Y = "PREF_PARAM_Y";
