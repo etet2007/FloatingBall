@@ -22,7 +22,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_
 public class QuickSettingService extends TileService {
 
   private static final String TAG = QuickSettingService.class.getSimpleName();
-  private boolean mHasAddedBall = false;
+  private boolean isAddedBall = false;
   private Tile tile;
 
   //当用户从Edit栏添加到快速设定中调用
@@ -41,15 +41,14 @@ public class QuickSettingService extends TileService {
   // 点击的时候
   @Override
   public void onClick() {
-    Log.d(TAG, "onFunction " + mHasAddedBall);
 
-    if (mHasAddedBall) {
+    if (isAddedBall) {
       removeFloatBall();
     } else {
       addFloatBall();
     }
-    mHasAddedBall = !mHasAddedBall;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL, mHasAddedBall);
+    isAddedBall = !isAddedBall;
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL, isAddedBall);
 
     LocalBroadcastManager.getInstance(QuickSettingService.this).sendBroadcast(new Intent("refreshActivity"));
     refreshTile();
@@ -62,8 +61,8 @@ public class QuickSettingService extends TileService {
   public void onStartListening() {
     Log.d(TAG, "onStartListening");
     tile = getQsTile();
-    mHasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
-    Log.d(TAG, "onStartListening mHasAddedBall" + mHasAddedBall);
+    isAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
+    Log.d(TAG, "onStartListening isAddedBall" + isAddedBall);
 
     refreshTile();
   }
@@ -92,7 +91,7 @@ public class QuickSettingService extends TileService {
   }
 
   private void refreshTile() {
-    if (mHasAddedBall) {
+    if (isAddedBall) {
       tile.setState(Tile.STATE_ACTIVE);
     } else {
       tile.setState(Tile.STATE_INACTIVE);

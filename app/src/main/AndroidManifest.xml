@@ -94,11 +94,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- <receiver android:name=".activity.MainActivity$RefreshReceiver"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="refreshActivity" /> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
         <service
             android:name=".QuickSettingService"
             android:icon="@drawable/ic_floating_button_quick_setting"

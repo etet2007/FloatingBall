@@ -82,13 +82,13 @@ public class MainActivity extends AppCompatActivity
     //ButterKnife
     ButterKnife.bind(this);
 
-    //初始化toolbar等
     initViews();
 
     FragmentManager fragmentManager = getFragmentManager();
     SettingFragment settingFragment = SettingFragment.newInstance();
     ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment, R.id.contentFrame);
 
+    //QuickSettingService refresh MainActivity
     mRefreshReceiver = new RefreshReceiver(this);
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction("refreshActivity");
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity
       }
     });
 
-    // Set up the switch.
+    // Set up the ballSwitch.
     ballSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

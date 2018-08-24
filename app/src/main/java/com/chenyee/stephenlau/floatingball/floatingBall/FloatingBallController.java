@@ -91,7 +91,6 @@ public class FloatingBallController {
 
     updateParameter();
 
-
     // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
     FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
 
@@ -274,8 +273,6 @@ public class FloatingBallController {
     //过滤掉100以下的了
     if (isInputing) {// 键盘正在显示
       if (!isSoftKeyboardShow) {// 键盘第一次显示
-//        mFloatingBallManager.moveBallViewUp();
-        Log.d(TAG, "notifyBallViewKeyboardShow call");
         mFloatingBallView.inputMethodWindowHeight = inputMethodWindowHeight;
         mFloatingBallView.moveToKeyboardTop();
 
