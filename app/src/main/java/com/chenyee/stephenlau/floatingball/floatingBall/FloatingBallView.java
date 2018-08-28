@@ -14,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,7 +28,6 @@ import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
@@ -46,15 +46,14 @@ public class FloatingBallView extends View {
   private Paint mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private Paint mBallEmptyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-  //手势的状态
-  private static final int UP = 1;
-  private static final int DOWN = 2;
-  private static final int LEFT = 3;
-  private static final int RIGHT = 4;
-  private static final int NONE = 5;
+  private static final int STATE_UP = 1;
+  private static final int STATE_DOWN = 2;
+  private static final int STATE_LEFT = 3;
+  private static final int STATE_RIGHT = 4;
+  private static final int STATE_NONE = 5;
 
   private int currentGestureState;
-  private int lastGestureState = NONE;
+  private int lastGestureState = STATE_NONE;
 
   //灰色背景长度
   private final float edge = dip2px(getContext(), 4);
@@ -67,6 +66,10 @@ public class FloatingBallView extends View {
   private float mBackgroundRadius;
 
   private int measuredSideLength;
+
+  public void setMoveUpDistance(int moveUpDistance) {
+    this.moveUpDistance = moveUpDistance;
+  }
 
   //移动距离 可以设置
   private int moveUpDistance;
@@ -99,14 +102,13 @@ public class FloatingBallView extends View {
 
   private WindowManager.LayoutParams mViewLayoutParams;
 
-  private GestureDetector mDetector;
+  private GestureDetector mGestureDetector;
 
   private WindowManager mWindowManager;
-  //接触时动画
-  private ObjectAnimator onTouchAnimate;
-  private ObjectAnimator unTouchAnimate;
 
-  //Vibrator
+  private ObjectAnimator onTouchAnimator;
+  private ObjectAnimator unTouchAnimator;
+
   private Vibrator mVibrator;
 
   private Bitmap mBitmapRead;
@@ -114,13 +116,14 @@ public class FloatingBallView extends View {
 
   //基础透明度值
   private int mBaseOpacity;
-  //透明度模式
+
   private int mOpacityMode;
-  //透明度呼吸动画
-  private ObjectAnimator breathingAnimate;
-  //透明度减少动画
-  private ObjectAnimator reduceAnimate;
+  private ObjectAnimator breathingOpacityAnimator;
+
+  private ObjectAnimator reduceOpacityAnimator;
+
   private int lastLayoutParamsY;
+  private int gestureStateChangeCount;
 
   public float getBallCenterY() {
     return ballCenterY;
@@ -165,12 +168,12 @@ public class FloatingBallView extends View {
   public void setDoubleClickEventType(int doubleClickEventType) {
     mDoubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
 
-    isUseDoubleClick =  mDoubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
+    isUseDoubleClick =  mDoubleTapFunctionListener != FunctionInterfaceUtils.getListener(STATE_NONE);
 
     if (isUseDoubleClick) {
-      mDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
+      mGestureDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
     } else {
-      mDetector.setOnDoubleTapListener(null);
+      mGestureDetector.setOnDoubleTapListener(null);
     }
   }
 
@@ -219,18 +222,18 @@ public class FloatingBallView extends View {
     }
 
     if (mOpacityMode == OPACITY_REDUCE) {
-      calcReduceAnimation(mBaseOpacity);
-      if (reduceAnimate != null) {
-        reduceAnimate.start();
+      setUpReduceAnimator(mBaseOpacity);
+      if (reduceOpacityAnimator != null) {
+        reduceOpacityAnimator.start();
       }
     }
 
     if (mOpacityMode == OPACITY_BREATHING) {
-      calcBreathingAnimation(mBaseOpacity);
-      breathingAnimate.start();
+      setUpBreathingAnimator(mBaseOpacity);
+      breathingOpacityAnimator.start();
     } else {
-      if (breathingAnimate != null) {
-        breathingAnimate.cancel();
+      if (breathingOpacityAnimator != null) {
+        breathingOpacityAnimator.cancel();
       }
     }
   }
@@ -252,17 +255,15 @@ public class FloatingBallView extends View {
     refreshOpacityMode();
   }
 
-  /**
-   * @param opacity opacity正常值，会自动将为0.6倍
-   */
-  private void calcReduceAnimation(int opacity) {
+
+  private void setUpReduceAnimator(int opacity) {
     Keyframe kf1 = Keyframe.ofInt(0f, opacity);
     Keyframe kf2 = Keyframe.ofInt(0.5f, opacity);
     Keyframe kf3 = Keyframe.ofInt(1f, (int) (opacity * 0.6));
     PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1, kf2, kf3);
-    reduceAnimate = ObjectAnimator.ofPropertyValuesHolder(this, pVH);
-    reduceAnimate.setDuration(3000);
-    reduceAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    reduceOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(this, pVH);
+    reduceOpacityAnimator.setDuration(3000);
+    reduceOpacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         invalidate();
@@ -270,7 +271,7 @@ public class FloatingBallView extends View {
     });
   }
 
-  private void calcBreathingAnimation(int opacity) {
+  private void setUpBreathingAnimator(int opacity) {
     Keyframe kf1 = Keyframe.ofInt(0f, (int) (opacity * 0.4));
     Keyframe kf2 = Keyframe.ofInt(0.35f, opacity);
     Keyframe kf3 = Keyframe.ofInt(0.5f, opacity);
@@ -278,11 +279,11 @@ public class FloatingBallView extends View {
     Keyframe kf5 = Keyframe.ofInt(1f, (int) (opacity * 0.4));
     PropertyValuesHolder pVH = PropertyValuesHolder
         .ofKeyframe("paintAlpha", kf1, kf2, kf3, kf4, kf5);
-    breathingAnimate = ObjectAnimator.ofPropertyValuesHolder(this, pVH);
-    breathingAnimate.setRepeatCount(ValueAnimator.INFINITE);
-    breathingAnimate.setRepeatMode(ValueAnimator.RESTART);
-    breathingAnimate.setDuration(4000);
-    breathingAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    breathingOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(this, pVH);
+    breathingOpacityAnimator.setRepeatCount(ValueAnimator.INFINITE);
+    breathingOpacityAnimator.setRepeatMode(ValueAnimator.RESTART);
+    breathingOpacityAnimator.setDuration(4000);
+    breathingOpacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         invalidate();
@@ -331,7 +332,7 @@ public class FloatingBallView extends View {
       createBitmapCropFromBitmapRead();
     }
     //动画的参数也需计算
-    calcTouchAnimator();
+    setUpTouchAnimator();
   }
 
   /**
@@ -344,7 +345,7 @@ public class FloatingBallView extends View {
     performAddAnimator();
 
     mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-    mDetector = new GestureDetector(context, new FloatingBallGestureListener());
+    mGestureDetector = new GestureDetector(context, new FloatingBallGestureListener());
     mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
     mBackgroundPaint.setColor(Color.GRAY);
@@ -415,29 +416,27 @@ public class FloatingBallView extends View {
     scaledBitmap.recycle();
   }
 
-  private void calcTouchAnimator() {
-//        onTouchAnimate
+  private void setUpTouchAnimator() {
     Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
     Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + ballRadiusDeltaMax - 1);
     Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + ballRadiusDeltaMax);
     PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0, kf1, kf2);
-    onTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, onTouch);
-    onTouchAnimate.setDuration(300);
-    onTouchAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    onTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(this, onTouch);
+    onTouchAnimator.setDuration(300);
+    onTouchAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         invalidate();
       }
     });
 
-//        unTouchAnimate
     Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius + ballRadiusDeltaMax);
     Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius + ballRadiusDeltaMax);
     Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
     PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3, kf4, kf5);
-    unTouchAnimate = ObjectAnimator.ofPropertyValuesHolder(this, unTouch);
-    unTouchAnimate.setDuration(400);
-    unTouchAnimate.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    unTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(this, unTouch);
+    unTouchAnimator.setDuration(400);
+    unTouchAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         invalidate();
@@ -471,30 +470,6 @@ public class FloatingBallView extends View {
         .start();
   }
 
-  /**
-   * 向上移动动画
-   */
-  public void performMoveUpAnimator() {
-    ObjectAnimator animation = ObjectAnimator.ofInt(this, "mLayoutParamsY", getMLayoutParamsY(),
-        getMLayoutParamsY()
-            - moveUpDistance);
-
-    animation.setDuration(200); //in milliseconds
-    animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        mWindowManager.updateViewLayout(FloatingBallView.this, mViewLayoutParams);
-      }
-    });
-    animation.start();
-  }
-
-  /**
-   * 向下移动动画
-   */
-  public void performMoveDownAnimator() {
-    startParamsYAnimationTo(getMLayoutParamsY() + moveUpDistance);
-  }
 
   public int inputMethodWindowHeight;
   private boolean isMoveUp = false;
@@ -508,14 +483,13 @@ public class FloatingBallView extends View {
 
     int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
 
-    int gap = 8;
-    int ballBottomYPlusGap = getMLayoutParamsY() + measuredSideLength + gap;
+    int ballBottomYPlusGap = getMLayoutParamsY() + measuredSideLength + moveUpDistance;
     if (ballBottomYPlusGap < keyboardTopY) {
       return;
     }
     lastLayoutParamsY = getMLayoutParamsY();
 
-    startParamsYAnimationTo(keyboardTopY - measuredSideLength - gap);
+    startParamsYAnimationTo(keyboardTopY - measuredSideLength - moveUpDistance);
     isMoveUp = true;
 
   }
@@ -535,7 +509,7 @@ public class FloatingBallView extends View {
     ObjectAnimator animation = ObjectAnimator
         .ofInt(this, "mLayoutParamsY", getMLayoutParamsY(), paramsY
         );
-    animation.setDuration(200); //in milliseconds
+    animation.setDuration(200);
     animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
@@ -581,21 +555,18 @@ public class FloatingBallView extends View {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    //使用Detector处理一部分手势
-    mDetector.onTouchEvent(event);
+    mGestureDetector.onTouchEvent(event);    //使用Detector处理一部分手势
 
     switch (event.getAction()) {
       //任何接触，球都放大。 Opacity reset.
       case MotionEvent.ACTION_DOWN:
-        onTouchAnimate.start();//球放大动画
+        onTouchAnimator.start();
         if (mOpacityMode == OPACITY_REDUCE) {
-          // 自动降低透明度的逻辑
           setPaintAlpha(mBaseOpacity);
         }
 
-        // 处理移动模式
       case MotionEvent.ACTION_MOVE:
-        // 移动模式
+        // 长按移动模式
         if (isLongPress) {
           //getX()、getY()返回的则是触摸点相对于View的位置。
           //getRawX()、getRawY()返回的是触摸点相对于屏幕的位置
@@ -610,41 +581,35 @@ public class FloatingBallView extends View {
           SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, mViewLayoutParams.x);
           SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, mViewLayoutParams.y);
           mWindowManager.updateViewLayout(FloatingBallView.this, mViewLayoutParams);
-
         }
         break;
       case MotionEvent.ACTION_UP:
-        //球缩小动画
-        unTouchAnimate.start();
+        unTouchAnimator.start();
         //滑动操作
         if (isScrolling) {
-          //功能接口
-          doGesture();
+          onFunctionWithCurrentGestureState();
           //球移动动画
           moveFloatBallBack();
-          currentGestureState = NONE;
-          lastGestureState = NONE;
+          currentGestureState = STATE_NONE;
+          lastGestureState = STATE_NONE;
           isScrolling = false;
         }
         if (mOpacityMode == OPACITY_REDUCE) {
-          // 自动降低透明度的逻辑
-          if (reduceAnimate != null) {
-            reduceAnimate.start();
+          if (reduceOpacityAnimator != null) {
+            reduceOpacityAnimator.start();
           }
         }
         //reset flag value.
         if (isLongPress) {
           isLongPress = false;
           if (isKeyboardShow) {
-            //键盘弹起，移动到键盘下要避开
-
+            //键盘弹起，长按移动到键盘下要避开
             int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
 
-            int gap = 8;
-            int ballBottomYPlusGap = getMLayoutParamsY() + measuredSideLength + gap;
+            int ballBottomYPlusGap = getMLayoutParamsY() + measuredSideLength + moveUpDistance;
             if (ballBottomYPlusGap >= keyboardTopY) {
               lastLayoutParamsY = getMLayoutParamsY();
-              startParamsYAnimationTo(keyboardTopY - measuredSideLength - gap);
+              startParamsYAnimationTo(keyboardTopY - measuredSideLength - moveUpDistance);
             } else {
               isMoveUp = false;
             }
@@ -658,55 +623,58 @@ public class FloatingBallView extends View {
     return true;
   }
 
-  private void doGesture() {
+  private void onFunctionWithCurrentGestureState() {
+    if (gestureStateChangeCount > 1) {
+      gestureStateChangeCount = 0;
+      return;
+    }
+    gestureStateChangeCount = 0;
+
     switch (currentGestureState) {
-      case UP:
+      case STATE_UP:
         if (mUpFunctionListener != null) {
           mUpFunctionListener.onFunction();
         }
         break;
-      case DOWN:
+      case STATE_DOWN:
         if (mUpFunctionListener != null) {
           mDownFunctionListener.onFunction();
         }
         break;
-      case LEFT:
+      case STATE_LEFT:
         if (mLeftFunctionListener != null) {
           mLeftFunctionListener.onFunction();
         }
         break;
-      case RIGHT:
+      case STATE_RIGHT:
         if (mRightFunctionListener != null) {
           mRightFunctionListener.onFunction();
         }
         break;
-      case NONE:
+      case STATE_NONE:
         break;
     }
   }
 
-  /**
-   * 根据currentGestureSTATE改变显示参数,瞬间移动
-   */
-  private void moveFloatingBall() {
+  private void moveBallViewWithCurrentGestureState() {
     switch (currentGestureState) {
-      case UP:
+      case STATE_UP:
         ballCenterX = 0;
-        ballCenterY = -gestureMoveDistance;
+        ballCenterY = - gestureMoveDistance;
         break;
-      case DOWN:
+      case STATE_DOWN:
         ballCenterY = gestureMoveDistance;
         ballCenterX = 0;
         break;
-      case LEFT:
-        ballCenterX = -gestureMoveDistance;
+      case STATE_LEFT:
+        ballCenterX = - gestureMoveDistance;
         ballCenterY = 0;
         break;
-      case RIGHT:
+      case STATE_RIGHT:
         ballCenterX = gestureMoveDistance;
         ballCenterY = 0;
         break;
-      case NONE:
+      case STATE_NONE:
         ballCenterX = 0;
         ballCenterY = 0;
         break;
@@ -764,16 +732,18 @@ public class FloatingBallView extends View {
       double angle = Math.atan2(deltaY, deltaX);
       //判断currentGestureSTATE
       if (angle > -Math.PI / 4 && angle < Math.PI / 4) {
-        currentGestureState = RIGHT;
+        currentGestureState = STATE_RIGHT;
       } else if (angle > Math.PI / 4 && angle < Math.PI * 3 / 4) {
-        currentGestureState = DOWN;
+        currentGestureState = STATE_DOWN;
       } else if (angle > -Math.PI * 3 / 4 && angle < -Math.PI / 4) {
-        currentGestureState = UP;
+        currentGestureState = STATE_UP;
       } else {
-        currentGestureState = LEFT;
+        currentGestureState = STATE_LEFT;
       }
       if (currentGestureState != lastGestureState) {
-        moveFloatingBall();
+        Log.d(TAG, "onScroll: gestureStateChangeCount"+gestureStateChangeCount);
+        gestureStateChangeCount++;
+        moveBallViewWithCurrentGestureState();
         lastGestureState = currentGestureState;
       }
       return false;
@@ -786,7 +756,6 @@ public class FloatingBallView extends View {
         mVibrator.vibrate(pattern, -1);
       }
       isLongPress = true;
-
     }
 
     @Override
@@ -794,6 +763,7 @@ public class FloatingBallView extends View {
       return false;
     }
   }
+
 
   private class DoubleTapGestureListener implements GestureDetector.OnDoubleTapListener {
 

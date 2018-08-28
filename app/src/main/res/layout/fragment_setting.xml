@@ -7,7 +7,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/CardViewTextTheme"
-
     android:orientation="vertical">
 
 
@@ -29,7 +28,6 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:context=".ui.activity.MainActivity"
 >
-            <!--android:text="@string/opacity"-->
             <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -326,6 +324,26 @@
                 android:layout_marginBottom="10dp"
                 app:switchPadding="40dp"
                 />
+
+            <android.support.v7.widget.AppCompatTextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="10dp"
+              android:layout_marginBottom="10dp"
+              android:gravity="center_horizontal"
+              android:text="@string/upDistance"
+              />
+
+            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+              android:id="@+id/upDistance_seekbar"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              app:dsb_indicatorColor="@color/colorAccent"
+              app:dsb_max="90"
+              app:dsb_min="0"
+              app:dsb_progressColor="@color/colorAccent"
+              app:dsb_value="8"
+              />
 
 
         </android.support.v7.widget.LinearLayoutCompat>

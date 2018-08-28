@@ -2,6 +2,6 @@
 <device-admin
     xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-policies>
-        <force-lock />
+        <force-lock/>
     </uses-policies>
 </device-admin>

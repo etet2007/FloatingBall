@@ -3,7 +3,6 @@ package com.chenyee.stephenlau.floatingball.ui.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -39,6 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
@@ -47,9 +47,9 @@ public class SettingFragment extends Fragment {
 
   private static final String TAG = SettingFragment.class.getSimpleName();
 
-  private Unbinder mUnBinder;
+  private Unbinder butterKnifeUnBinder;
 
-  //控件
+  // Widgets
   @BindView(R.id.root_linearLayout)
   LinearLayoutCompat rootLinearLayout;
   @BindView(R.id.opacity_seekbar)
@@ -79,8 +79,11 @@ public class SettingFragment extends Fragment {
   SwitchCompat isRotateHideSwitch;
   @BindView(R.id.vibrate_switch)
   SwitchCompat vibrateSwitch;
+  @BindView(R.id.upDistance_seekbar)
+  DiscreteSeekBar upDistanceSeekbar;
 
-  //调用系统相册-选择图片
+
+  // 调用系统相册-选择图片
   private static final int REQUEST_CODE_IMAGE = 1;
   private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
@@ -107,10 +110,10 @@ public class SettingFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    // ButterKnife bind
-    mUnBinder = ButterKnife.bind(this, view);
 
-    //初始化view
+    butterKnifeUnBinder = ButterKnife.bind(this, view);
+
+    // 初始化view
     initContentViews();
   }
 
@@ -123,7 +126,7 @@ public class SettingFragment extends Fragment {
   @Override
   public void onDestroy() {
     // ButterKnife unbind
-    mUnBinder.unbind();
+    butterKnifeUnBinder.unbind();
     super.onDestroy();
   }
 
@@ -250,6 +253,22 @@ public class SettingFragment extends Fragment {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         SharedPrefsUtils.setBooleanPreference(PREF_IS_VIBRATE, isChecked);
+      }
+    });
+    upDistanceSeekbar.setOnProgressChangeListener(new OnProgressChangeListener() {
+      @Override
+      public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+        SharedPrefsUtils.setIntegerPreference(PREF_MOVE_UP_DISTANCE, value);
+      }
+
+      @Override
+      public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+      }
+
+      @Override
+      public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
       }
     });
   }

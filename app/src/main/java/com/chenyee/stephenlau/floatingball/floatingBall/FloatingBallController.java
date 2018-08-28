@@ -185,6 +185,9 @@ public class FloatingBallController {
           .getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
       mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
     }
+    if (key.equals(PREF_MOVE_UP_DISTANCE)) {
+      mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 8));
+    }
 
   }
 
@@ -222,6 +225,8 @@ public class FloatingBallController {
     mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
 
     mFloatingBallView.setmSingleTapFunctionListener(getListener(BACK));
+
+    mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 8));
   }
 
   /**
@@ -285,19 +290,6 @@ public class FloatingBallController {
       isSoftKeyboardShow = false;
     }
   }
-
-  public void moveBallViewUp() {
-    if (mFloatingBallView != null) {
-      mFloatingBallView.performMoveUpAnimator();
-    }
-  }
-
-  public void moveBallViewDown() {
-    if (mFloatingBallView != null) {
-      mFloatingBallView.performMoveDownAnimator();
-    }
-  }
-
 
   public void clear() {
     if (mFloatingBallView != null) {

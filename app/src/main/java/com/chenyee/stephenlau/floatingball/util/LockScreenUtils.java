@@ -5,7 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
-import com.chenyee.stephenlau.floatingball.receiver.LockReceiver;
+import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.R;
 
 /**
@@ -17,7 +17,7 @@ public class LockScreenUtils {
     public static boolean canLockScreen(Context context){
         DevicePolicyManager policyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or  ContentProvider)
-        ComponentName componentName = new ComponentName(context, LockReceiver.class);
+        ComponentName componentName = new ComponentName(context, LockRequestReceiver.class);
 
         if (!policyManager.isAdminActive(componentName)) {
             return false;
@@ -29,7 +29,7 @@ public class LockScreenUtils {
     public static void lockScreen(Context context){
         DevicePolicyManager policyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or  ContentProvider)
-        ComponentName componentName = new ComponentName(context, LockReceiver.class);
+        ComponentName componentName = new ComponentName(context, LockRequestReceiver.class);
         if (policyManager.isAdminActive(componentName)) {//判断是否有权限
             policyManager.lockNow();
         }else{

@@ -39,7 +39,7 @@ import com.artitk.licensefragment.model.LicenseType;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.ui.fragment.SettingFragment;
-import com.chenyee.stephenlau.floatingball.receiver.LockReceiver;
+import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.util.ActivityUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
@@ -328,7 +328,7 @@ public class MainActivity extends AppCompatActivity
 
   private void uninstall() {
     ComponentName componentName =
-        new ComponentName(MainActivity.this, LockReceiver.class);
+        new ComponentName(MainActivity.this, LockRequestReceiver.class);
     DevicePolicyManager devicePolicyManager =
         (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
     if (devicePolicyManager != null) {

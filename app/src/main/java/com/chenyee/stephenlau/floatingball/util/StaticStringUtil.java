@@ -29,6 +29,8 @@ public class StaticStringUtil {
     public static final String PREF_UP_SLIDE_EVENT = "UP_SLIDE_EVENT";
     public static final String PREF_DOWN_SLIDE_EVENT = "DOWN_SLIDE_EVENT";
 
+    public static final String PREF_MOVE_UP_DISTANCE = "PREF_MOVE_UP_DISTANCE";
+
     //EXTRA_TYPE
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
 

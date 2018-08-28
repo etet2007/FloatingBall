@@ -16,6 +16,6 @@ import android.content.Intent;
 //          <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
 //          </intent-filter>
 
-public class LockReceiver extends DeviceAdminReceiver {
+public class LockRequestReceiver extends DeviceAdminReceiver {
 
 }

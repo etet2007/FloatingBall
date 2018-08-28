@@ -58,7 +58,6 @@
             <!-- </intent-filter> -->
         </activity>
 
-        <!-- 全局Service -->
         <service
             android:name=".floatingBall.FloatingBallService"
             android:configChanges="orientation|keyboard|keyboardHidden"
@@ -72,9 +71,8 @@
                 android:resource="@xml/accessibilityservice" />
         </service>
 
-        <!-- 用于申请锁屏的权限 -->
         <receiver
-            android:name=".receiver.LockReceiver"
+            android:name=".receiver.LockRequestReceiver"
             android:description="@string/app_name"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -109,9 +107,8 @@
             android:launchMode="singleInstance"
             android:theme="@style/Theme.Transparent"
             >
-
-
         </activity>
+
     </application>
 
 </manifest>

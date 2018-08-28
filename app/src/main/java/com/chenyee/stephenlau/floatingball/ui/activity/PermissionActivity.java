@@ -11,7 +11,7 @@ import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
 import android.widget.Button;
 
-import com.chenyee.stephenlau.floatingball.receiver.LockReceiver;
+import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtils;
 import com.chenyee.stephenlau.floatingball.util.LockScreenUtils;
@@ -56,7 +56,7 @@ public class PermissionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or  ContentProvider)
-                ComponentName componentName = new ComponentName(PermissionActivity.this, LockReceiver.class);
+                ComponentName componentName = new ComponentName(PermissionActivity.this, LockRequestReceiver.class);
                 Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                 intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
                 intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, R.string.app_name);
