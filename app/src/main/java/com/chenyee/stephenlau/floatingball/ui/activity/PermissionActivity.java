@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -33,6 +34,7 @@ public class PermissionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
+
         ButterKnife.bind(this);
 
         logoImageView.animate().translationYBy(dip2px(getApplicationContext(),100)).setDuration(3000).start();
@@ -40,7 +42,6 @@ public class PermissionActivity extends AppCompatActivity {
         drawOverlaysButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //申请DrawOverlays权限
                 requestDrawOverlaysPermission();
             }
         });
@@ -49,7 +50,6 @@ public class PermissionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 AccessibilityUtils.checkAccessibilitySetting();
-
             }
         });
         lockScreenButton.setOnClickListener(new View.OnClickListener() {
@@ -66,9 +66,15 @@ public class PermissionActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-
+        Log.d(TAG, "onResume: ");
         boolean hasDrawPermission = false;
         boolean hasAccessibilityPermission = false;
         boolean hasLockScreenPermission = false;
@@ -109,7 +115,7 @@ public class PermissionActivity extends AppCompatActivity {
             // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivityForResult(intent, 1);
         }
     }

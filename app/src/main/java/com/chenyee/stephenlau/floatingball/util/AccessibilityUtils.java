@@ -116,8 +116,8 @@ public class AccessibilityUtils {
     if (!isAccessibilitySettingsOn()) {
       // 引导至辅助功能设置页面
       App.getApplication().startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-          .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-      Toast.makeText(context, context.getString(R.string.openAccessibility), Toast.LENGTH_SHORT)
+          );
+      Toast.makeText(App.getApplication(), context.getString(R.string.openAccessibility), Toast.LENGTH_SHORT)
           .show();
     }
   }
