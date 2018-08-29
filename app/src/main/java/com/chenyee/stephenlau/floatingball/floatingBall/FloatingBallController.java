@@ -110,6 +110,18 @@ public class FloatingBallController {
     mFloatingBallView = null;
   }
 
+  public void rotateHideBallView() {
+    isAddedBall = false;
+    SharedPrefsUtils.setBooleanPreference(PREF_HAS_ROTATE_HIDE_BALL, true);
+
+    if (mFloatingBallView == null) {
+      return;
+    }
+    mFloatingBallView.performRemoveAnimator();
+    mFloatingBallView = null;
+  }
+
+
   /**
    * 设置背景图 复制外部路径的图片到目录中去，更新bitmapRead，再进行裁剪
    *
@@ -291,13 +303,17 @@ public class FloatingBallController {
     }
   }
 
-  public void clear() {
+  public void recycleBitmapMemory() {
     if (mFloatingBallView != null) {
       mFloatingBallView.recycleBitmap();
     }
   }
 
-  public void setVisibility(boolean isHide) {
+  /**
+   * screenshot时暂时隐藏
+   * @param isHide
+   */
+  public void setBallViewVisibility(boolean isHide) {
     if (mFloatingBallView != null) {
       mFloatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
     }

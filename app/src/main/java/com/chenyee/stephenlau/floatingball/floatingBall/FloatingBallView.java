@@ -28,6 +28,7 @@ import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
@@ -168,7 +169,7 @@ public class FloatingBallView extends View {
   public void setDoubleClickEventType(int doubleClickEventType) {
     mDoubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
 
-    isUseDoubleClick =  mDoubleTapFunctionListener != FunctionInterfaceUtils.getListener(STATE_NONE);
+    isUseDoubleClick =  mDoubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
 
     if (isUseDoubleClick) {
       mGestureDetector.setOnDoubleTapListener(new DoubleTapGestureListener());
@@ -532,7 +533,7 @@ public class FloatingBallView extends View {
       canvas.drawCircle(0, 0, mBackgroundRadius, mBackgroundPaint);
     }
 
-    //clear ball
+    //recycleBitmapMemory ball
     canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallEmptyPaint);
     //draw ball
     canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, mBallPaint);

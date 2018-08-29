@@ -17,10 +17,10 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ROTATE_HIDE_BALL;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ROTATE_HIDE;
 
@@ -42,6 +42,12 @@ public class FloatingBallService extends AccessibilityService {
 
   private FloatingBallController mFloatingBallController;
 
+  private void getFloatingBallController() {
+    if (mFloatingBallController == null) {
+      mFloatingBallController = FloatingBallController.getInstance();
+    }
+  }
+
   public static Intent getStartIntent(Context context) {
     return new Intent(context, FloatingBallService.class);
   }
@@ -61,9 +67,7 @@ public class FloatingBallService extends AccessibilityService {
   protected void onServiceConnected() {
     super.onServiceConnected();
     Log.d(TAG, "onServiceConnected: ");
-    if (mFloatingBallController == null) {
-      mFloatingBallController = FloatingBallController.getInstance();
-    }
+    getFloatingBallController();
 
     mFloatingBallController.addBallView(FloatingBallService.this);
 
@@ -97,11 +101,15 @@ public class FloatingBallService extends AccessibilityService {
       return;
     }
 
+    boolean hasRotateHideBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ROTATE_HIDE_BALL, false);
+
+
     if (SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE, true)) {
       if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        mFloatingBallController.removeBallView();
-      } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        mFloatingBallController.rotateHideBallView();
+      } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT  && hasRotateHideBall ) {
         mFloatingBallController.addBallView(FloatingBallService.this);
+        SharedPrefsUtils.setBooleanPreference(PREF_HAS_ROTATE_HIDE_BALL, false);
       }
     }
   }
@@ -124,9 +132,7 @@ public class FloatingBallService extends AccessibilityService {
 
     if (intent != null) {
       //mFloatBallManager的判断是因为生命周期有时候有问题
-      if (mFloatingBallController == null) {
-        mFloatingBallController = FloatingBallController.getInstance();
-      }
+      getFloatingBallController();
 
       Bundle data = intent.getExtras();
       if (data != null) {
@@ -141,7 +147,7 @@ public class FloatingBallService extends AccessibilityService {
         }
 
         if (type == TYPE_HIDE) {
-          mFloatingBallController.setVisibility(data.getBoolean("isHide"));
+          mFloatingBallController.setBallViewVisibility(data.getBoolean("isHide"));
         }
 
         //intent中传图片地址，也可以换为sharedPreference吧
@@ -150,31 +156,28 @@ public class FloatingBallService extends AccessibilityService {
         }
 
         if (type == TYPE_CLEAR) {
-          mFloatingBallController.clear();
+          mFloatingBallController.recycleBitmapMemory();
         }
       }
     }
     return super.onStartCommand(intent, flags, startId);
   }
 
-  public void hideBall() {
-    if (mFloatingBallController == null) {
-      mFloatingBallController = FloatingBallController.getInstance();
-    }
 
+  public void hideBall() {
+    getFloatingBallController();
     mFloatingBallController.removeBallView();
 
-    sendNotification();
+    sendHideBallNotification();
   }
 
   /**
    * send notification when hiding
    */
-  private void sendNotification() {
+  private void sendHideBallNotification() {
     String contentTitle = getString(R.string.hide_notification_content_title);
     String contentText = getString(R.string.hideNotificationContentText);
-    NotificationManager notificationManager = (NotificationManager) getSystemService(
-        NOTIFICATION_SERVICE);
+    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
     if (notificationManager == null) {
       return;
@@ -184,7 +187,7 @@ public class FloatingBallService extends AccessibilityService {
     Bundle data = new Bundle();
     data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
     intent.putExtras(data);
-    PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+    PendingIntent addBallPendingIntent = PendingIntent.getService(this, 0, intent, 0);
 
     if (Build.VERSION.SDK_INT >= 26) {
       String channelID = "1";
@@ -200,7 +203,7 @@ public class FloatingBallService extends AccessibilityService {
           .setContentTitle(contentTitle)
           .setContentText(contentText)
           .setAutoCancel(true)
-          .setContentIntent(pintent)
+          .setContentIntent(addBallPendingIntent)
           .build();
       notificationManager.notify(1, notification);
 
@@ -211,7 +214,7 @@ public class FloatingBallService extends AccessibilityService {
           .setContentTitle(contentTitle)
           .setContentText(contentText)
           .setAutoCancel(true)
-          .setContentIntent(pintent)
+          .setContentIntent(addBallPendingIntent)
           .build();
       notificationManager.notify(1, notification);
     }
