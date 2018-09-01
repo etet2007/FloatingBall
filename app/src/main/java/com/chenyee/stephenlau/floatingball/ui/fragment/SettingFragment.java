@@ -182,11 +182,11 @@ public class SettingFragment extends Fragment {
     useGrayBackgroundSwitch
         .setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
     vibrateSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
-    isRotateHideSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE, true));
+    isRotateHideSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE_SETTING, true));
     updateFunctionListView();
     updateOpacityModeView();
 
-//        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
+//        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
 //        //hasAddedBall代表两种状态
 //        updateViewsState(hasAddedBall);
 
@@ -246,7 +246,7 @@ public class SettingFragment extends Fragment {
     isRotateHideSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-        SharedPrefsUtils.setBooleanPreference(PREF_IS_ROTATE_HIDE, isChecked);
+        SharedPrefsUtils.setBooleanPreference(PREF_IS_ROTATE_HIDE_SETTING, isChecked);
       }
     });
     vibrateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

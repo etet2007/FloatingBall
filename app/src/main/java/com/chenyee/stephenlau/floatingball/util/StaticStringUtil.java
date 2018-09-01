@@ -16,12 +16,12 @@ public class StaticStringUtil {
 
     public static final String PREF_OPACITY_MODE = "PREF_OPACITY_MODE";
 
-    public static final String PREF_IS_ADDED_BALL = "PREF_IS_ADDED_BALL";
-    public static final String PREF_HAS_ROTATE_HIDE_BALL = "PREF_HAS_ROTATE_HIDE_BALL";
+    public static final String PREF_IS_ADDED_BALL_IN_SETTING = "PREF_IS_ADDED_BALL_IN_SETTING";
+    public static final String PREF_IS_BALL_HIDE_BECAUSE_ROTATE = "PREF_IS_BALL_HIDE_BECAUSE_ROTATE";
     public static final String PREF_PARAM_X = "PREF_PARAM_X";
     public static final String PREF_PARAM_Y = "PREF_PARAM_Y";
     public static final String PREF_IS_VIBRATE = "PREF_IS_VIBRATE";
-    public static final String PREF_IS_ROTATE_HIDE = "PREF_IS_ROTATE_HIDE";
+    public static final String PREF_IS_ROTATE_HIDE_SETTING = "PREF_IS_ROTATE_HIDE_SETTING";
 
     public static final String PREF_DOUBLE_CLICK_EVENT = "DOUBLE_CLICK_EVENT";
     public static final String PREF_RIGHT_SLIDE_EVENT = "RIGHT_SLIDE_EVENT";

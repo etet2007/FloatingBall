@@ -16,7 +16,9 @@ import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
+import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
+import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -86,7 +88,7 @@ public class FloatingBallController {
         | LayoutParams.FLAG_LAYOUT_IN_SCREEN
         | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
 
-    mFloatingBallView.setLayoutParams(params);
+    mFloatingBallView.setBallViewLayoutParams(params);
     windowManager.addView(mFloatingBallView, params);
 
     updateParameter();
@@ -95,29 +97,29 @@ public class FloatingBallController {
     FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
 
     isAddedBall = true;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL, true);
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
   }
 
 
   public void removeBallView() {
     isAddedBall = false;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL, false);
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
 
     if (mFloatingBallView == null) {
       return;
     }
-    mFloatingBallView.performRemoveAnimator();
+    mFloatingBallView.removeBallWithAnimation();
     mFloatingBallView = null;
   }
 
   public void rotateHideBallView() {
     isAddedBall = false;
-    SharedPrefsUtils.setBooleanPreference(PREF_HAS_ROTATE_HIDE_BALL, true);
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_BALL_HIDE_BECAUSE_ROTATE, true);
 
     if (mFloatingBallView == null) {
       return;
     }
-    mFloatingBallView.performRemoveAnimator();
+    mFloatingBallView.removeBallWithAnimation();
     mFloatingBallView = null;
   }
 
@@ -139,7 +141,6 @@ public class FloatingBallController {
 
   /**
    * No use
-   * @param key
    */
   public void updateSpecificParameter(String key) {
     if (mFloatingBallView == null) {
@@ -172,30 +173,19 @@ public class FloatingBallController {
     mFloatingBallView.invalidate();
 
     if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
-      mFloatingBallView.setDoubleClickEventType(SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE));
+      mFloatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
     }
     if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
-      //LeftSlideEvent
-      int leftSlideEvent = SharedPrefsUtils
-          .getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
-      mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
+      mFloatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
     }
     if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
-      //RightSlideEvent
-      int rightSlideEvent = SharedPrefsUtils
-          .getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
-      mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
+      mFloatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
     }
     if (key.equals(PREF_UP_SLIDE_EVENT)) {
-      //UpSlideEvent
-      int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
-      mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
+      mFloatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
     }
     if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
-      //DownSlideEvent
-      int downSlideEvent = SharedPrefsUtils
-          .getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
-      mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
+      mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
     }
     if (key.equals(PREF_MOVE_UP_DISTANCE)) {
       mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 8));
@@ -211,32 +201,22 @@ public class FloatingBallController {
       return;
     }
     /* View */
-    mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
-    mFloatingBallView
-        .changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
-    mFloatingBallView
-        .setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
-    mFloatingBallView.setUseGrayBackground(
-        SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
+    mFloatingBallView.setOpacity(SingleDataManager.opacity());
+    mFloatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
+    mFloatingBallView.setUseBackground(SingleDataManager.isUseBackground());
+    mFloatingBallView.setUseGrayBackground(SingleDataManager.isUseGrayBackground());
 
     mFloatingBallView.requestLayout();
     mFloatingBallView.invalidate();
 
     /* Function */
-    mFloatingBallView.setDoubleClickEventType(SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE));
-    int leftSlideEvent = SharedPrefsUtils
-        .getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
-    mFloatingBallView.setLeftFunctionListener(getListener(leftSlideEvent));
-    int rightSlideEvent = SharedPrefsUtils
-        .getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
-    mFloatingBallView.setRightFunctionListener(getListener(rightSlideEvent));
-    int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
-    mFloatingBallView.setUpFunctionListener(getListener(upSlideEvent));
-    int downSlideEvent = SharedPrefsUtils
-        .getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
-    mFloatingBallView.setDownFunctionListener(getListener(downSlideEvent));
+    mFloatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
+    mFloatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
+    mFloatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
+    mFloatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
+    mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
 
-    mFloatingBallView.setmSingleTapFunctionListener(getListener(BACK));
+    mFloatingBallView.setSingleTapFunctionListener(BACK);
 
     mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 8));
   }
@@ -249,48 +229,11 @@ public class FloatingBallController {
       return;
     }
 
-    boolean isInputing = false;
-    int inputMethodWindowHeight = 0;
 
-    if (android.os.Build.VERSION.SDK_INT > 20) {//Work
-      try {
-        InputMethodManager imm = (InputMethodManager) App.getApplication().getApplicationContext()
-            .getSystemService(Context.INPUT_METHOD_SERVICE);
-        Class clazz = imm.getClass();
-        Method method = clazz.getMethod("getInputMethodWindowVisibleHeight", null);
-        method.setAccessible(true);
-        inputMethodWindowHeight = (Integer) method.invoke(imm, null);
-        Log.d(TAG, "inputMethodWindowHeight = " + inputMethodWindowHeight);
-        if (inputMethodWindowHeight > 100) {
-          isInputing = true;
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    } else {//应该不work
-      String defaultInputName = Settings.Secure
-          .getString(getApplication().getApplicationContext().getContentResolver(),
-              Settings.Secure.DEFAULT_INPUT_METHOD);
-      defaultInputName = defaultInputName.substring(0, defaultInputName.indexOf("/"));
-
-      ActivityManager activityManager = (ActivityManager) getApplication().getApplicationContext()
-          .getSystemService(Context.ACTIVITY_SERVICE);
-      List<RunningAppProcessInfo> appProcesses = activityManager
-          .getRunningAppProcesses();
-
-      for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-        if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
-          if (appProcess.processName.equals(defaultInputName)) {
-            isInputing = true;
-            break;
-          }
-        }
-      }
-    }
     //过滤掉100以下的了
-    if (isInputing) {// 键盘正在显示
+    if (InputMethodDetector.detectIsInputing()) {// 键盘正在显示
       if (!isSoftKeyboardShow) {// 键盘第一次显示
-        mFloatingBallView.inputMethodWindowHeight = inputMethodWindowHeight;
+        mFloatingBallView.inputMethodWindowHeight = InputMethodDetector.inputMethodWindowHeight;
         mFloatingBallView.moveToKeyboardTop();
 
       }
@@ -311,7 +254,6 @@ public class FloatingBallController {
 
   /**
    * screenshot时暂时隐藏
-   * @param isHide
    */
   public void setBallViewVisibility(boolean isHide) {
     if (mFloatingBallView != null) {

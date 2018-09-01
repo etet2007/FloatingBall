@@ -13,7 +13,7 @@ import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 
 /**
  * Description: <p> Created by Liu Qitian on 18-5-3.
@@ -48,7 +48,7 @@ public class QuickSettingService extends TileService {
       addFloatBall();
     }
     isAddedBall = !isAddedBall;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL, isAddedBall);
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, isAddedBall);
 
     LocalBroadcastManager.getInstance(QuickSettingService.this).sendBroadcast(new Intent("refreshActivity"));
     refreshTile();
@@ -61,7 +61,7 @@ public class QuickSettingService extends TileService {
   public void onStartListening() {
     Log.d(TAG, "onStartListening");
     tile = getQsTile();
-    isAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
+    isAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
     Log.d(TAG, "onStartListening isAddedBall" + isAddedBall);
 
     refreshTile();

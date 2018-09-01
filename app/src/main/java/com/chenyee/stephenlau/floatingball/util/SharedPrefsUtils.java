@@ -14,8 +14,8 @@ final public class SharedPrefsUtils {
     return PreferenceManager.getDefaultSharedPreferences(applicationContext);
   }
 
-  public static void setApplicationContext(Context applicationContext) {
-    SharedPrefsUtils.applicationContext = applicationContext;
+  public static void setApplicationContext(Context context) {
+    applicationContext = context;
   }
 
   private static Context applicationContext;

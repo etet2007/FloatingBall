@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity
     super.onResume();
     Log.d(TAG, "onResume: ");
     // Update views
-    boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
+    boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
     updateViewsState(hasAddedBall);
   }
 

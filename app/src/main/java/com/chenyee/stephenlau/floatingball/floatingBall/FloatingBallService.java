@@ -18,11 +18,11 @@ import android.view.accessibility.AccessibilityEvent;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
+import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_HAS_ROTATE_HIDE_BALL;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ROTATE_HIDE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_BALL_HIDE_BECAUSE_ROTATE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 
 
 /**
@@ -71,13 +71,13 @@ public class FloatingBallService extends AccessibilityService {
 
     mFloatingBallController.addBallView(FloatingBallService.this);
 
-    SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
+    SingleDataManager.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
   public void onCreate() {
     super.onCreate();
-    SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
+    SingleDataManager.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
@@ -89,34 +89,33 @@ public class FloatingBallService extends AccessibilityService {
   public void onDestroy() {
     super.onDestroy();
 
-    SharedPrefsUtils.getSharedPreferences()
-        .unregisterOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
+    SingleDataManager.unregisterOnDataChangeListener(mOnSharedPreferenceChangeListener);
+
   }
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    boolean isAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
+    boolean isAddedBall = SingleDataManager.isAddedBallInSetting();
     if (!isAddedBall) {
       return;
     }
 
-    boolean hasRotateHideBall = SharedPrefsUtils.getBooleanPreference(PREF_HAS_ROTATE_HIDE_BALL, false);
+    boolean isBallHideBecauseRotate = SingleDataManager.isBallHideBecauseRotate();
 
-
-    if (SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE, true)) {
+    if (SingleDataManager.isRotateHideSetting()) {
       if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         mFloatingBallController.rotateHideBallView();
-      } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT  && hasRotateHideBall ) {
+      } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT  && isBallHideBecauseRotate ) {
         mFloatingBallController.addBallView(FloatingBallService.this);
-        SharedPrefsUtils.setBooleanPreference(PREF_HAS_ROTATE_HIDE_BALL, false);
+        SingleDataManager.setIsBallHideBecauseRotate(false);
       }
     }
   }
 
   @Override
   public void onAccessibilityEvent(AccessibilityEvent event) {
-    Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL, false);
+    Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
 
     if (!hasAddBall || mFloatingBallController == null) {
       //do nothing
