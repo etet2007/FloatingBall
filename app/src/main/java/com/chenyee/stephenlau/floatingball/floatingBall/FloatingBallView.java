@@ -26,13 +26,7 @@ import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
-import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_Y;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
  * Created by stephenlau on 2017/12/5.
@@ -48,25 +42,31 @@ public class FloatingBallView extends View {
   public static final int STATE_RIGHT = 4;
   public static final int STATE_NONE = 5;
 
+  private FloatingBallDrawer floatingBallDrawer;
+
+  private FloatingBallAnimator floatingBallAnimator;
+
+  private FloatingBallPaint floatingBallPaint;
+
+
+  public FloatingBallDrawer getFloatingBallDrawer() {
+    return floatingBallDrawer;
+  }
+
+  public void setFloatingBallDrawer(FloatingBallDrawer floatingBallDrawer) {
+    this.floatingBallDrawer = floatingBallDrawer;
+  }
+
+  public FloatingBallPaint getFloatingBallPaint() {
+    return floatingBallPaint;
+  }
+
+  public void setFloatingBallPaint(FloatingBallPaint floatingBallPaint) {
+    this.floatingBallPaint = floatingBallPaint;
+  }
+
   private int currentGestureState;
   private int lastGestureState = STATE_NONE;
-
-  //灰色背景长度
-  private final float edge = dip2px(getContext(), 4);
-  public final float ballRadiusDeltaMaxInAnimation = 7;
-  public final int scrollGestureMoveDistance = 18;
-
-  private float ballRadius;
-  private float backgroundRadius;
-
-  private int measuredSideLength;
-
-
-  //移动距离 可以设置
-  private int moveUpDistance;
-
-  private float ballCenterY = 0;
-  private float ballCenterX = 0;
 
   //function list
   private FunctionListener singleTapFunctionListener;
@@ -82,7 +82,6 @@ public class FloatingBallView extends View {
   private boolean isLongPress = false;
 
   private boolean useBackground = false;
-  private boolean useGrayBackground = true;
   private boolean isUseDoubleClick = false;
 
   private boolean isVibrate = true;
@@ -91,23 +90,19 @@ public class FloatingBallView extends View {
   private float lastTouchEventPositionX;
   private float lastTouchEventPositionY;
 
-
   private GestureDetector mGestureDetector;
 
-  private WindowManager mWindowManager;
+  private WindowManager windowManager;
 
   private Vibrator mVibrator;
 
   private Bitmap mBitmapRead;
   private Bitmap mBitmapScaled;
 
-  //基础透明度值
   private int userSetOpacity = 125;
 
   private int opacityMode;
 
-  private FloatingBallAnimator floatingBallAnimator;
-  private FloatingBallPaint floatingballPaint;
 
   public LayoutParams getBallViewLayoutParams() {
     return ballViewLayoutParams;
@@ -123,29 +118,6 @@ public class FloatingBallView extends View {
 
   private int gestureStateChangeCount;
 
-
-  public void setMoveUpDistance(int moveUpDistance) {
-    this.moveUpDistance = moveUpDistance;
-  }
-  public float getBallCenterY() {
-    return ballCenterY;
-  }
-
-  public void setBallCenterY(float ballCenterY) {
-    this.ballCenterY = ballCenterY;
-  }
-
-  public float getBallCenterX() {
-    return ballCenterX;
-  }
-
-  public void setBallCenterX(float ballCenterX) {
-    this.ballCenterX = ballCenterX;
-  }
-
-  public void setUseGrayBackground(boolean useGrayBackground) {
-    this.useGrayBackground = useGrayBackground;
-  }
 
   public void setUseBackground(boolean useBackground) {
     if (useBackground) {
@@ -180,23 +152,16 @@ public class FloatingBallView extends View {
   }
 
   private int layoutParamsY;//动画用到
+
   private int getLayoutParamsY() {
     return ballViewLayoutParams.y;
   }
+
   @Keep
   private void setLayoutParamsY(int y) {
     ballViewLayoutParams.y = y;
   }
 
-
-
-  public float getBallRadius() {
-    return ballRadius;
-  }
-
-  public void setBallRadius(float ballRadius) {
-    this.ballRadius = ballRadius;
-  }
 
   public void setIsVibrate(boolean isVibrate) {
     this.isVibrate = isVibrate;
@@ -212,7 +177,7 @@ public class FloatingBallView extends View {
 
   private void refreshOpacityMode() {
     if (opacityMode == OPACITY_NONE) {
-      floatingballPaint.setPaintAlpha(userSetOpacity);
+      floatingBallPaint.setPaintAlpha(userSetOpacity);
     }
 
     if (opacityMode == OPACITY_REDUCE) {
@@ -234,12 +199,13 @@ public class FloatingBallView extends View {
 
 
   public void setOpacity(int opacity) {
-    floatingballPaint.setPaintAlpha(opacity);
+    floatingBallPaint.setPaintAlpha(opacity);
 
     userSetOpacity = opacity;
 
     refreshOpacityMode();
   }
+
 
   //功能
   public void setDownFunctionListener(int downFunctionListenerType) {
@@ -266,13 +232,8 @@ public class FloatingBallView extends View {
    * 改变悬浮球大小，需要改变所有与Size相关的东西
    */
   public void changeFloatBallSizeWithRadius(int ballRadius) {
-    this.ballRadius = ballRadius;
-    this.backgroundRadius = ballRadius + edge;
 
-    //View宽高 r + moveDistance + r在动画变大的值 = r + edge + gap
-    int frameGap = (int) (scrollGestureMoveDistance + ballRadiusDeltaMaxInAnimation - edge);
-
-    measuredSideLength = (int) (backgroundRadius + frameGap) * 2;
+    floatingBallDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
 
     if (useBackground) {
       createBitmapCropFromBitmapRead();
@@ -287,14 +248,20 @@ public class FloatingBallView extends View {
   public FloatingBallView(Context context) {
     super(context);
 
-    floatingBallAnimator = new FloatingBallAnimator(this);
-    changeFloatBallSizeWithRadius(25);
+    floatingBallPaint = new FloatingBallPaint();
+
+    floatingBallDrawer = new FloatingBallDrawer(floatingBallPaint);
+
+    floatingBallAnimator = new FloatingBallAnimator(this,floatingBallDrawer);
+
     floatingBallAnimator.performAddAnimator();
 
-    floatingballPaint = new FloatingBallPaint();
+    changeFloatBallSizeWithRadius(25);
 
-    mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+    windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+
     mGestureDetector = new GestureDetector(context, new FloatingBallGestureListener());
+
     mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
     refreshOpacityMode();
@@ -331,7 +298,7 @@ public class FloatingBallView extends View {
   }
 
   public void createBitmapCropFromBitmapRead() {
-    if (ballRadius <= 0) {
+    if (floatingBallDrawer.ballRadius <= 0) {
       return;
     }
     //bitmapRead可能已被回收
@@ -339,7 +306,7 @@ public class FloatingBallView extends View {
       refreshBitmapRead();
     }
 
-    int edge = (int) ballRadius * 2;
+    int edge = (int) floatingBallDrawer.ballRadius * 2;
 
     Bitmap scaledBitmap = Bitmap.createScaledBitmap(mBitmapRead, edge, edge, true);
     //进行裁切后的bitmapCrop
@@ -347,7 +314,7 @@ public class FloatingBallView extends View {
     Canvas canvas = new Canvas(mBitmapScaled);
     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     //x y r
-    canvas.drawCircle(ballRadius, ballRadius, ballRadius, paint);
+    canvas.drawCircle(floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, paint);
     paint.reset();
     paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
     canvas.drawBitmap(scaledBitmap, 0, 0, paint);
@@ -366,8 +333,6 @@ public class FloatingBallView extends View {
   }
 
   private void removeBallWithoutAnimation() {
-    WindowManager windowManager = (WindowManager) getContext()
-        .getSystemService(Context.WINDOW_SERVICE);
     if (windowManager != null) {
       windowManager.removeView(FloatingBallView.this);
     }
@@ -385,13 +350,14 @@ public class FloatingBallView extends View {
 
     int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
 
-    int ballBottomYPlusGap = getLayoutParamsY() + measuredSideLength + moveUpDistance;
+    int ballBottomYPlusGap =
+        getLayoutParamsY() + floatingBallDrawer.measuredSideLength + floatingBallDrawer.moveUpDistance;
     if (ballBottomYPlusGap < keyboardTopY) {
       return;
     }
     lastLayoutParamsY = getLayoutParamsY();
 
-    startParamsYAnimationTo(keyboardTopY - measuredSideLength - moveUpDistance);
+    startParamsYAnimationTo(keyboardTopY - floatingBallDrawer.measuredSideLength - floatingBallDrawer.moveUpDistance);
     isMoveUp = true;
 
   }
@@ -415,7 +381,7 @@ public class FloatingBallView extends View {
     animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
-        mWindowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
+        windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
       }
     });
     animation.start();
@@ -427,24 +393,14 @@ public class FloatingBallView extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    //移动到View的中心进行绘制
-    canvas.translate(measuredSideLength / 2, measuredSideLength / 2);
 
-    Paint backgroundPaint = floatingballPaint.getBackgroundPaint();
-    if (useGrayBackground) {
-      canvas.drawCircle(0, 0, backgroundRadius, backgroundPaint);
-    }
+    floatingBallDrawer.drawBallWithThisModel(canvas);
 
-    Paint ballEmptyPaint = floatingballPaint.getBallEmptyPaint();
-    Paint ballPaint = floatingballPaint.getBallPaint();
-
-    canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballEmptyPaint);
-
-    canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballPaint);
+    Paint ballPaint = floatingBallPaint.getBallPaint();
 
     if (useBackground) {
-      canvas.drawBitmap(mBitmapScaled, -mBitmapScaled.getWidth() / 2 + ballCenterX,
-          -mBitmapScaled.getHeight() / 2 + ballCenterY, ballPaint);
+      canvas.drawBitmap(mBitmapScaled, -mBitmapScaled.getWidth() / 2 + floatingBallDrawer.ballCenterX,
+          -mBitmapScaled.getHeight() / 2 + floatingBallDrawer.ballCenterY, ballPaint);
     }
   }
 
@@ -454,7 +410,7 @@ public class FloatingBallView extends View {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    setMeasuredDimension(measuredSideLength, measuredSideLength);
+    setMeasuredDimension(floatingBallDrawer.measuredSideLength, floatingBallDrawer.measuredSideLength);
   }
 
   @Override
@@ -467,7 +423,7 @@ public class FloatingBallView extends View {
         floatingBallAnimator.startOnTouchAnimator();
 
         if (opacityMode == OPACITY_REDUCE) {
-          floatingballPaint.setPaintAlpha(userSetOpacity);
+          floatingBallPaint.setPaintAlpha(userSetOpacity);
         }
 
       case MotionEvent.ACTION_MOVE:
@@ -485,7 +441,7 @@ public class FloatingBallView extends View {
 
           SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, ballViewLayoutParams.x);
           SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, ballViewLayoutParams.y);
-          mWindowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
+          windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
         }
         break;
       case MotionEvent.ACTION_UP:
@@ -510,14 +466,15 @@ public class FloatingBallView extends View {
             //键盘弹起，长按移动到键盘下要避开
             int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
 
-            int ballBottomYPlusGap = getLayoutParamsY() + measuredSideLength + moveUpDistance;
+            int ballBottomYPlusGap =
+                getLayoutParamsY() + floatingBallDrawer.measuredSideLength + floatingBallDrawer.moveUpDistance;
             if (ballBottomYPlusGap >= keyboardTopY) {
               lastLayoutParamsY = getLayoutParamsY();
-              startParamsYAnimationTo(keyboardTopY - measuredSideLength - moveUpDistance);
+              startParamsYAnimationTo(
+                  keyboardTopY - floatingBallDrawer.measuredSideLength - floatingBallDrawer.moveUpDistance);
             } else {
               isMoveUp = false;
             }
-
           }
 
         }
@@ -558,6 +515,11 @@ public class FloatingBallView extends View {
       case STATE_NONE:
         break;
     }
+  }
+
+  public void updateModuleData() {
+    floatingBallDrawer.updateFieldBySingleDataManager();
+
   }
 
 

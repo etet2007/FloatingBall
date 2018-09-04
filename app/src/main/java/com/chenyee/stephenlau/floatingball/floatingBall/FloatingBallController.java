@@ -160,8 +160,7 @@ public class FloatingBallController {
         mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
         break;
       case PREF_USE_GRAY_BACKGROUND:
-        mFloatingBallView.setUseGrayBackground(
-            SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
+        mFloatingBallView.updateModuleData();
         break;
       case PREF_IS_VIBRATE:
         mFloatingBallView
@@ -187,9 +186,7 @@ public class FloatingBallController {
     if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
       mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
     }
-    if (key.equals(PREF_MOVE_UP_DISTANCE)) {
-      mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 8));
-    }
+
 
   }
 
@@ -204,7 +201,7 @@ public class FloatingBallController {
     mFloatingBallView.setOpacity(SingleDataManager.opacity());
     mFloatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
     mFloatingBallView.setUseBackground(SingleDataManager.isUseBackground());
-    mFloatingBallView.setUseGrayBackground(SingleDataManager.isUseGrayBackground());
+    mFloatingBallView.updateModuleData();
 
     mFloatingBallView.requestLayout();
     mFloatingBallView.invalidate();
@@ -217,8 +214,6 @@ public class FloatingBallController {
     mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
 
     mFloatingBallView.setSingleTapFunctionListener(BACK);
-
-    mFloatingBallView.setMoveUpDistance(SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 8));
   }
 
   /**

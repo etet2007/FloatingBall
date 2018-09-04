@@ -9,6 +9,9 @@ import android.support.annotation.Keep;
 public class FloatingBallAnimator {
 
   private FloatingBallView view;
+  private FloatingBallDrawer floatingBallDrawer;
+  private FloatingBallPaint floatingBallPaint;
+
 
   private ObjectAnimator reduceOpacityAnimator;
   private ObjectAnimator breathingOpacityAnimator;
@@ -17,8 +20,10 @@ public class FloatingBallAnimator {
   private ObjectAnimator unTouchAnimator;
 
 
-  public FloatingBallAnimator(FloatingBallView view) {
+  public FloatingBallAnimator(FloatingBallView view,FloatingBallDrawer floatingBallDrawer) {
     this.view = view;
+    this.floatingBallDrawer = floatingBallDrawer;
+    floatingBallPaint = view.getFloatingBallPaint();
   }
 
   public void setUpReduceAnimator(int opacity) {
@@ -26,7 +31,7 @@ public class FloatingBallAnimator {
     Keyframe kf2 = Keyframe.ofInt(0.5f, opacity);
     Keyframe kf3 = Keyframe.ofInt(1f, (int) (opacity * 0.6));
     PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1, kf2, kf3);
-    reduceOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(view, pVH);
+    reduceOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallPaint, pVH);
     reduceOpacityAnimator.setDuration(3000);
     reduceOpacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
@@ -50,7 +55,7 @@ public class FloatingBallAnimator {
     Keyframe kf4 = Keyframe.ofInt(0.65f, opacity);
     Keyframe kf5 = Keyframe.ofInt(1f, (int) (opacity * 0.4));
     PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1, kf2, kf3, kf4, kf5);
-    breathingOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(view, pVH);
+    breathingOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallPaint, pVH);
     breathingOpacityAnimator.setRepeatCount(ValueAnimator.INFINITE);
     breathingOpacityAnimator.setRepeatMode(ValueAnimator.RESTART);
     breathingOpacityAnimator.setDuration(4000);
@@ -94,10 +99,10 @@ public class FloatingBallAnimator {
   @Keep
   public void setUpTouchAnimator(int ballRadius) {
     Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
-    Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + view.ballRadiusDeltaMaxInAnimation - 1);
-    Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + view.ballRadiusDeltaMaxInAnimation);
+    Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation - 1);
+    Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);
     PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0, kf1, kf2);
-    onTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(view, onTouch);
+    onTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, onTouch);
     onTouchAnimator.setDuration(300);
     onTouchAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
@@ -106,11 +111,11 @@ public class FloatingBallAnimator {
       }
     });
 
-    Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius + view.ballRadiusDeltaMaxInAnimation);
-    Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius + view.ballRadiusDeltaMaxInAnimation);
+    Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);
+    Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);
     Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
     PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3, kf4, kf5);
-    unTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(view, unTouch);
+    unTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, unTouch);
     unTouchAnimator.setDuration(400);
     unTouchAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
@@ -133,35 +138,36 @@ public class FloatingBallAnimator {
     }
   }
 
+  @Keep
   public void moveFloatBallBack() {
     PropertyValuesHolder pvh1 = PropertyValuesHolder.ofFloat("ballCenterX", 0);
     PropertyValuesHolder pvh2 = PropertyValuesHolder.ofFloat("ballCenterY", 0);
-    ObjectAnimator.ofPropertyValuesHolder(view, pvh1, pvh2).setDuration(300).start();
+    ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, pvh1, pvh2).setDuration(300).start();
   }
 
 
   public void moveBallViewWithCurrentGestureState(int currentGestureState) {
     switch (currentGestureState) {
       case FloatingBallView.STATE_UP:
-        view.setBallCenterX(0);
-        view.setBallCenterY(-view.scrollGestureMoveDistance);
+        floatingBallDrawer.setBallCenterX(0);
+        floatingBallDrawer.setBallCenterY(-floatingBallDrawer.scrollGestureMoveDistance);
         break;
       case FloatingBallView.STATE_DOWN:
-        view.setBallCenterX(0);
-        view.setBallCenterY(view.scrollGestureMoveDistance);
+        floatingBallDrawer.setBallCenterX(0);
+        floatingBallDrawer.setBallCenterY(floatingBallDrawer.scrollGestureMoveDistance);
 
         break;
       case FloatingBallView.STATE_LEFT:
-        view.setBallCenterX(-view.scrollGestureMoveDistance);
-        view.setBallCenterY(0);
+        floatingBallDrawer.setBallCenterX(-floatingBallDrawer.scrollGestureMoveDistance);
+        floatingBallDrawer.setBallCenterY(0);
         break;
       case FloatingBallView.STATE_RIGHT:
-        view.setBallCenterX(view.scrollGestureMoveDistance);
-        view.setBallCenterY(0);
+        floatingBallDrawer.setBallCenterX(floatingBallDrawer.scrollGestureMoveDistance);
+        floatingBallDrawer.setBallCenterY(0);
         break;
       case FloatingBallView.STATE_NONE:
-        view.setBallCenterX(0);
-        view.setBallCenterY(0);
+        floatingBallDrawer.setBallCenterX(0);
+        floatingBallDrawer.setBallCenterY(0);
         break;
     }
     view.invalidate();

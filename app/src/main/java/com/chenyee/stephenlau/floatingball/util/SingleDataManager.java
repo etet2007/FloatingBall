@@ -1,21 +1,6 @@
 package com.chenyee.stephenlau.floatingball.util;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HOME;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NOTIFICATION;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_BALL_HIDE_BECAUSE_ROTATE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ROTATE_HIDE_SETTING;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_LEFT_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_OPACITY;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_RIGHT_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_SIZE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_UP_SLIDE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_BACKGROUND;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_GRAY_BACKGROUND;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.RECENT_APPS;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 import android.content.SharedPreferences;
 
@@ -128,5 +113,13 @@ public class SingleDataManager {
 
   public static void setDownSlideEvent(int value) {
     SharedPrefsUtils.setIntegerPreference(PREF_DOWN_SLIDE_EVENT, value);
+  }
+
+  public static int moveUpDistance() {
+    return SharedPrefsUtils.getIntegerPreference(PREF_MOVE_UP_DISTANCE, 8);
+  }
+
+  public static void setMoveUpDistance(int value) {
+    SharedPrefsUtils.setIntegerPreference(PREF_MOVE_UP_DISTANCE, value);
   }
 }
