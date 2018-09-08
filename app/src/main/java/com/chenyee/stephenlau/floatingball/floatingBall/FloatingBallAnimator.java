@@ -12,13 +12,11 @@ public class FloatingBallAnimator {
   private FloatingBallDrawer floatingBallDrawer;
   private FloatingBallPaint floatingBallPaint;
 
-
   private ObjectAnimator reduceOpacityAnimator;
   private ObjectAnimator breathingOpacityAnimator;
 
   private ObjectAnimator onTouchAnimator;
   private ObjectAnimator unTouchAnimator;
-
 
   public FloatingBallAnimator(FloatingBallView view,FloatingBallDrawer floatingBallDrawer) {
     this.view = view;
@@ -146,30 +144,4 @@ public class FloatingBallAnimator {
   }
 
 
-  public void moveBallViewWithCurrentGestureState(int currentGestureState) {
-    switch (currentGestureState) {
-      case FloatingBallView.STATE_UP:
-        floatingBallDrawer.setBallCenterX(0);
-        floatingBallDrawer.setBallCenterY(-floatingBallDrawer.scrollGestureMoveDistance);
-        break;
-      case FloatingBallView.STATE_DOWN:
-        floatingBallDrawer.setBallCenterX(0);
-        floatingBallDrawer.setBallCenterY(floatingBallDrawer.scrollGestureMoveDistance);
-
-        break;
-      case FloatingBallView.STATE_LEFT:
-        floatingBallDrawer.setBallCenterX(-floatingBallDrawer.scrollGestureMoveDistance);
-        floatingBallDrawer.setBallCenterY(0);
-        break;
-      case FloatingBallView.STATE_RIGHT:
-        floatingBallDrawer.setBallCenterX(floatingBallDrawer.scrollGestureMoveDistance);
-        floatingBallDrawer.setBallCenterY(0);
-        break;
-      case FloatingBallView.STATE_NONE:
-        floatingBallDrawer.setBallCenterX(0);
-        floatingBallDrawer.setBallCenterY(0);
-        break;
-    }
-    view.invalidate();
-  }
 }

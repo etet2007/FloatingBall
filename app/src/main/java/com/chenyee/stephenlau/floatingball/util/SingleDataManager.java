@@ -122,4 +122,12 @@ public class SingleDataManager {
   public static void setMoveUpDistance(int value) {
     SharedPrefsUtils.setIntegerPreference(PREF_MOVE_UP_DISTANCE, value);
   }
+
+  public static boolean isVibrate() {
+    return SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true);
+  }
+
+  public static void setIsVibrate(boolean value) {
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_VIBRATE, value);
+  }
 }

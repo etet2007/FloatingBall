@@ -1,6 +1,11 @@
 package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener.STATE_DOWN;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener.STATE_LEFT;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener.STATE_NONE;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener.STATE_RIGHT;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener.STATE_UP;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 
 import android.graphics.Canvas;
@@ -9,6 +14,7 @@ import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 
 public class FloatingBallDrawer {
 
+  private FloatingBallView view;
   private FloatingBallPaint floatingballPaint;
 
   public final float edge = dip2px(getApplication(), 4);
@@ -27,7 +33,9 @@ public class FloatingBallDrawer {
 
   private boolean useGrayBackground = true;
 
-  public FloatingBallDrawer(FloatingBallPaint floatingballPaint) {
+  public FloatingBallDrawer(FloatingBallView floatingBallView,
+      FloatingBallPaint floatingballPaint) {
+    this.view = floatingBallView;
     this.floatingballPaint = floatingballPaint;
   }
 
@@ -54,7 +62,6 @@ public class FloatingBallDrawer {
   public void setBallCenterX(float ballCenterX) {
     this.ballCenterX = ballCenterX;
   }
-
 
   public void setMoveUpDistance(int moveUpDistance) {
     this.moveUpDistance = moveUpDistance;
@@ -95,6 +102,31 @@ public class FloatingBallDrawer {
     canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballPaint);
   }
 
+  public void moveBallViewWithCurrentGestureState(int currentGestureState) {
+    switch (currentGestureState) {
+      case STATE_UP:
+        setBallCenterX(0);
+        setBallCenterY(-scrollGestureMoveDistance);
+        break;
+      case STATE_DOWN:
+        setBallCenterX(0);
+        setBallCenterY(scrollGestureMoveDistance);
 
+        break;
+      case STATE_LEFT:
+        setBallCenterX(-scrollGestureMoveDistance);
+        setBallCenterY(0);
+        break;
+      case STATE_RIGHT:
+        setBallCenterX(scrollGestureMoveDistance);
+        setBallCenterY(0);
+        break;
+      case STATE_NONE:
+        setBallCenterX(0);
+        setBallCenterY(0);
+        break;
+    }
+    view.invalidate();
+  }
 
 }

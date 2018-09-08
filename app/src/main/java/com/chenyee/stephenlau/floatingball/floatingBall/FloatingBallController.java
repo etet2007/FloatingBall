@@ -160,11 +160,8 @@ public class FloatingBallController {
         mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
         break;
       case PREF_USE_GRAY_BACKGROUND:
-        mFloatingBallView.updateModuleData();
-        break;
       case PREF_IS_VIBRATE:
-        mFloatingBallView
-            .setIsVibrate(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
+        mFloatingBallView.updateModuleData();
         break;
     }
     //refresh the layout and draw the view
