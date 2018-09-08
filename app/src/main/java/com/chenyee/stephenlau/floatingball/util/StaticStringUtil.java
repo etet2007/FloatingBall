@@ -20,9 +20,12 @@ public class StaticStringUtil {
     public static final String PREF_IS_BALL_HIDE_BECAUSE_ROTATE = "PREF_IS_BALL_HIDE_BECAUSE_ROTATE";
     public static final String PREF_PARAM_X = "PREF_PARAM_X";
     public static final String PREF_PARAM_Y = "PREF_PARAM_Y";
+    public static final String PREF_IS_AVOID_KEYBOARD = "PREF_IS_AVOID_KEYBOARD";
+
     public static final String PREF_IS_VIBRATE = "PREF_IS_VIBRATE";
     public static final String PREF_IS_ROTATE_HIDE_SETTING = "PREF_IS_ROTATE_HIDE_SETTING";
 
+    public static final String PREF_SINGLE_TAP_EVENT = "PREF_SINGLE_TAP_EVENT";
     public static final String PREF_DOUBLE_CLICK_EVENT = "DOUBLE_CLICK_EVENT";
     public static final String PREF_RIGHT_SLIDE_EVENT = "RIGHT_SLIDE_EVENT";
     public static final String PREF_LEFT_SLIDE_EVENT = "LEFT_SLIDE_EVENT";

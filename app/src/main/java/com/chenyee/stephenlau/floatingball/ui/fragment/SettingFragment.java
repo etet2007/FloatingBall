@@ -26,10 +26,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
+import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.util.ArrayDeque;
@@ -65,6 +67,8 @@ public class SettingFragment extends Fragment {
   @BindView(R.id.use_gray_background_switch)
   SwitchCompat useGrayBackgroundSwitch;
 
+  @BindView(R.id.single_tap_textView)
+  AppCompatTextView singleTapTextView;
   @BindView(R.id.double_click_textView)
   AppCompatTextView doubleClickTextView;
   @BindView(R.id.left_slide_textView)
@@ -79,6 +83,8 @@ public class SettingFragment extends Fragment {
   SwitchCompat isRotateHideSwitch;
   @BindView(R.id.vibrate_switch)
   SwitchCompat vibrateSwitch;
+  @BindView(R.id.avoid_keyboard_switch)
+  SwitchCompat avoidKeyboardSwitch;
   @BindView(R.id.upDistance_seekbar)
   DiscreteSeekBar upDistanceSeekbar;
 
@@ -176,13 +182,13 @@ public class SettingFragment extends Fragment {
   }
 
   private void initContentViews() {
-    opacitySeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
-    sizeSeekBar.setProgress(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
-    backgroundSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
-    useGrayBackgroundSwitch
-        .setChecked(SharedPrefsUtils.getBooleanPreference(PREF_USE_GRAY_BACKGROUND, true));
-    vibrateSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_VIBRATE, true));
-    isRotateHideSwitch.setChecked(SharedPrefsUtils.getBooleanPreference(PREF_IS_ROTATE_HIDE_SETTING, true));
+    opacitySeekBar.setProgress(SingleDataManager.opacity());
+    sizeSeekBar.setProgress(SingleDataManager.size());
+    backgroundSwitch.setChecked(SingleDataManager.isUseBackground());
+    useGrayBackgroundSwitch.setChecked(SingleDataManager.isUseGrayBackground());
+    vibrateSwitch.setChecked(SingleDataManager.isVibrate());
+    avoidKeyboardSwitch.setChecked(SingleDataManager.isAvoidKeyboard());
+    isRotateHideSwitch.setChecked(SingleDataManager.isRotateHideSetting());
     updateFunctionListView();
     updateOpacityModeView();
 
@@ -193,7 +199,7 @@ public class SettingFragment extends Fragment {
     opacitySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
       @Override
       public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-        SharedPrefsUtils.setIntegerPreference(PREF_OPACITY, value);
+        SingleDataManager.setOpacity(value);
       }
 
       @Override
@@ -207,7 +213,7 @@ public class SettingFragment extends Fragment {
     sizeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
       @Override
       public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-        SharedPrefsUtils.setIntegerPreference(PREF_SIZE, value);
+        SingleDataManager.setSize(value);
       }
 
       @Override
@@ -240,19 +246,25 @@ public class SettingFragment extends Fragment {
         .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
           @Override
           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            SharedPrefsUtils.setBooleanPreference(PREF_USE_GRAY_BACKGROUND, isChecked);
+            SingleDataManager.setIsUseGrayBackground(isChecked);
           }
         });
     isRotateHideSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-        SharedPrefsUtils.setBooleanPreference(PREF_IS_ROTATE_HIDE_SETTING, isChecked);
+        SingleDataManager.setIsRotateHideSetting(isChecked);
       }
     });
     vibrateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        SharedPrefsUtils.setBooleanPreference(PREF_IS_VIBRATE, isChecked);
+        SingleDataManager.setIsVibrate(isChecked);
+      }
+    });
+    avoidKeyboardSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        SingleDataManager.setIsAvoidKeyboard(isChecked);
       }
     });
     upDistanceSeekbar.setOnProgressChangeListener(new OnProgressChangeListener() {
@@ -276,20 +288,23 @@ public class SettingFragment extends Fragment {
   private void updateFunctionListView() {
     Resources res = getResources();
     String[] functionList = res.getStringArray(R.array.function_array);
-    int doubleClickEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE);
+
+    int singleTapEvent = SingleDataManager.singleTapEvent();
+    singleTapTextView.setText(functionList[singleTapEvent]);
+
+    int doubleClickEvent = SingleDataManager.doubleClickEvent();
     doubleClickTextView.setText(functionList[doubleClickEvent]);
 
-    int rightSlideEvent = SharedPrefsUtils
-        .getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
+    int rightSlideEvent = SingleDataManager.rightSlideEvent();
     rightSlideTextView.setText(functionList[rightSlideEvent]);
 
-    int leftSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
+    int leftSlideEvent = SingleDataManager.leftSlideEvent();
     leftSlideTextView.setText(functionList[leftSlideEvent]);
 
-    int upSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
+    int upSlideEvent = SingleDataManager.upSlideEvent();
     upSlideTextView.setText(functionList[upSlideEvent]);
 
-    int downSlideEvent = SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
+    int downSlideEvent = SingleDataManager.downSlideEvent();
     downSlideTextView.setText(functionList[downSlideEvent]);
   }
 
@@ -360,13 +375,15 @@ public class SettingFragment extends Fragment {
     }
   }
 
-  @OnClick({R.id.double_click_function,
+  @OnClick({
+      R.id.single_tap_function,
+      R.id.double_click_function,
       R.id.left_function,
       R.id.right_function,
       R.id.up_function,
       R.id.down_function
   })
-  public void onDoubleClickClicked(View view) {
+  public void onFunctionClicked(View view) {
     if (view.getId() == R.id.double_click_function) {
       showFunctionDialog(R.string.double_click_title, PREF_DOUBLE_CLICK_EVENT);
     } else if (view.getId() == R.id.left_function) {
@@ -377,6 +394,8 @@ public class SettingFragment extends Fragment {
       showFunctionDialog(R.string.up_slide_title, PREF_UP_SLIDE_EVENT);
     } else if (view.getId() == R.id.down_function) {
       showFunctionDialog(R.string.down_slide_title, PREF_DOWN_SLIDE_EVENT);
+    } else if (view.getId() == R.id.single_tap_function) {
+      showFunctionDialog(R.string.single_tap_title, PREF_SINGLE_TAP_EVENT);
     }
   }
 

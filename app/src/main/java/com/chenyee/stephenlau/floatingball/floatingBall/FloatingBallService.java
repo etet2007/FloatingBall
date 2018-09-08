@@ -115,9 +115,9 @@ public class FloatingBallService extends AccessibilityService {
 
   @Override
   public void onAccessibilityEvent(AccessibilityEvent event) {
-    Boolean hasAddBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
-
-    if (!hasAddBall || mFloatingBallController == null) {
+    Boolean hasAddBall = SingleDataManager.isAddedBallInSetting();
+    Boolean isAvoidKeyboard = SingleDataManager.isAvoidKeyboard();
+    if (!hasAddBall || !isAvoidKeyboard || mFloatingBallController == null) {
       //do nothing
       return;
     }

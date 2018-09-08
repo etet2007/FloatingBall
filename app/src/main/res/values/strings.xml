@@ -24,6 +24,9 @@
     <string name="drawoverlays_permission">DrawOverlays permission</string>
     <string name="request_accessibility">Request accessibility</string>
 
+    <string name="single_tap_title">Single tap</string>
+    <string name="single_tap">Single tap:</string>
+
     <string name="double_click_title">Double click</string>
     <string name="double_click">Double click:</string>
 
@@ -50,6 +53,7 @@
     <string name="hide">Hide</string>
     <string name="notification">Expand notifications</string>
     <string name="screen_shot">Screenshot</string>
+    <string name="back">Back</string>
 
 
     <string name="hide_notification_content_title">Hiding</string>
@@ -71,6 +75,7 @@
     <string name="no_support_screenshot">Your system is not supported.</string>
     <string name="screenshot_fail">Failed to store a screenshot.</string>
     <string name="screenshot_succeed">Screenshot succeed!</string>
+  <string name="avoid_keyboard">Avoid keyboard</string>
 
 
 </resources>

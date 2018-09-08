@@ -75,6 +75,14 @@ public class SingleDataManager {
     SharedPrefsUtils.setBooleanPreference(PREF_USE_GRAY_BACKGROUND, value);
   }
 
+  public static int singleTapEvent() {
+    return SharedPrefsUtils.getIntegerPreference(PREF_SINGLE_TAP_EVENT, BACK);
+  }
+
+  public static void setsSingleTapEvent(int value) {
+    SharedPrefsUtils.setIntegerPreference(PREF_SINGLE_TAP_EVENT, value);
+  }
+
   public static int doubleClickEvent() {
     return SharedPrefsUtils.getIntegerPreference(PREF_DOUBLE_CLICK_EVENT, NONE);
   }
@@ -129,5 +137,12 @@ public class SingleDataManager {
 
   public static void setIsVibrate(boolean value) {
     SharedPrefsUtils.setBooleanPreference(PREF_IS_VIBRATE, value);
+  }
+
+  public static boolean isAvoidKeyboard() {
+    return SharedPrefsUtils.getBooleanPreference(PREF_IS_AVOID_KEYBOARD, true);
+  }
+  public static boolean setIsAvoidKeyboard(boolean value) {
+    return SharedPrefsUtils.setBooleanPreference(PREF_IS_AVOID_KEYBOARD, value);
   }
 }

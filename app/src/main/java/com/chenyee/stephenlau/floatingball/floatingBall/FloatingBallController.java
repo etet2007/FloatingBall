@@ -148,16 +148,16 @@ public class FloatingBallController {
     }
     switch (key) {
       case PREF_OPACITY:
-        mFloatingBallView.setOpacity(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY, 125));
+        mFloatingBallView.setOpacity(SingleDataManager.opacity());
         break;
       case PREF_OPACITY_MODE:
         mFloatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
         break;
       case PREF_SIZE:
-        mFloatingBallView.changeFloatBallSizeWithRadius(SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25));
+        mFloatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
         break;
       case PREF_USE_BACKGROUND:
-        mFloatingBallView.setUseBackground(SharedPrefsUtils.getBooleanPreference(PREF_USE_BACKGROUND, false));
+        mFloatingBallView.setUseBackground(SingleDataManager.isUseBackground());
         break;
       case PREF_USE_GRAY_BACKGROUND:
       case PREF_IS_VIBRATE:
@@ -170,18 +170,16 @@ public class FloatingBallController {
 
     if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
       mFloatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
-    }
-    if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
+    } else if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
       mFloatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
-    }
-    if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
+    } else if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
       mFloatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
-    }
-    if (key.equals(PREF_UP_SLIDE_EVENT)) {
+    } else if (key.equals(PREF_UP_SLIDE_EVENT)) {
       mFloatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
-    }
-    if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
+    } else if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
       mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
+    } else if (key.equals(PREF_SINGLE_TAP_EVENT)) {
+      mFloatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
     }
 
 
@@ -209,8 +207,7 @@ public class FloatingBallController {
     mFloatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
     mFloatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
     mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
-
-    mFloatingBallView.setSingleTapFunctionListener(BACK);
+    mFloatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
   }
 
   /**
@@ -220,7 +217,6 @@ public class FloatingBallController {
     if (mFloatingBallView == null) {
       return;
     }
-
 
     //过滤掉100以下的了
     if (InputMethodDetector.detectIsInputing()) {// 键盘正在显示

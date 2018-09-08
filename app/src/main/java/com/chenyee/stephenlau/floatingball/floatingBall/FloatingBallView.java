@@ -234,8 +234,10 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     refreshOpacityMode();
   }
 
-  public void updateViewLayout(WindowManager.LayoutParams ballViewLayoutParams) {
+  public void updateViewLayout(int x,int y) {
     if (windowManager != null) {
+      ballViewLayoutParams.x = x;
+      ballViewLayoutParams.y = y;
       windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
     }
   }

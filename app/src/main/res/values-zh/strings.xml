@@ -28,6 +28,8 @@
     <string name="drawoverlays_permission">允许出现在其他应用上</string>
     <string name="active_device_administrator">激活设备管理器(用于锁屏)</string>
 
+    <string name="single_tap_title">单击</string>
+    <string name="single_tap">单击:</string>
 
     <string name="double_click_title">双击</string>
     <string name="double_click">双击:</string>
@@ -55,6 +57,8 @@
     <string name="hide">隐藏</string>
     <string name="notification">打开通知栏</string>
     <string name="screen_shot">截屏</string>
+  <string name="back">返回</string>
+
 
     <string name="hide_notification_content_title">隐藏中</string>
     <string name="hideNotificationContentText">点击重启。</string>
@@ -76,5 +80,7 @@
     <string name="no_support_screenshot">抱歉，你的系统不支持。</string>
     <string name="screenshot_fail">截图失败</string>
     <string name="screenshot_succeed">截图成功</string>
+  <string name="avoid_keyboard">躲避键盘</string>
+
 
 </resources>

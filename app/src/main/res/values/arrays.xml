@@ -10,6 +10,7 @@
         <item>@string/rootLockScreen</item>
         <item>@string/notification</item>
         <item>@string/screen_shot</item>
+        <item>@string/back</item>
     </string-array>
 
     <string-array name="opacity_mode">
@@ -17,6 +18,5 @@
         <item>@string/reduce</item>
         <item>@string/breathing</item>
     </string-array>
-
 
 </resources>

@@ -175,13 +175,12 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
             lastTouchEventPositionX = event.getX();
             lastTouchEventPositionY = event.getY();
           }
-          LayoutParams ballViewLayoutParams = new LayoutParams();
-          ballViewLayoutParams.x = (int) (event.getRawX() - lastTouchEventPositionX);
-          ballViewLayoutParams.y = (int) (event.getRawY() - lastTouchEventPositionY);
+          int x = (int) (event.getRawX() - lastTouchEventPositionX);
+          int y = (int) (event.getRawY() - lastTouchEventPositionY);
 
-          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, ballViewLayoutParams.x);
-          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, ballViewLayoutParams.y);
-          floatingBallView.updateViewLayout(ballViewLayoutParams);
+          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, x);
+          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, y);
+          floatingBallView.updateViewLayout(x,y);
         }
         break;
       case MotionEvent.ACTION_UP:
@@ -191,6 +190,9 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
 
         //滑动操作
         if (isScrolling) {
+          if (onGestureEventListener != null) {
+            onGestureEventListener.onScrollEnd();
+          }
           if (scrollGestureChangeCount == 1) {
             if (onGestureEventListener != null) {
               onGestureEventListener.onFunctionWithCurrentGestureState(currentGestureState);
@@ -198,9 +200,6 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
           }
           scrollGestureChangeCount = 0;
 
-          if (onGestureEventListener != null) {
-            onGestureEventListener.onScrollEnd();
-          }
           currentGestureState = STATE_NONE;
           lastGestureState = STATE_NONE;
           isScrolling = false;
