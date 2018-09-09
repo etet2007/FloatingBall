@@ -13,12 +13,19 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
+        debug {
+//            minifyEnabled true
+//            zipAlignEnabled true
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+        }
         release {
             // 混淆
             minifyEnabled true
             // 移除无用的resource
             shrinkResources true
-
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         lintOptions {
@@ -55,7 +62,8 @@ dependencies {
 
     // ui
     implementation 'org.adw.library:discrete-seekbar:1.0.1' //https://github.com/AnderWeb/discreteSeekBar
-    implementation 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar' //https://github.com/glomadrian/material-animated-switch
+    implementation 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'
+    //https://github.com/glomadrian/material-animated-switch
     implementation 'de.hdodenhof:circleimageview:2.2.0' //https://github.com/hdodenhof/CircleImageView
 
     // test

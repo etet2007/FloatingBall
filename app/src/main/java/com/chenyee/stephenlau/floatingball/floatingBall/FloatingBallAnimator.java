@@ -45,7 +45,7 @@ public class FloatingBallAnimator {
     }
   }
 
-
+  @Keep
   public void setUpBreathingAnimator(int opacity) {
     Keyframe kf1 = Keyframe.ofInt(0f, (int) (opacity * 0.4));
     Keyframe kf2 = Keyframe.ofInt(0.35f, opacity);
@@ -94,7 +94,6 @@ public class FloatingBallAnimator {
         .start();
   }
 
-  @Keep
   public void setUpTouchAnimator(int ballRadius) {
     Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
     Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation - 1);
@@ -123,7 +122,6 @@ public class FloatingBallAnimator {
     });
   }
 
-  @Keep
   public void startOnTouchAnimator() {
     if (onTouchAnimator != null) {
       onTouchAnimator.start();
@@ -136,7 +134,6 @@ public class FloatingBallAnimator {
     }
   }
 
-  @Keep
   public void moveFloatBallBack() {
     PropertyValuesHolder pvh1 = PropertyValuesHolder.ofFloat("ballCenterX", 0);
     PropertyValuesHolder pvh2 = PropertyValuesHolder.ofFloat("ballCenterY", 0);

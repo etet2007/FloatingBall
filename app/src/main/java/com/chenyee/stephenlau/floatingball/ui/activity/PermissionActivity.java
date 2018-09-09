@@ -2,6 +2,7 @@ package com.chenyee.stephenlau.floatingball.ui.activity;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,7 +50,7 @@ public class PermissionActivity extends AppCompatActivity {
         accessibilityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AccessibilityUtils.checkAccessibilitySetting();
+                AccessibilityUtils.checkAccessibilitySetting(PermissionActivity.this);
             }
         });
         lockScreenButton.setOnClickListener(new View.OnClickListener() {

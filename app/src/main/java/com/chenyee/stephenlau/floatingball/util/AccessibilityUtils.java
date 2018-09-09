@@ -111,11 +111,10 @@ public class AccessibilityUtils {
   /**
    * 判断辅助功能是否开启，并开启设置
    */
-  public static void checkAccessibilitySetting() {
-    Context context = App.getApplication();
+  public static void checkAccessibilitySetting(Context context) {
     if (!isAccessibilitySettingsOn()) {
       // 引导至辅助功能设置页面
-      App.getApplication().startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+      context.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
           );
       Toast.makeText(App.getApplication(), context.getString(R.string.openAccessibility), Toast.LENGTH_SHORT)
           .show();

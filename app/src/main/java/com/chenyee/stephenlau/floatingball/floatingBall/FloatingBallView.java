@@ -30,7 +30,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 /**
  * Created by stephenlau on 2017/12/5.
  */
-
+@Keep
 public class FloatingBallView extends View implements OnGestureEventListener {
 
   private static final String TAG = FloatingBallView.class.getSimpleName();
@@ -124,7 +124,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     return ballViewLayoutParams.y;
   }
 
-  @Keep
   private void setLayoutParamsY(int y) {
     ballViewLayoutParams.y = y;
   }

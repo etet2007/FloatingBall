@@ -4,7 +4,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.support.annotation.Keep;
 
+@Keep
 public class FloatingBallPaint {
 
   private Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
