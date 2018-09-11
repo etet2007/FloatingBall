@@ -86,7 +86,7 @@ public class SettingFragment extends Fragment {
   @BindView(R.id.avoid_keyboard_switch)
   SwitchCompat avoidKeyboardSwitch;
   @BindView(R.id.upDistance_seekbar)
-  DiscreteSeekBar upDistanceSeekbar;
+  DiscreteSeekBar upDistanceSeekBar;
 
 
   // 调用系统相册-选择图片
@@ -267,10 +267,10 @@ public class SettingFragment extends Fragment {
         SingleDataManager.setIsAvoidKeyboard(isChecked);
       }
     });
-    upDistanceSeekbar.setOnProgressChangeListener(new OnProgressChangeListener() {
+    upDistanceSeekBar.setOnProgressChangeListener(new OnProgressChangeListener() {
       @Override
       public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-        SharedPrefsUtils.setIntegerPreference(PREF_MOVE_UP_DISTANCE, value);
+        SingleDataManager.setMoveUpDistance(value);
       }
 
       @Override

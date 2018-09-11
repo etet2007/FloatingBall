@@ -18,8 +18,12 @@ public class StaticStringUtil {
 
     public static final String PREF_IS_ADDED_BALL_IN_SETTING = "PREF_IS_ADDED_BALL_IN_SETTING";
     public static final String PREF_IS_BALL_HIDE_BECAUSE_ROTATE = "PREF_IS_BALL_HIDE_BECAUSE_ROTATE";
-    public static final String PREF_PARAM_X = "PREF_PARAM_X";
-    public static final String PREF_PARAM_Y = "PREF_PARAM_Y";
+    public static final String PREF_PARAM_X_PORTRAIT = "PREF_PARAM_X_PORTRAIT";
+    public static final String PREF_PARAM_Y_PORTRAIT = "PREF_PARAM_Y_PORTRAIT";
+
+    public static final String PREF_PARAM_X_LANDSCAPE = "PREF_PARAM_X_LANDSCAPE";
+    public static final String PREF_PARAM_Y_LANDSCAPE = "PREF_PARAM_Y_LANDSCAPE";
+
     public static final String PREF_IS_AVOID_KEYBOARD = "PREF_IS_AVOID_KEYBOARD";
 
     public static final String PREF_IS_VIBRATE = "PREF_IS_VIBRATE";

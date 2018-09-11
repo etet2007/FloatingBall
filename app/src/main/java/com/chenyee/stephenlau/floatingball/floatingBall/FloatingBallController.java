@@ -1,31 +1,24 @@
 package com.chenyee.stephenlau.floatingball.floatingBall;
 
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Build;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 
-import android.view.inputmethod.InputMethodManager;
 import com.chenyee.stephenlau.floatingball.App;
+import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
-import java.lang.reflect.Method;
-import java.util.List;
 
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
 import static com.chenyee.stephenlau.floatingball.App.gScreenWidth;
-import static com.chenyee.stephenlau.floatingball.App.getApplication;
-import static com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils.getListener;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
@@ -72,8 +65,15 @@ public class FloatingBallController {
 
     // use code to initialize layout parameters
     LayoutParams params = new LayoutParams();
-    params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X, gScreenWidth / 2);
-    params.y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y, gScreenHeight / 2);
+    Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
+    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_LANDSCAPE, gScreenWidth / 2);
+      params.y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_LANDSCAPE, gScreenHeight / 2);
+    } else if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+      params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_PORTRAIT, gScreenWidth / 2);
+      params.y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_PORTRAIT, gScreenHeight / 2);
+    }
+
     params.width = LayoutParams.WRAP_CONTENT;
     params.height = LayoutParams.WRAP_CONTENT;
     params.gravity = Gravity.START | Gravity.TOP;
@@ -102,20 +102,17 @@ public class FloatingBallController {
 
 
   public void removeBallView() {
-    isAddedBall = false;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
-
-    if (mFloatingBallView == null) {
-      return;
-    }
-    mFloatingBallView.removeBallWithAnimation();
-    mFloatingBallView = null;
+    SingleDataManager.setIsAddedBallInSetting(false);
+    remove();
   }
 
   public void rotateHideBallView() {
-    isAddedBall = false;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_BALL_HIDE_BECAUSE_ROTATE, true);
+    SingleDataManager.setIsBallHideBecauseRotate(true);
+    remove();
+  }
 
+  private void remove() {
+    isAddedBall = false;
     if (mFloatingBallView == null) {
       return;
     }
@@ -132,7 +129,7 @@ public class FloatingBallController {
   public void setBackgroundImage(String imagePath) {
     if (mFloatingBallView != null) {
 
-      mFloatingBallView.copyBackgroundImage(imagePath);
+      BitmapUtils.copyBackgroundImage(imagePath);
       mFloatingBallView.refreshBitmapRead();
       mFloatingBallView.createBitmapCropFromBitmapRead();
       mFloatingBallView.invalidate();
@@ -161,7 +158,8 @@ public class FloatingBallController {
         break;
       case PREF_USE_GRAY_BACKGROUND:
       case PREF_IS_VIBRATE:
-        mFloatingBallView.updateModuleData();
+      case PREF_MOVE_UP_DISTANCE:
+        mFloatingBallView.updateModelData();
         break;
     }
     //refresh the layout and draw the view
@@ -182,7 +180,6 @@ public class FloatingBallController {
       mFloatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
     }
 
-
   }
 
   /**
@@ -196,7 +193,7 @@ public class FloatingBallController {
     mFloatingBallView.setOpacity(SingleDataManager.opacity());
     mFloatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
     mFloatingBallView.setUseBackground(SingleDataManager.isUseBackground());
-    mFloatingBallView.updateModuleData();
+    mFloatingBallView.updateModelData();
 
     mFloatingBallView.requestLayout();
     mFloatingBallView.invalidate();
@@ -218,21 +215,28 @@ public class FloatingBallController {
       return;
     }
 
-    //过滤掉100以下的了
-    if (InputMethodDetector.detectIsInputing()) {// 键盘正在显示
-      if (!isSoftKeyboardShow) {// 键盘第一次显示
-        mFloatingBallView.inputMethodWindowHeight = InputMethodDetector.inputMethodWindowHeight;
-        mFloatingBallView.moveToKeyboardTop();
-
-      }
-      isSoftKeyboardShow = true;
-    } else {// 键盘不再显示
-      if (isSoftKeyboardShow) {// 键盘第一次消失
-        mFloatingBallView.moveBackWhenKeyboardDisappear();
-      }
-      isSoftKeyboardShow = false;
+    if (InputMethodDetector.detectIsInputingWithHeight(100)) {
+      onKeyboardShow();
+    } else {
+      onKeyboardDisappear();
     }
   }
+
+  private void onKeyboardShow() {
+    if (!isSoftKeyboardShow) {
+
+      mFloatingBallView.moveToKeyboardTop();
+    }
+    isSoftKeyboardShow = true;
+  }
+
+  private void onKeyboardDisappear() {
+    if (isSoftKeyboardShow) {
+      mFloatingBallView.moveBackWhenKeyboardDisappear();
+    }
+    isSoftKeyboardShow = false;
+  }
+
 
   public void recycleBitmapMemory() {
     if (mFloatingBallView != null) {
@@ -248,4 +252,22 @@ public class FloatingBallController {
       mFloatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
     }
   }
-}
+
+
+  public void updateBallViewLayout(int orientation) {
+    if (mFloatingBallView != null) {
+      if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        int x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_LANDSCAPE, gScreenWidth / 2);
+        int y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_LANDSCAPE, gScreenHeight / 2);
+
+        mFloatingBallView.updateViewLayoutWithValue(x,y);
+
+      } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        int x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_PORTRAIT, gScreenWidth / 2);
+        int y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_PORTRAIT, gScreenHeight / 2);
+
+        mFloatingBallView.updateViewLayoutWithValue(x,y);
+      }
+    }
+    }
+  }

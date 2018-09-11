@@ -17,12 +17,9 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_BALL_HIDE_BECAUSE_ROTATE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 
 
 /**
@@ -96,6 +93,7 @@ public class FloatingBallService extends AccessibilityService {
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
+
     boolean isAddedBall = SingleDataManager.isAddedBallInSetting();
     if (!isAddedBall) {
       return;
@@ -103,26 +101,34 @@ public class FloatingBallService extends AccessibilityService {
 
     boolean isBallHideBecauseRotate = SingleDataManager.isBallHideBecauseRotate();
 
-    if (SingleDataManager.isRotateHideSetting()) {
+    if (SingleDataManager.isRotateHideSetting()) {//LANDSCAPE 隐藏
+
       if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
         mFloatingBallController.rotateHideBallView();
-      } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT  && isBallHideBecauseRotate ) {
+
+      } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT && isBallHideBecauseRotate) {
+
         mFloatingBallController.addBallView(FloatingBallService.this);
         SingleDataManager.setIsBallHideBecauseRotate(false);
       }
-    }
+
+    } else { //LANDSCAPE 不隐藏
+
+        mFloatingBallController.updateBallViewLayout(newConfig.orientation);
+
+      }
+
   }
 
   @Override
   public void onAccessibilityEvent(AccessibilityEvent event) {
     Boolean hasAddBall = SingleDataManager.isAddedBallInSetting();
     Boolean isAvoidKeyboard = SingleDataManager.isAvoidKeyboard();
-    if (!hasAddBall || !isAvoidKeyboard || mFloatingBallController == null) {
-      //do nothing
-      return;
+    if (hasAddBall && isAvoidKeyboard && mFloatingBallController != null) {
+      //触发输入法检测
+      mFloatingBallController.inputMethodDetect();
     }
-    //触发输入法检测
-    mFloatingBallController.inputMethodDetect();
   }
 
   @Override

@@ -31,7 +31,6 @@ public class FloatingBallDrawer {
   public float ballCenterY = 0;
   public float ballCenterX = 0;
 
-  public int moveUpDistance;
 
   private boolean useGrayBackground = true;
 
@@ -65,9 +64,6 @@ public class FloatingBallDrawer {
     this.ballCenterX = ballCenterX;
   }
 
-  public void setMoveUpDistance(int moveUpDistance) {
-    this.moveUpDistance = moveUpDistance;
-  }
 
   public void setUseGrayBackground(boolean useGrayBackground) {
     this.useGrayBackground = useGrayBackground;
@@ -75,11 +71,11 @@ public class FloatingBallDrawer {
 
   public void updateFieldBySingleDataManager() {
     useGrayBackground = SingleDataManager.isUseGrayBackground();
-    moveUpDistance = SingleDataManager.moveUpDistance();
   }
 
   public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
     this.ballRadius = ballRadius;
+
     backgroundRadius = ballRadius + edge;
 
     //View宽高 r + moveDistance + r在动画变大的值 = r + edge + gap

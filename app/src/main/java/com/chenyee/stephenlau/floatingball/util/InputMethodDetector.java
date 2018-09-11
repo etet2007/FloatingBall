@@ -16,7 +16,7 @@ public class InputMethodDetector {
 
   public static int inputMethodWindowHeight;
 
-  public static boolean detectIsInputing() {
+  public static boolean detectIsInputingWithHeight(int heightThreshold) {
     boolean isInputing = false;
 
     if (android.os.Build.VERSION.SDK_INT > 20) {//Work
@@ -28,7 +28,7 @@ public class InputMethodDetector {
         method.setAccessible(true);
         inputMethodWindowHeight = (Integer) method.invoke(imm, null);
 
-        if (inputMethodWindowHeight > 100) {
+        if (inputMethodWindowHeight > heightThreshold) {
           isInputing = true;
         }
       } catch (Exception e) {

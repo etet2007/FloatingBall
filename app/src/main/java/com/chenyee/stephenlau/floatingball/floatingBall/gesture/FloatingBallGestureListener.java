@@ -1,19 +1,11 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.gesture;
 
-import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_X;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_PARAM_Y;
-
 import android.content.Context;
 import android.os.Vibrator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
-import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 
 
@@ -178,9 +170,8 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
           int x = (int) (event.getRawX() - lastTouchEventPositionX);
           int y = (int) (event.getRawY() - lastTouchEventPositionY);
 
-          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X, x);
-          SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y, y);
-          floatingBallView.updateViewLayout(x,y);
+
+          floatingBallView.updateViewLayoutWithValue(x,y);
         }
         break;
       case MotionEvent.ACTION_UP:
@@ -210,7 +201,7 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
           if (onGestureEventListener != null) {
             onGestureEventListener.onLongPressEnd();
           }
-
+          floatingBallView.saveLayoutParams();
         }
         isLongPress = false;
         isFirstLongPressEvent = false;

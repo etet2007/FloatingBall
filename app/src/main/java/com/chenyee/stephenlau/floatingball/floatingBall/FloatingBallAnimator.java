@@ -18,7 +18,7 @@ public class FloatingBallAnimator {
   private ObjectAnimator onTouchAnimator;
   private ObjectAnimator unTouchAnimator;
 
-  public FloatingBallAnimator(FloatingBallView view,FloatingBallDrawer floatingBallDrawer) {
+  public FloatingBallAnimator(FloatingBallView view, FloatingBallDrawer floatingBallDrawer) {
     this.view = view;
     this.floatingBallDrawer = floatingBallDrawer;
     floatingBallPaint = view.getFloatingBallPaint();
@@ -140,5 +140,17 @@ public class FloatingBallAnimator {
     ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, pvh1, pvh2).setDuration(300).start();
   }
 
+  public void startParamsYAnimationTo(int paramsY) {
+    ObjectAnimator animation = ObjectAnimator
+        .ofInt(view, "layoutParamsY", view.getLayoutParamsY(), paramsY);
+    animation.setDuration(200);
+    animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      @Override
+      public void onAnimationUpdate(ValueAnimator animation) {
+        view.updateViewLayout();
+      }
+    });
+    animation.start();
+  }
 
 }

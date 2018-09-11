@@ -1,8 +1,7 @@
 package com.chenyee.stephenlau.floatingball.floatingBall;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,15 +15,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.widget.Toast;
 
+import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
-import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
+import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
+import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
+import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
+import static com.chenyee.stephenlau.floatingball.App.gScreenWidth;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
@@ -43,7 +45,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
   private FloatingBallAnimator floatingBallAnimator;
 
-
   //function list
   public FunctionListener singleTapFunctionListener;
   private FunctionListener downFunctionListener;
@@ -57,21 +58,28 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
   public boolean isUseDoubleClick = false;
 
-  //上次touchEvent的位置
-
 
   private GestureDetector gestureDetector;
 
   private WindowManager windowManager;
 
-
   private Bitmap mBitmapRead;
-
   private Bitmap mBitmapScaled;
+
   private int userSetOpacity = 125;
 
   private int opacityMode;
 
+
+  private WindowManager.LayoutParams ballViewLayoutParams;
+
+  private int lastLayoutParamsY;
+
+  private int layoutParamsY;//用于使用反射
+
+  private int keyboardTopY;
+
+  private int moveUpDistance;
 
   public LayoutParams getBallViewLayoutParams() {
     return ballViewLayoutParams;
@@ -81,10 +89,14 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     this.ballViewLayoutParams = ballViewLayoutParams;
   }
 
-  private WindowManager.LayoutParams ballViewLayoutParams;
+  public int getLayoutParamsY() {
+    return ballViewLayoutParams.y;
+  }
 
-  private int lastLayoutParamsY;
-
+  public void setLayoutParamsY(int y) {
+    ballViewLayoutParams.y = y;
+    windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
+  }
 
   public void setUseBackground(boolean useBackground) {
     if (useBackground) {
@@ -116,16 +128,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     } else {
       gestureDetector.setOnDoubleTapListener(null);
     }
-  }
-
-  private int layoutParamsY;//动画用到
-
-  private int getLayoutParamsY() {
-    return ballViewLayoutParams.y;
-  }
-
-  private void setLayoutParamsY(int y) {
-    ballViewLayoutParams.y = y;
   }
 
   /**
@@ -174,6 +176,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   public void setDownFunctionListener(int downFunctionListenerType) {
     this.downFunctionListener = FunctionInterfaceUtils.getListener(downFunctionListenerType);
   }
+
   public void setUpFunctionListener(int upFunctionListenerType) {
     this.upFunctionListener = FunctionInterfaceUtils.getListener(upFunctionListenerType);
   }
@@ -206,6 +209,14 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     this.floatingBallPaint = floatingBallPaint;
   }
 
+  public int getMeasureLength() {
+    if (floatingBallAnimator != null) {
+      return floatingBallDrawer.measuredSideLength;
+    } else {
+      return 0;
+    }
+  }
+
   /**
    * 构造函数
    */
@@ -214,9 +225,9 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     floatingBallPaint = new FloatingBallPaint();
 
-    floatingBallDrawer = new FloatingBallDrawer(this,floatingBallPaint);
+    floatingBallDrawer = new FloatingBallDrawer(this, floatingBallPaint);
 
-    floatingBallAnimator = new FloatingBallAnimator(this,floatingBallDrawer);
+    floatingBallAnimator = new FloatingBallAnimator(this, floatingBallDrawer);
 
     floatingBallAnimator.performAddAnimator();
 
@@ -229,11 +240,26 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     gestureDetector = new GestureDetector(context, floatingBallGestureListener);
 
-
     refreshOpacityMode();
   }
 
-  public void updateViewLayout(int x,int y) {
+  public void saveLayoutParams() {
+    Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
+    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X_LANDSCAPE, ballViewLayoutParams.x);
+      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y_LANDSCAPE, ballViewLayoutParams.y);
+     } else if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X_PORTRAIT, ballViewLayoutParams.x);
+      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y_PORTRAIT, ballViewLayoutParams.y);  }
+
+  }
+  public void updateViewLayout() {
+    if (windowManager != null) {
+      windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
+    }
+  }
+
+  public void updateViewLayoutWithValue(int x, int y) {
     if (windowManager != null) {
       ballViewLayoutParams.x = x;
       ballViewLayoutParams.y = y;
@@ -270,20 +296,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
   }
 
-  /**
-   * 复制图片置软件文件夹内。
-   */
-  public void copyBackgroundImage(String imagePath) {
-    Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-    if (bitmap == null) {
-      Toast.makeText(getContext(), "Read image error", Toast.LENGTH_LONG).show();
-      return;
-    }
-    //copy source image
-    String path = getContext().getFilesDir().toString();
-    BitmapUtils.copyImage(bitmap, path, "ballBackground.png");
-    bitmap.recycle();
-  }
 
   public void createBitmapCropFromBitmapRead() {
     if (floatingBallDrawer.ballRadius <= 0) {
@@ -302,7 +314,8 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     Canvas canvas = new Canvas(mBitmapScaled);
     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     //x y r
-    canvas.drawCircle(floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, paint);
+    canvas
+        .drawCircle(floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, paint);
     paint.reset();
     paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
     canvas.drawBitmap(scaledBitmap, 0, 0, paint);
@@ -326,8 +339,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
   }
 
-  public int inputMethodWindowHeight;
-  private boolean isMoveUp = false;
+  private boolean isBallMoveUp = false;
   private boolean isKeyboardShow = false;
 
   /**
@@ -336,44 +348,30 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   public void moveToKeyboardTop() {
     isKeyboardShow = true;
 
-    int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
+    // 计算键盘顶部Y坐标
+    keyboardTopY = gScreenHeight - InputMethodDetector.inputMethodWindowHeight;
 
-    int ballBottomYPlusGap =
-        getLayoutParamsY() + floatingBallDrawer.measuredSideLength + floatingBallDrawer.moveUpDistance;
-    if (ballBottomYPlusGap < keyboardTopY) {
-      return;
+    int ballBottomYPlusGap = getLayoutParamsY() + getMeasureLength() + moveUpDistance;
+
+    if (ballBottomYPlusGap >= keyboardTopY) {//球在键盘下方
+      lastLayoutParamsY = getLayoutParamsY();
+
+      floatingBallAnimator.startParamsYAnimationTo(keyboardTopY - getMeasureLength() - moveUpDistance);
+      isBallMoveUp = true;
     }
-    lastLayoutParamsY = getLayoutParamsY();
-
-    startParamsYAnimationTo(keyboardTopY - floatingBallDrawer.measuredSideLength - floatingBallDrawer.moveUpDistance);
-    isMoveUp = true;
-
   }
 
   public void moveBackWhenKeyboardDisappear() {
     isKeyboardShow = false;
 
-    if (isMoveUp) {
-      isMoveUp = false;
+    if (isBallMoveUp) {
+      isBallMoveUp = false;
 
-      startParamsYAnimationTo(lastLayoutParamsY);
+      floatingBallAnimator.startParamsYAnimationTo(lastLayoutParamsY);
     }
 
   }
 
-  private void startParamsYAnimationTo(int paramsY) {
-    ObjectAnimator animation = ObjectAnimator
-        .ofInt(this, "layoutParamsY", getLayoutParamsY(), paramsY
-        );
-    animation.setDuration(200);
-    animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
-      }
-    });
-    animation.start();
-  }
 
   /**
    * 绘制
@@ -398,7 +396,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    setMeasuredDimension(floatingBallDrawer.measuredSideLength, floatingBallDrawer.measuredSideLength);
+    setMeasuredDimension(getMeasureLength(), getMeasureLength());
   }
 
   @Override
@@ -411,9 +409,10 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   }
 
 
-  public void updateModuleData() {
+  public void updateModelData() {
     floatingBallDrawer.updateFieldBySingleDataManager();
     floatingBallGestureListener.updateFieldBySingleDataManager();
+    moveUpDistance = SingleDataManager.moveUpDistance();
   }
 
   @Override
@@ -471,17 +470,13 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   @Override
   public void onLongPressEnd() {
     if (isKeyboardShow) {
-      //键盘弹起，长按移动到键盘下要避开
-      int keyboardTopY = gScreenHeight - inputMethodWindowHeight;
 
-      int ballBottomYPlusGap =
-          getLayoutParamsY() + floatingBallDrawer.measuredSideLength + floatingBallDrawer.moveUpDistance;
-      if (ballBottomYPlusGap >= keyboardTopY) {
+      int ballBottomYPlusGap = getLayoutParamsY() + getMeasureLength() + moveUpDistance;
+      if (ballBottomYPlusGap >= keyboardTopY) { //球在键盘下方
         lastLayoutParamsY = getLayoutParamsY();
-        startParamsYAnimationTo(
-            keyboardTopY - floatingBallDrawer.measuredSideLength - floatingBallDrawer.moveUpDistance);
+        floatingBallAnimator.startParamsYAnimationTo(keyboardTopY - getMeasureLength() - moveUpDistance);
       } else {
-        isMoveUp = false;
+        isBallMoveUp = false;
       }
     }
   }
