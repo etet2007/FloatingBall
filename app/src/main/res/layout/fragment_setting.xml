@@ -40,11 +40,10 @@
         android:id="@+id/opacity_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:dsb_indicatorColor="@color/colorAccent"
         app:dsb_max="255"
         app:dsb_min="0"
-        app:dsb_progressColor="@color/colorAccent"
         app:dsb_value="125"
+
         />
       <android.support.v7.widget.AppCompatTextView
         android:layout_width="match_parent"
@@ -63,6 +62,7 @@
         app:dsb_min="1"
         app:dsb_progressColor="@color/colorAccent"
         app:dsb_value="40"
+        style="@style/DiscreteSeekBarStyle"
         />
 
       <RelativeLayout
@@ -355,13 +355,12 @@
         />
 
       <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        style="@style/DiscreteSeekBarStyle"
         android:id="@+id/upDistance_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:dsb_indicatorColor="@color/colorAccent"
         app:dsb_max="90"
         app:dsb_min="0"
-        app:dsb_progressColor="@color/colorAccent"
         app:dsb_value="8"
         />
     </android.support.v7.widget.LinearLayoutCompat>
