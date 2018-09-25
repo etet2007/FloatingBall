@@ -37,9 +37,12 @@
         />
 
       <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        style="@style/DiscreteSeekBarStyle"
         android:id="@+id/opacity_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+
         app:dsb_max="255"
         app:dsb_min="0"
         app:dsb_value="125"
@@ -57,10 +60,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        app:dsb_indicatorColor="@color/colorAccent"
         app:dsb_max="80"
         app:dsb_min="1"
-        app:dsb_progressColor="@color/colorAccent"
         app:dsb_value="40"
         style="@style/DiscreteSeekBarStyle"
         />

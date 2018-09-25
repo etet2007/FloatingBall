@@ -189,6 +189,7 @@ public class SettingFragment extends Fragment {
     vibrateSwitch.setChecked(SingleDataManager.isVibrate());
     avoidKeyboardSwitch.setChecked(SingleDataManager.isAvoidKeyboard());
     isRotateHideSwitch.setChecked(SingleDataManager.isRotateHideSetting());
+    upDistanceSeekBar.setProgress(SingleDataManager.moveUpDistance());
     updateFunctionListView();
     updateOpacityModeView();
 

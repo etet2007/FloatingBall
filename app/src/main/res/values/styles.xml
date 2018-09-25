@@ -34,9 +34,8 @@
   </style>
 
   <style name="DiscreteSeekBarStyle">
-    <item name="app:dsb_progressColor">@color/colorAccent</item>
-    <item name="app:dsb_indicatorColor">@color/colorAccent</item>
-
+    <item name="dsb_progressColor">@color/colorAccent</item>
+    <item name="dsb_indicatorColor">@color/colorAccent</item>
   </style>
 
 
