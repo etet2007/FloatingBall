@@ -12,6 +12,16 @@
     <item name="windowNoTitle">true</item>
   </style>
 
+  <style name="Theme.Transparent" parent="android:Theme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowIsFloating">true</item>
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
+
+  <!--CardViewStyle-->
   <style name="CardViewStyle" parent="CardView">
     <item name="android:layout_width">match_parent</item>
     <item name="android:layout_height">wrap_content</item>
@@ -27,25 +37,39 @@
     <item name="cardElevation">2dp</item>
   </style>
 
-  <style name="CardViewTextTheme">
+  <!--textTheme-->
+  <style name="textTheme">
     <item name="android:textSize">18dp</item>
     <item name="android:textColor">@color/primary_text</item>
     <item name="android:textAllCaps">false</item>
   </style>
 
+  <!--DiscreteSeekBarStyle-->
   <style name="DiscreteSeekBarStyle">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
     <item name="dsb_progressColor">@color/colorAccent</item>
     <item name="dsb_indicatorColor">@color/colorAccent</item>
+    <item name="android:layout_margin">7dp</item>
   </style>
 
+  <style name="SwitchStyle">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_margin">7dp</item>
+    <item name="android:padding">10dp</item>
 
-  <style name="Theme.Transparent" parent="android:Theme">
-    <item name="android:windowIsTranslucent">true</item>
-    <item name="android:windowBackground">@android:color/transparent</item>
-    <item name="android:windowContentOverlay">@null</item>
-    <item name="android:windowNoTitle">true</item>
-    <item name="android:windowIsFloating">true</item>
-    <item name="android:backgroundDimEnabled">false</item>
   </style>
+
+  <style name="DialogRelativeLayoutStyle">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_margin">7dp</item>
+    <item name="android:padding">10dp</item>
+    <item name="android:background">?attr/selectableItemBackground</item>
+    <item name="android:clickable">true</item>
+    <item name="android:focusable">true</item>
+  </style>
+
 
 </resources>

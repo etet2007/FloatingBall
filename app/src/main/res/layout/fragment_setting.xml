@@ -7,12 +7,10 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
-  android:theme="@style/CardViewTextTheme">
+  android:theme="@style/textTheme">
 
 
   <android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/CardViewStyle"
     >
 
@@ -31,7 +29,7 @@
       <android.support.v7.widget.AppCompatTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_margin="10dp"
         android:gravity="center_horizontal"
         android:text="@string/opacity"
         />
@@ -39,86 +37,64 @@
       <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
         style="@style/DiscreteSeekBarStyle"
         android:id="@+id/opacity_seekbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-
         app:dsb_max="255"
         app:dsb_min="0"
         app:dsb_value="125"
-
         />
       <android.support.v7.widget.AppCompatTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_margin="10dp"
         android:gravity="center_horizontal"
         android:text="@string/size"
         />
+
       <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        style="@style/DiscreteSeekBarStyle"
         android:id="@+id/size_seekbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         app:dsb_max="80"
         app:dsb_min="1"
         app:dsb_value="40"
-        style="@style/DiscreteSeekBarStyle"
         />
 
       <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/DialogRelativeLayoutStyle"
         android:id="@+id/opacity_mode_relativeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-
         >
 
         <android.support.v7.widget.AppCompatTextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="10dp"
           android:layout_alignParentStart="true"
           android:text="@string/opacity_mode"
-          android:textSize="18sp"
           />
 
         <android.support.v7.widget.AppCompatTextView
           android:id="@+id/opacity_mode_textView"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="30dp"
           android:layout_alignParentEnd="true"
           android:text="@string/none"
           android:textColor="@color/colorPrimaryDark"/>
       </RelativeLayout>
 
       <android.support.v7.widget.SwitchCompat
+        style="@style/SwitchStyle"
         android:id="@+id/use_gray_background_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text="@string/use_gray_background"
-        app:switchPadding="20dp"
         />
 
       <android.support.v7.widget.SwitchCompat
+        style="@style/SwitchStyle"
         android:id="@+id/background_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text="@string/use_background_picture"
-        app:switchPadding="15dp"
         />
+
       <android.support.v7.widget.AppCompatButton
         android:id="@+id/choosePic_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_margin="10dp"
         android:text="@string/choose_picture"
         />
     </android.support.v7.widget.LinearLayoutCompat>
@@ -139,20 +115,13 @@
       android:gravity="center_horizontal"
       android:orientation="vertical">
       <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/DialogRelativeLayoutStyle"
         android:id="@+id/single_tap_function"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         >
 
         <android.support.v7.widget.AppCompatTextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="10dp"
           android:layout_alignParentStart="true"
           android:text="@string/single_tap"
           android:textSize="18sp"
@@ -162,27 +131,19 @@
           android:id="@+id/single_tap_textView"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="30dp"
           android:layout_alignParentEnd="true"
           android:text="@string/none"
           android:textColor="@color/colorPrimaryDark"/>
       </RelativeLayout>
 
       <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/DialogRelativeLayoutStyle"
         android:id="@+id/double_click_function"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         >
 
         <android.support.v7.widget.AppCompatTextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="10dp"
           android:layout_alignParentStart="true"
           android:text="@string/double_click"
           android:textSize="18sp"
@@ -192,27 +153,19 @@
           android:id="@+id/double_click_textView"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="30dp"
           android:layout_alignParentEnd="true"
           android:text="@string/none"
           android:textColor="@color/colorPrimaryDark"/>
       </RelativeLayout>
 
       <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/DialogRelativeLayoutStyle"
         android:id="@+id/left_function"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         >
 
         <android.support.v7.widget.AppCompatTextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="10dp"
           android:layout_alignParentStart="true"
           android:text="@string/left_slide"
           android:textSize="18sp"
@@ -222,27 +175,19 @@
           android:id="@+id/left_slide_textView"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="30dp"
           android:layout_alignParentEnd="true"
           android:text="@string/recent_apps"
           android:textColor="@color/colorPrimaryDark"/>
       </RelativeLayout>
 
       <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/DialogRelativeLayoutStyle"
         android:id="@+id/right_function"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         >
 
         <android.support.v7.widget.AppCompatTextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="10dp"
           android:layout_alignParentStart="true"
           android:text="@string/right_slide"
           android:textSize="18sp"
@@ -252,27 +197,19 @@
           android:id="@+id/right_slide_textView"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="30dp"
           android:layout_alignParentEnd="true"
           android:text="@string/recent_apps"
           android:textColor="@color/colorPrimaryDark"/>
       </RelativeLayout>
 
       <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/DialogRelativeLayoutStyle"
         android:id="@+id/up_function"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         >
 
         <android.support.v7.widget.AppCompatTextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="10dp"
           android:layout_alignParentStart="true"
           android:text="@string/up_slide"
           android:textSize="18sp"
@@ -282,27 +219,19 @@
           android:id="@+id/up_slide_textView"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="30dp"
           android:layout_alignParentEnd="true"
           android:text="@string/home"
           android:textColor="@color/colorPrimaryDark"/>
       </RelativeLayout>
 
       <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/DialogRelativeLayoutStyle"
         android:id="@+id/down_function"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         >
 
         <android.support.v7.widget.AppCompatTextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="10dp"
           android:layout_alignParentStart="true"
           android:text="@string/down_slide"
           android:textSize="18sp"
@@ -312,7 +241,6 @@
           android:id="@+id/down_slide_textView"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="30dp"
           android:layout_alignParentEnd="true"
           android:text="@string/notification"
           android:textColor="@color/colorPrimaryDark"/>
@@ -337,13 +265,9 @@
       android:orientation="vertical">
 
       <android.support.v7.widget.SwitchCompat
+        style="@style/SwitchStyle"
         android:id="@+id/avoid_keyboard_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:text="@string/avoid_keyboard"
-        app:switchPadding="40dp"
         />
 
       <android.support.v7.widget.AppCompatTextView
@@ -358,8 +282,6 @@
       <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
         style="@style/DiscreteSeekBarStyle"
         android:id="@+id/upDistance_seekbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         app:dsb_max="90"
         app:dsb_min="0"
         app:dsb_value="8"
@@ -382,25 +304,16 @@
       android:gravity="center_horizontal"
       android:orientation="vertical">
       <android.support.v7.widget.SwitchCompat
+        style="@style/SwitchStyle"
         android:id="@+id/is_rotate_hide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:text="@string/is_rotate_hide"
-        app:switchPadding="40dp"
         />
 
       <android.support.v7.widget.SwitchCompat
+        style="@style/SwitchStyle"
         android:id="@+id/vibrate_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:text="@string/is_vibrate"
-        app:switchPadding="40dp"
         />
-
 
 
     </android.support.v7.widget.LinearLayoutCompat>
