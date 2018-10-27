@@ -7,6 +7,7 @@ import android.content.Intent;
 /**
  * Created by lqtian on 2017/9/29.
  */
+
 //在manifests中声明好就可以
 //android:permission="android.permission.BIND_DEVICE_ADMIN" >
 //  <meta-data

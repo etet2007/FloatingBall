@@ -282,9 +282,10 @@
       <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
         style="@style/DiscreteSeekBarStyle"
         android:id="@+id/upDistance_seekbar"
-        app:dsb_max="90"
+        app:dsb_max="200"
         app:dsb_min="0"
         app:dsb_value="8"
+
         />
     </android.support.v7.widget.LinearLayoutCompat>
 
