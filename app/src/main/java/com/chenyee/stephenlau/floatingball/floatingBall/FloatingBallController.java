@@ -1,7 +1,6 @@
 package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.view.Gravity;
@@ -16,9 +15,8 @@ import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
+import java.util.ArrayList;
 
-import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
-import static com.chenyee.stephenlau.floatingball.App.gScreenWidth;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
@@ -33,10 +31,12 @@ public class FloatingBallController {
   /**
    * View
    */
-  private FloatingBallView mFloatingBallView;
+//  private FloatingBallView floatingBallView;
+  private ArrayList<FloatingBallView> floatingBallViewList = new ArrayList<>();
 
   private boolean isSoftKeyboardShow = false;
-  private boolean isAddedBall = false;
+  private boolean isStartedBallView = false;
+  private WindowManager windowManager;
 
 
   private FloatingBallController() {
@@ -46,34 +46,40 @@ public class FloatingBallController {
     return sFloatingBallController;
   }
 
-
   /**
-   * create floatingBallView and add to WindowManager
+   * new floatingBallView and add to WindowManager
    */
-  public void addBallView(Context context) {
-    if (isAddedBall) {
+  public void startBallView(Context context) {
+    if (isStartedBallView) {//已经开启
       return;
     }
-    if (mFloatingBallView == null) {
-      mFloatingBallView = new FloatingBallView(context);
-    }
-    WindowManager windowManager = (WindowManager) App.getApplication().getApplicationContext()
+
+    windowManager = (WindowManager) App.getApplication().getApplicationContext()
         .getSystemService(Context.WINDOW_SERVICE);
-    if (windowManager == null) {
-      return;
+
+    int amount = SingleDataManager.amount();
+    for (int id = 0; id < amount; id++) {
+      addFloatingBallView(context, id);
     }
+
+    updateParameter();
+
+    // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
+    FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
+
+    isStartedBallView = true;
+    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
+  }
+
+  public void addFloatingBallView(Context context, int id) {
+    if (windowManager == null) {
+      throw new NullPointerException();
+    }
+    FloatingBallView floatingBallView = new FloatingBallView(context, id);
+    floatingBallViewList.add(floatingBallView);
 
     // use code to initialize layout parameters
     LayoutParams params = new LayoutParams();
-    Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
-    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_LANDSCAPE, gScreenWidth / 2);
-      params.y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_LANDSCAPE, gScreenHeight / 2);
-    } else if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-      params.x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_PORTRAIT, gScreenWidth / 2);
-      params.y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_PORTRAIT, gScreenHeight / 2);
-    }
-
     params.width = LayoutParams.WRAP_CONTENT;
     params.height = LayoutParams.WRAP_CONTENT;
     params.gravity = Gravity.START | Gravity.TOP;
@@ -87,37 +93,36 @@ public class FloatingBallController {
         | LayoutParams.FLAG_NOT_FOCUSABLE
         | LayoutParams.FLAG_LAYOUT_IN_SCREEN
         | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
-
-    mFloatingBallView.setBallViewLayoutParams(params);
-    windowManager.addView(mFloatingBallView, params);
+    floatingBallView.setBallViewLayoutParams(params);
+    windowManager.addView(floatingBallView, params);
 
     updateParameter();
-
-    // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
-    FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
-
-    isAddedBall = true;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
   }
-
 
   public void removeBallView() {
     SingleDataManager.setIsAddedBallInSetting(false);
-    remove();
+    removeAll();
   }
 
   public void rotateHideBallView() {
     SingleDataManager.setIsBallHideBecauseRotate(true);
-    remove();
+    removeAll();
   }
 
-  private void remove() {
-    isAddedBall = false;
-    if (mFloatingBallView == null) {
-      return;
+  public void removeLastFloatingBall() {
+    if (floatingBallViewList.size() > 1) {//最小数量为1
+      FloatingBallView floatingBallView = floatingBallViewList.get(floatingBallViewList.size() - 1);
+      floatingBallView.removeBallWithAnimation();
+      floatingBallViewList.remove(floatingBallView);
     }
-    mFloatingBallView.removeBallWithAnimation();
-    mFloatingBallView = null;
+  }
+
+  private void removeAll() {
+    isStartedBallView = false;
+    for (FloatingBallView floatingBallView : floatingBallViewList) {
+        floatingBallView.removeBallWithAnimation();
+    }
+    floatingBallViewList.clear();
   }
 
 
@@ -127,12 +132,11 @@ public class FloatingBallController {
    * @param imagePath 外部图片地址
    */
   public void setBackgroundImage(String imagePath) {
-    if (mFloatingBallView != null) {
-
+    for (FloatingBallView floatingBallView : floatingBallViewList) {
       BitmapUtils.copyBackgroundImage(imagePath);
-      mFloatingBallView.refreshBitmapRead();
-      mFloatingBallView.createBitmapCropFromBitmapRead();
-      mFloatingBallView.invalidate();
+      floatingBallView.refreshBitmapRead();
+      floatingBallView.createBitmapCropFromBitmapRead();
+      floatingBallView.invalidate();
     }
   }
 
@@ -140,80 +144,79 @@ public class FloatingBallController {
    * No use
    */
   public void updateSpecificParameter(String key) {
-    if (mFloatingBallView == null) {
-      return;
-    }
-    switch (key) {
-      case PREF_OPACITY:
-        mFloatingBallView.setOpacity(SingleDataManager.opacity());
-        break;
-      case PREF_OPACITY_MODE:
-        mFloatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
-        break;
-      case PREF_SIZE:
-        mFloatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
-        break;
-      case PREF_USE_BACKGROUND:
-        mFloatingBallView.setUseBackground(SingleDataManager.isUseBackground());
-        break;
-      case PREF_USE_GRAY_BACKGROUND:
-      case PREF_IS_VIBRATE:
-      case PREF_MOVE_UP_DISTANCE:
-        mFloatingBallView.updateModelData();
-        break;
-    }
-    //refresh the layout and draw the view
-    mFloatingBallView.requestLayout();
-    mFloatingBallView.invalidate();
+    for (FloatingBallView floatingBallView : floatingBallViewList) {
 
-    if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
-      mFloatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
-    } else if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
-      mFloatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
-    } else if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
-      mFloatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
-    } else if (key.equals(PREF_UP_SLIDE_EVENT)) {
-      mFloatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
-    } else if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
-      mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
-    } else if (key.equals(PREF_SINGLE_TAP_EVENT)) {
-      mFloatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
-    }
+      switch (key) {
+        case PREF_OPACITY:
+          floatingBallView.setOpacity(SingleDataManager.opacity());
+          break;
+        case PREF_OPACITY_MODE:
+          floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
+          break;
+        case PREF_SIZE:
+          floatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
+          break;
+        case PREF_USE_BACKGROUND:
+          floatingBallView.setUseBackground(SingleDataManager.isUseBackground());
+          break;
+        case PREF_USE_GRAY_BACKGROUND:
+        case PREF_IS_VIBRATE:
+        case PREF_MOVE_UP_DISTANCE:
+          floatingBallView.updateModelData();
+          break;
+      }
+      //refresh the layout and draw the view
+      floatingBallView.requestLayout();
+      floatingBallView.invalidate();
 
+      if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
+        floatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
+      } else if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
+        floatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
+      } else if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
+        floatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
+      } else if (key.equals(PREF_UP_SLIDE_EVENT)) {
+        floatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
+      } else if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
+        floatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
+      } else if (key.equals(PREF_SINGLE_TAP_EVENT)) {
+        floatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
+      }
+    }
   }
 
   /**
    * Use sharedPreference data to update all parameter
    */
   private void updateParameter() {
-    if (mFloatingBallView == null) {
-      return;
+    for (FloatingBallView floatingBallView : floatingBallViewList) {
+
+      floatingBallView.updateLayoutParamsWithOrientation();
+      /* View */
+      floatingBallView.setOpacity(SingleDataManager.opacity());
+      floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
+      floatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
+      floatingBallView.setUseBackground(SingleDataManager.isUseBackground());
+
+      floatingBallView.updateModelData();
+
+      floatingBallView.requestLayout();
+      floatingBallView.invalidate();
+
+      /* Function */
+      floatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
+      floatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
+      floatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
+      floatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
+      floatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
+      floatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
     }
-    /* View */
-    mFloatingBallView.setOpacity(SingleDataManager.opacity());
-    mFloatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
-    mFloatingBallView.setUseBackground(SingleDataManager.isUseBackground());
-    mFloatingBallView.updateModelData();
-
-    mFloatingBallView.requestLayout();
-    mFloatingBallView.invalidate();
-
-    /* Function */
-    mFloatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
-    mFloatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
-    mFloatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
-    mFloatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
-    mFloatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
-    mFloatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
   }
 
   /**
    * According to the state of input method, move the floatingBall view.
    */
   public void inputMethodDetect() {
-    if (mFloatingBallView == null) {
-      return;
-    }
 
     if (InputMethodDetector.detectIsInputingWithHeight(100)) {
       onKeyboardShow();
@@ -224,23 +227,26 @@ public class FloatingBallController {
 
   private void onKeyboardShow() {
     if (!isSoftKeyboardShow) {
-
-      mFloatingBallView.moveToKeyboardTop();
+      for (FloatingBallView floatingBallView : floatingBallViewList) {
+        floatingBallView.moveToKeyboardTop();
+      }
     }
     isSoftKeyboardShow = true;
   }
 
   private void onKeyboardDisappear() {
     if (isSoftKeyboardShow) {
-      mFloatingBallView.moveBackWhenKeyboardDisappear();
+      for (FloatingBallView floatingBallView : floatingBallViewList) {
+        floatingBallView.moveBackWhenKeyboardDisappear();
+      }
     }
     isSoftKeyboardShow = false;
   }
 
 
   public void recycleBitmapMemory() {
-    if (mFloatingBallView != null) {
-      mFloatingBallView.recycleBitmap();
+    for (FloatingBallView floatingBallView : floatingBallViewList) {
+      floatingBallView.recycleBitmap();
     }
   }
 
@@ -248,26 +254,17 @@ public class FloatingBallController {
    * screenshot时暂时隐藏
    */
   public void setBallViewVisibility(boolean isHide) {
-    if (mFloatingBallView != null) {
-      mFloatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
+    for (FloatingBallView floatingBallView : floatingBallViewList) {
+      floatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
     }
   }
 
 
-  public void updateBallViewLayout(int orientation) {
-    if (mFloatingBallView != null) {
-      if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        int x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_LANDSCAPE, gScreenWidth / 2);
-        int y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_LANDSCAPE, gScreenHeight / 2);
-
-        mFloatingBallView.updateViewLayoutWithValue(x,y);
-
-      } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-        int x = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_PORTRAIT, gScreenWidth / 2);
-        int y = SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_PORTRAIT, gScreenHeight / 2);
-
-        mFloatingBallView.updateViewLayoutWithValue(x,y);
-      }
-    }
+  public void updateBallViewLayout() {
+    for (FloatingBallView floatingBallView : floatingBallViewList) {
+      floatingBallView.updateLayoutParamsWithOrientation();
     }
   }
+
+
+}

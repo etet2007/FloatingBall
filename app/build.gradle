@@ -7,17 +7,17 @@ android {
         applicationId "com.chenyee.stephenlau.floatingball"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 322
-        versionName "3.2.2"
+        versionCode 330
+        versionName "3.3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         debug {
-            minifyEnabled true
-            zipAlignEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            minifyEnabled true
+//            zipAlignEnabled true
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
         }
         release {
@@ -56,6 +56,7 @@ repositories {
     maven {
 //        MaterialAnimatedSwitch
         url "http://dl.bintray.com/glomadrian/maven"
+
     }
 }
 
@@ -75,6 +76,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1' //https://github.com/JakeWharton/butterknife
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
+    implementation 'com.github.didikee:AndroidDonate:0.1.0'
     // ui
     implementation 'org.adw.library:discrete-seekbar:1.0.1' //https://github.com/AnderWeb/discreteSeekBar
     implementation 'com.github.glomadrian:MaterialAnimatedSwitch:1.1@aar'

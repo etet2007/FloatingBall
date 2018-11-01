@@ -5,6 +5,9 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.support.annotation.Keep;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 public class FloatingBallAnimator {
 
@@ -80,6 +83,7 @@ public class FloatingBallAnimator {
   public void performAddAnimator() {
     view.setScaleX(0);
     view.setScaleY(0);
+
     view.animate()
         .scaleY(1).scaleX(1)
         .setDuration(200)
@@ -113,6 +117,8 @@ public class FloatingBallAnimator {
     Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
     PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3, kf4, kf5);
     unTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, unTouch);
+    unTouchAnimator.setInterpolator(new DecelerateInterpolator());
+
     unTouchAnimator.setDuration(400);
     unTouchAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
@@ -137,17 +143,22 @@ public class FloatingBallAnimator {
   public void moveFloatBallBack() {
     PropertyValuesHolder pvh1 = PropertyValuesHolder.ofFloat("ballCenterX", 0);
     PropertyValuesHolder pvh2 = PropertyValuesHolder.ofFloat("ballCenterY", 0);
-    ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, pvh1, pvh2).setDuration(300).start();
+    ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, pvh1, pvh2);
+    animation.setInterpolator(new DecelerateInterpolator());
+    animation.setDuration(500)
+        .start();
+
   }
 
   public void startParamsYAnimationTo(int paramsY) {
     ObjectAnimator animation = ObjectAnimator
         .ofInt(view, "layoutParamsY", view.getLayoutParamsY(), paramsY);
-    animation.setDuration(200);
+    animation.setDuration(300);
+    animation.setInterpolator(new AccelerateDecelerateInterpolator());
     animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
-        view.updateViewLayout();
+        view.updateLayoutParamsWithOrientation();
       }
     });
     animation.start();

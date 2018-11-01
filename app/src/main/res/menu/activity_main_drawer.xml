@@ -15,6 +15,12 @@
         android:title="@string/license"/>
 
     <item
+      android:id="@+id/donate"
+      android:contentDescription="haha"
+      android:icon="@drawable/coffee"
+      android:title="@string/donate"/>
+
+    <item
         android:id="@+id/uninstall"
         android:icon="@drawable/ic_delete_forever_black_24dp"
         android:title="@string/uninstall"/>

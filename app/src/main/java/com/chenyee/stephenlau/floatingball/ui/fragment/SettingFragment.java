@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 
 import android.support.v7.app.AlertDialog;
@@ -22,6 +23,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -58,6 +60,13 @@ public class SettingFragment extends Fragment {
   DiscreteSeekBar opacitySeekBar;
   @BindView(R.id.size_seekbar)
   DiscreteSeekBar sizeSeekBar;
+  @BindView(R.id.minusFloatingActionButton)
+  FloatingActionButton minusButton;
+  @BindView(R.id.amountTextView)
+  AppCompatTextView amountTextView;
+  @BindView(R.id.plusFloatingActionButton)
+  FloatingActionButton plusButton;
+
   @BindView(R.id.opacity_mode_textView)
   AppCompatTextView opacityModeTextView;
   @BindView(R.id.choosePic_button)
@@ -184,6 +193,7 @@ public class SettingFragment extends Fragment {
   private void initContentViews() {
     opacitySeekBar.setProgress(SingleDataManager.opacity());
     sizeSeekBar.setProgress(SingleDataManager.size());
+    amountTextView.setText(String.valueOf(SingleDataManager.amount()));
     backgroundSwitch.setChecked(SingleDataManager.isUseBackground());
     useGrayBackgroundSwitch.setChecked(SingleDataManager.isUseGrayBackground());
     vibrateSwitch.setChecked(SingleDataManager.isVibrate());
@@ -223,6 +233,42 @@ public class SettingFragment extends Fragment {
 
       @Override
       public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+      }
+    });
+    plusButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        SingleDataManager.setAmount(SingleDataManager.amount()+1);
+
+        Intent intent = new Intent(getActivity(), FloatingBallService.class);
+        Bundle data = new Bundle();
+        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+        intent.putExtras(data);
+        getActivity().startService(intent);
+
+        amountTextView.setText(String.valueOf(SingleDataManager.amount()));
+
+      }
+    });
+
+    minusButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        int amount = SingleDataManager.amount();
+        if (amount >= 2) {
+          SingleDataManager.setAmount(amount - 1);
+          Intent intent = new Intent(getActivity(), FloatingBallService.class);
+
+          Bundle data = new Bundle();
+          data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE_LAST);
+          intent.putExtras(data);
+          getActivity().startService(intent);
+
+          amountTextView.setText(String.valueOf(SingleDataManager.amount()));
+
+        } else {
+          //最少是1个
+        }
       }
     });
 

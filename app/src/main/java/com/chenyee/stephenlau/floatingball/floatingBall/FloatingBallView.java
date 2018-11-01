@@ -45,6 +45,12 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
   private FloatingBallAnimator floatingBallAnimator;
 
+  public int getIdCode() {
+    return idCode;
+  }
+
+  private int idCode;
+
   //function list
   public FunctionListener singleTapFunctionListener;
   private FunctionListener downFunctionListener;
@@ -220,8 +226,9 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   /**
    * 构造函数
    */
-  public FloatingBallView(Context context) {
+  public FloatingBallView(Context context, int idCode) {
     super(context);
+    this.idCode = idCode;
 
     floatingBallPaint = new FloatingBallPaint();
 
@@ -243,24 +250,48 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     refreshOpacityMode();
   }
 
-  public void saveLayoutParams() {
-    Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
-    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X_LANDSCAPE, ballViewLayoutParams.x);
-      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y_LANDSCAPE, ballViewLayoutParams.y);
-     } else if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X_PORTRAIT, ballViewLayoutParams.x);
-      SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y_PORTRAIT, ballViewLayoutParams.y);  }
-
-  }
-  public void updateViewLayout() {
+  public void setLayoutPositionParamsAndSave(int x, int y) {
     if (windowManager != null) {
+      ballViewLayoutParams.x = x;
+      ballViewLayoutParams.y = y;
+
       windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
+
+      //不是很耗性能，直接保存。当然也可以长按结束的时候再进行保存。
+      saveLayoutParams();
     }
   }
 
-  public void updateViewLayoutWithValue(int x, int y) {
+  private void saveLayoutParams() {
+    Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
+    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      SingleDataManager.setFloatingBallLandscapeX(ballViewLayoutParams.x, idCode);
+      SingleDataManager.setFloatingBallLandscapeY(ballViewLayoutParams.y, idCode);
+    } else if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+      SingleDataManager.setFloatingBallPortraitX(ballViewLayoutParams.x, idCode);
+      SingleDataManager.setFloatingBallPortraitY(ballViewLayoutParams.y, idCode);
+    }
+  }
+
+  /**
+   * 取数据更新
+   */
+  public void updateLayoutParamsWithOrientation() {
     if (windowManager != null) {
+
+      Configuration configuration = App.getApplication().getResources().getConfiguration();
+      int orientation = configuration.orientation;
+
+      int x = 0, y = 0;
+      if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        x = SingleDataManager.floatingBallLandscapeX(idCode);
+        y = SingleDataManager.floatingBallLandscapeY(idCode);
+
+      } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        x = SingleDataManager.floatingBallPortraitX(idCode);
+        y = SingleDataManager.floatingBallPortraitY(idCode);
+      }
+
       ballViewLayoutParams.x = x;
       ballViewLayoutParams.y = y;
       windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
@@ -335,7 +366,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
   private void removeBallWithoutAnimation() {
     if (windowManager != null) {
-      windowManager.removeView(FloatingBallView.this);
+      windowManager.removeViewImmediate(this);
     }
   }
 

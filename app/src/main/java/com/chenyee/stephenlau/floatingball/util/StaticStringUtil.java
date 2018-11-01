@@ -14,6 +14,9 @@ public class StaticStringUtil {
     public static final String PREF_USE_BACKGROUND = "PREF_USE_BACKGROUND";
     public static final String PREF_USE_GRAY_BACKGROUND = "PREF_USE_GRAY_BACKGROUND";
 
+    public static final String PREF_AMOUNT = "PREF_AMOUNT";
+
+
     public static final String PREF_OPACITY_MODE = "PREF_OPACITY_MODE";
 
     public static final String PREF_IS_ADDED_BALL_IN_SETTING = "PREF_IS_ADDED_BALL_IN_SETTING";

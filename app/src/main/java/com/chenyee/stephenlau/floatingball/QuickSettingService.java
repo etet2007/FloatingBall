@@ -77,7 +77,7 @@ public class QuickSettingService extends TileService {
   private void addFloatBall() {
     Intent intent = new Intent(QuickSettingService.this, FloatingBallService.class);
     Bundle data = new Bundle();
-    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_START);
     intent.putExtras(data);
     startService(intent);
   }
@@ -85,7 +85,7 @@ public class QuickSettingService extends TileService {
   private void removeFloatBall() {
     Intent intent = new Intent(QuickSettingService.this, FloatingBallService.class);
     Bundle data = new Bundle();
-    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE);
+    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE_ALL);
     intent.putExtras(data);
     startService(intent);
   }

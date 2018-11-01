@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
   <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="colorPrimary">@color/colorPrimary</item>
@@ -69,6 +69,18 @@
     <item name="android:background">?attr/selectableItemBackground</item>
     <item name="android:clickable">true</item>
     <item name="android:focusable">true</item>
+  </style>
+
+  <style name="actionFloatingButton">
+    <item name="fabCustomSize">24dp</item>
+    <item name="fabSize">mini</item>
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_gravity">center_vertical</item>
+    <item name="android:clickable">true</item>
+    <item name="android:elevation" tools:targetApi="lollipop">8dp</item>
+    <item name="android:focusable">true</item>
+
   </style>
 
 

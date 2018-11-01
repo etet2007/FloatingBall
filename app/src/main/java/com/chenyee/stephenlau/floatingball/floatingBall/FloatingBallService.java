@@ -31,11 +31,13 @@ public class FloatingBallService extends AccessibilityService {
 
   private static final String TAG = FloatingBallService.class.getSimpleName();
 
-  public static final int TYPE_ADD = 0;
-  public static final int TYPE_REMOVE = 1;
+  public static final int TYPE_START = 0;
+  public static final int TYPE_REMOVE_ALL = 1;
   public static final int TYPE_IMAGE = 2;
   public static final int TYPE_CLEAR = 3;
   public static final int TYPE_HIDE = 4;
+  public static final int TYPE_ADD = 5;
+  public static final int TYPE_REMOVE_LAST = 6;
 
   private FloatingBallController mFloatingBallController;
 
@@ -66,7 +68,7 @@ public class FloatingBallService extends AccessibilityService {
     Log.d(TAG, "onServiceConnected: ");
     getFloatingBallController();
 
-    mFloatingBallController.addBallView(FloatingBallService.this);
+    mFloatingBallController.startBallView(FloatingBallService.this);
 
     SingleDataManager.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
   }
@@ -109,13 +111,13 @@ public class FloatingBallService extends AccessibilityService {
 
       } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT && isBallHideBecauseRotate) {
 
-        mFloatingBallController.addBallView(FloatingBallService.this);
+        mFloatingBallController.startBallView(FloatingBallService.this);
         SingleDataManager.setIsBallHideBecauseRotate(false);
       }
 
     } else { //LANDSCAPE 不隐藏
 
-        mFloatingBallController.updateBallViewLayout(newConfig.orientation);
+        mFloatingBallController.updateBallViewLayout();
 
       }
 
@@ -131,6 +133,13 @@ public class FloatingBallService extends AccessibilityService {
     }
   }
 
+  /**
+   * 转化外界的指令。
+   * @param intent
+   * @param flags
+   * @param startId
+   * @return
+   */
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Log.d(TAG, "onStartCommand");
@@ -143,11 +152,11 @@ public class FloatingBallService extends AccessibilityService {
       if (data != null) {
         int type = data.getInt(EXTRA_TYPE);
 
-        if (type == TYPE_ADD) {
-          mFloatingBallController.addBallView(FloatingBallService.this);
+        if (type == TYPE_START) {
+          mFloatingBallController.startBallView(FloatingBallService.this);
         }
 
-        if (type == TYPE_REMOVE) {
+        if (type == TYPE_REMOVE_ALL) {
           mFloatingBallController.removeBallView();
         }
 
@@ -163,6 +172,14 @@ public class FloatingBallService extends AccessibilityService {
         if (type == TYPE_CLEAR) {
           mFloatingBallController.recycleBitmapMemory();
         }
+
+        if (type == TYPE_ADD) {
+          mFloatingBallController.addFloatingBallView(FloatingBallService.this,SingleDataManager.amount()-1);
+        }
+        if (type == TYPE_REMOVE_LAST) {
+          mFloatingBallController.removeLastFloatingBall();
+        }
+
       }
     }
     return super.onStartCommand(intent, flags, startId);
@@ -190,7 +207,7 @@ public class FloatingBallService extends AccessibilityService {
 
     Intent intent = new Intent(this, FloatingBallService.class);
     Bundle data = new Bundle();
-    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_START);
     intent.putExtras(data);
     PendingIntent addBallPendingIntent = PendingIntent.getService(this, 0, intent, 0);
 

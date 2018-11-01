@@ -170,8 +170,7 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
           int x = (int) (event.getRawX() - lastTouchEventPositionX);
           int y = (int) (event.getRawY() - lastTouchEventPositionY);
 
-
-          floatingBallView.updateViewLayoutWithValue(x,y);
+          floatingBallView.setLayoutPositionParamsAndSave(x,y);
         }
         break;
       case MotionEvent.ACTION_UP:
@@ -201,7 +200,6 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
           if (onGestureEventListener != null) {
             onGestureEventListener.onLongPressEnd();
           }
-          floatingBallView.saveLayoutParams();
         }
         isLongPress = false;
         isFirstLongPressEvent = false;

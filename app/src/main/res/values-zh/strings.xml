@@ -81,6 +81,9 @@
     <string name="screenshot_fail">截图失败</string>
     <string name="screenshot_succeed">截图成功</string>
   <string name="avoid_keyboard">躲避键盘</string>
+  <string name="amount">数量：</string>
+  <string name="donate">打赏</string>
+  <string name="noAliPay">找不到支付宝</string>
 
 
 </resources>

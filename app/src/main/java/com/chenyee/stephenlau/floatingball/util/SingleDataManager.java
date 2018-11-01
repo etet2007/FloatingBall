@@ -1,5 +1,7 @@
 package com.chenyee.stephenlau.floatingball.util;
 
+import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
+import static com.chenyee.stephenlau.floatingball.App.gScreenWidth;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 import android.content.SharedPreferences;
@@ -142,7 +144,52 @@ public class SingleDataManager {
   public static boolean isAvoidKeyboard() {
     return SharedPrefsUtils.getBooleanPreference(PREF_IS_AVOID_KEYBOARD, true);
   }
+
   public static boolean setIsAvoidKeyboard(boolean value) {
     return SharedPrefsUtils.setBooleanPreference(PREF_IS_AVOID_KEYBOARD, value);
+  }
+
+  //Position
+  //landscape
+  public static int floatingBallLandscapeX(int idCode) {
+    return SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_LANDSCAPE + idCode, gScreenWidth / 2);
+  }
+
+  public static void setFloatingBallLandscapeX(int x, int idCode) {
+    SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X_LANDSCAPE + idCode, x);
+  }
+
+  public static int floatingBallLandscapeY(int idCode) {
+    return SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_LANDSCAPE + idCode, gScreenHeight / 2);
+  }
+
+  public static void setFloatingBallLandscapeY(int y, int idCode) {
+    SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y_LANDSCAPE + idCode, y);
+  }
+
+  //portrait
+  public static int floatingBallPortraitX(int idCode) {
+    return SharedPrefsUtils.getIntegerPreference(PREF_PARAM_X_PORTRAIT + idCode, gScreenWidth / 2);
+  }
+
+  public static void setFloatingBallPortraitX(int x, int idCode) {
+
+    SharedPrefsUtils.setIntegerPreference(PREF_PARAM_X_PORTRAIT + idCode, x);
+  }
+
+  public static int floatingBallPortraitY(int idCode) {
+    return SharedPrefsUtils.getIntegerPreference(PREF_PARAM_Y_PORTRAIT + idCode, gScreenHeight / 2);
+  }
+
+  public static void setFloatingBallPortraitY(int y, int idCode) {
+    SharedPrefsUtils.setIntegerPreference(PREF_PARAM_Y_PORTRAIT + idCode, y);
+  }
+
+  public static int amount() {
+    return SharedPrefsUtils.getIntegerPreference(PREF_AMOUNT ,1);
+  }
+
+  public static void setAmount(int amount) {
+    SharedPrefsUtils.setIntegerPreference(PREF_AMOUNT ,amount);
   }
 }

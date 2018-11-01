@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.didikee.donate.AlipayDonate;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.artitk.licensefragment.ScrollViewLicenseFragment;
 import com.artitk.licensefragment.model.License;
 import com.artitk.licensefragment.model.LicenseType;
@@ -92,8 +94,7 @@ public class MainActivity extends AppCompatActivity
     mRefreshReceiver = new RefreshReceiver(this);
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction("refreshActivity");
-    LocalBroadcastManager.getInstance(MainActivity.this)
-        .registerReceiver(mRefreshReceiver, intentFilter);
+    LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(mRefreshReceiver, intentFilter);
   }
 
 
@@ -153,6 +154,14 @@ public class MainActivity extends AppCompatActivity
               SettingFragment settingFragment = SettingFragment.newInstance();
               ActivityUtils.addFragmentToActivity(fragmentManager, settingFragment,
                   R.id.contentFrame);
+            } else if (id == R.id.donate) {
+              boolean hasInstalledAlipayClient = AlipayDonate.hasInstalledAlipayClient(MainActivity.this);
+              if (hasInstalledAlipayClient) {
+                AlipayDonate.startAlipayClient(MainActivity.this, "fkx01795bkxkfkuk5rfh79d");
+              } else {
+                Toast.makeText(getApplicationContext(), R.string.noAliPay,Toast.LENGTH_SHORT)
+                    .show();
+              }
             } else if (id == R.id.uninstall) {
               uninstall();
             }
@@ -290,7 +299,7 @@ public class MainActivity extends AppCompatActivity
   private void addFloatBall() {
     Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
     Bundle data = new Bundle();
-    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_START);
     intent.putExtras(data);
     startService(intent);
   }
@@ -298,7 +307,7 @@ public class MainActivity extends AppCompatActivity
   private void removeFloatBall() {
     Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
     Bundle data = new Bundle();
-    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE);
+    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE_ALL);
     intent.putExtras(data);
     startService(intent);
   }
@@ -342,7 +351,7 @@ public class MainActivity extends AppCompatActivity
 
 
   /**
-   * BroadcastReceiver
+   * For re
    */
   public class RefreshReceiver extends BroadcastReceiver {
 
