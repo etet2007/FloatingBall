@@ -39,6 +39,12 @@ public class FloatingBallService extends AccessibilityService {
   public static final int TYPE_ADD = 5;
   public static final int TYPE_REMOVE_LAST = 6;
 
+  private String mCurrentPackageName;
+
+  public String getmCurrentPackageName() {
+    return mCurrentPackageName;
+  }
+
   private FloatingBallController mFloatingBallController;
 
   private void getFloatingBallController() {
@@ -117,128 +123,136 @@ public class FloatingBallService extends AccessibilityService {
 
     } else { //LANDSCAPE 不隐藏
 
-        mFloatingBallController.updateBallViewLayout();
+      mFloatingBallController.updateBallViewLayout();
 
-      }
+    }
 
   }
 
   @Override
   public void onAccessibilityEvent(AccessibilityEvent event) {
-    Boolean hasAddBall = SingleDataManager.isAddedBallInSetting();
-    Boolean isAvoidKeyboard = SingleDataManager.isAvoidKeyboard();
-    if (hasAddBall && isAvoidKeyboard && mFloatingBallController != null) {
-      //触发输入法检测
-      mFloatingBallController.inputMethodDetect();
+    int type = event.getEventType();
+
+    switch (type) {
+      case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+        mCurrentPackageName = event.getPackageName() == null ? "" : event.getPackageName().toString();
+        break;
     }
-  }
 
-  /**
-   * 转化外界的指令。
-   * @param intent
-   * @param flags
-   * @param startId
-   * @return
-   */
-  @Override
-  public int onStartCommand(Intent intent, int flags, int startId) {
-    Log.d(TAG, "onStartCommand");
 
-    if (intent != null) {
-      //mFloatBallManager的判断是因为生命周期有时候有问题
-      getFloatingBallController();
-
-      Bundle data = intent.getExtras();
-      if (data != null) {
-        int type = data.getInt(EXTRA_TYPE);
-
-        if (type == TYPE_START) {
-          mFloatingBallController.startBallView(FloatingBallService.this);
-        }
-
-        if (type == TYPE_REMOVE_ALL) {
-          mFloatingBallController.removeBallView();
-        }
-
-        if (type == TYPE_HIDE) {
-          mFloatingBallController.setBallViewVisibility(data.getBoolean("isHide"));
-        }
-
-        //intent中传图片地址，也可以换为sharedPreference吧
-        if (type == TYPE_IMAGE) {
-          mFloatingBallController.setBackgroundImage(data.getString("imagePath"));
-        }
-
-        if (type == TYPE_CLEAR) {
-          mFloatingBallController.recycleBitmapMemory();
-        }
-
-        if (type == TYPE_ADD) {
-          mFloatingBallController.addFloatingBallView(FloatingBallService.this,SingleDataManager.amount()-1);
-        }
-        if (type == TYPE_REMOVE_LAST) {
-          mFloatingBallController.removeLastFloatingBall();
-        }
-
+      Boolean hasAddBall = SingleDataManager.isAddedBallInSetting();
+      Boolean isAvoidKeyboard = SingleDataManager.isAvoidKeyboard();
+      if (hasAddBall && isAvoidKeyboard && mFloatingBallController != null) {
+        //触发输入法检测
+        mFloatingBallController.inputMethodDetect();
       }
     }
-    return super.onStartCommand(intent, flags, startId);
-  }
 
+    /**
+     * 转化外界的指令。
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
+    @Override
+    public int onStartCommand (Intent intent,int flags, int startId){
+      Log.d(TAG, "onStartCommand");
 
-  public void hideBall() {
-    getFloatingBallController();
-    mFloatingBallController.removeBallView();
+      if (intent != null) {
+        //mFloatBallManager的判断是因为生命周期有时候有问题
+        getFloatingBallController();
 
-    sendHideBallNotification();
-  }
+        Bundle data = intent.getExtras();
+        if (data != null) {
+          int type = data.getInt(EXTRA_TYPE);
 
-  /**
-   * send notification when hiding
-   */
-  private void sendHideBallNotification() {
-    String contentTitle = getString(R.string.hide_notification_content_title);
-    String contentText = getString(R.string.hideNotificationContentText);
-    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+          if (type == TYPE_START) {
+            mFloatingBallController.startBallView(FloatingBallService.this);
+          }
 
-    if (notificationManager == null) {
-      return;
+          if (type == TYPE_REMOVE_ALL) {
+            mFloatingBallController.removeBallView();
+          }
+
+          if (type == TYPE_HIDE) {
+            mFloatingBallController.setBallViewVisibility(data.getBoolean("isHide"));
+          }
+
+          //intent中传图片地址，也可以换为sharedPreference吧
+          if (type == TYPE_IMAGE) {
+            mFloatingBallController.setBackgroundImage(data.getString("imagePath"));
+          }
+
+          if (type == TYPE_CLEAR) {
+            mFloatingBallController.recycleBitmapMemory();
+          }
+
+          if (type == TYPE_ADD) {
+            mFloatingBallController.addFloatingBallView(FloatingBallService.this, SingleDataManager.amount() - 1);
+          }
+          if (type == TYPE_REMOVE_LAST) {
+            mFloatingBallController.removeLastFloatingBall();
+          }
+
+        }
+      }
+      return super.onStartCommand(intent, flags, startId);
     }
 
-    Intent intent = new Intent(this, FloatingBallService.class);
-    Bundle data = new Bundle();
-    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_START);
-    intent.putExtras(data);
-    PendingIntent addBallPendingIntent = PendingIntent.getService(this, 0, intent, 0);
+    public void hideBall () {
+      getFloatingBallController();
+      mFloatingBallController.removeBallView();
 
-    if (Build.VERSION.SDK_INT >= 26) {
-      String channelID = "1";
-      String channelName = "channel_name";
-      NotificationChannel mChannel = new NotificationChannel(channelID, channelName,
-          NotificationManager.IMPORTANCE_LOW);
+      sendHideBallNotification();
+    }
 
-      notificationManager.createNotificationChannel(mChannel);
+    /**
+     * send notification when hiding
+     */
+    private void sendHideBallNotification () {
+      String contentTitle = getString(R.string.hide_notification_content_title);
+      String contentText = getString(R.string.hideNotificationContentText);
+      NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-      Notification notification = new Notification.Builder(this, channelID)
-          .setSmallIcon(R.mipmap.ic_launcher_app)
-          .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
-          .setContentTitle(contentTitle)
-          .setContentText(contentText)
-          .setAutoCancel(true)
-          .setContentIntent(addBallPendingIntent)
-          .build();
-      notificationManager.notify(1, notification);
+      if (notificationManager == null) {
+        return;
+      }
 
-    } else {
-      Notification notification = new NotificationCompat.Builder(this)
-          .setSmallIcon(R.mipmap.ic_launcher_app)
-          .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
-          .setContentTitle(contentTitle)
-          .setContentText(contentText)
-          .setAutoCancel(true)
-          .setContentIntent(addBallPendingIntent)
-          .build();
-      notificationManager.notify(1, notification);
+      Intent intent = new Intent(this, FloatingBallService.class);
+      Bundle data = new Bundle();
+      data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_START);
+      intent.putExtras(data);
+      PendingIntent addBallPendingIntent = PendingIntent.getService(this, 0, intent, 0);
+
+      if (Build.VERSION.SDK_INT >= 26) {
+        String channelID = "1";
+        String channelName = "channel_name";
+        NotificationChannel mChannel = new NotificationChannel(channelID, channelName,
+            NotificationManager.IMPORTANCE_LOW);
+
+        notificationManager.createNotificationChannel(mChannel);
+
+        Notification notification = new Notification.Builder(this, channelID)
+            .setSmallIcon(R.mipmap.ic_launcher_app)
+            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
+            .setContentTitle(contentTitle)
+            .setContentText(contentText)
+            .setAutoCancel(true)
+            .setContentIntent(addBallPendingIntent)
+            .build();
+        notificationManager.notify(1, notification);
+
+      } else {
+        Notification notification = new NotificationCompat.Builder(this)
+            .setSmallIcon(R.mipmap.ic_launcher_app)
+            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
+            .setContentTitle(contentTitle)
+            .setContentText(contentText)
+            .setAutoCancel(true)
+            .setContentIntent(addBallPendingIntent)
+            .build();
+        notificationManager.notify(1, notification);
+      }
     }
   }
-}

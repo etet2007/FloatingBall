@@ -321,8 +321,6 @@ public class MainActivity extends AppCompatActivity
     customLicenses.add(
         new License(MainActivity.this, "Butter Knife", LicenseType.APACHE_LICENSE_20,
             "2013", "Jake Wharton"));
-    customLicenses.add(new License(MainActivity.this, "Material Animated Switch",
-        LicenseType.APACHE_LICENSE_20, "2015", "Adrián García Lomas"));
     customLicenses.add(
         new License(MainActivity.this, "DiscreteSeekBar", LicenseType.APACHE_LICENSE_20,
             "2014", "Gustavo Claramunt (Ander Webbs)"));

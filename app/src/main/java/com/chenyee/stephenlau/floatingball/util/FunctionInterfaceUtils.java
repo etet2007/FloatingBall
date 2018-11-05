@@ -2,6 +2,9 @@ package com.chenyee.stephenlau.floatingball.util;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
@@ -28,10 +31,32 @@ public class FunctionInterfaceUtils {
     }
   };
 
+  private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 1;
   private static FunctionListener backFunctionListener = new FunctionListener() {
     @Override
     public void onFunction() {
-      AccessibilityUtils.doBack(sFloatingBallService);
+//      AccessibilityUtils.doBack(sFloatingBallService);
+
+      if (!UsageStatsUtils.hasPermission(sFloatingBallService)) { //若用户未开启权限，则引导用户开启“Apps with usage access”权限
+        sFloatingBallService.getApplicationContext().startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+      } else {
+        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+          try {
+            UsageStatsUtils.getTopPackageName(sFloatingBallService);
+          } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+  };
+
+  private static FunctionListener killFrontProcessListener = new FunctionListener() {
+    @Override
+    public void onFunction() {
+      if (!sFloatingBallService.getmCurrentPackageName().contains("launcher")) {
+        ActivityUtils.killBackgroundProcesses(sFloatingBallService, sFloatingBallService.getmCurrentPackageName());
+      }
     }
   };
 
@@ -73,7 +98,7 @@ public class FunctionInterfaceUtils {
   private static FunctionListener hideFunctionListener = new FunctionListener() {
     @Override
     public void onFunction() {
-      Toast.makeText(sFloatingBallService,sFloatingBallService.getString(R.string.hide) , Toast.LENGTH_LONG).show();
+      Toast.makeText(sFloatingBallService, sFloatingBallService.getString(R.string.hide), Toast.LENGTH_LONG).show();
       sFloatingBallService.hideBall();
     }
   };

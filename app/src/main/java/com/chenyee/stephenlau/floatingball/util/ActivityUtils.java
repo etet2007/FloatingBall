@@ -16,9 +16,19 @@
 
 package com.chenyee.stephenlau.floatingball.util;
 
+import static android.content.Context.ACTIVITY_SERVICE;
+import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
+import java.lang.reflect.Method;
+import java.util.List;
 
 //import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,18 +37,36 @@ import android.support.annotation.NonNull;
  */
 public class ActivityUtils {
 
-    /**
-     * The {@code fragment} is added to the container view with id {@code frameId}. The operation is
-     * performed by the {@code fragmentManager}.
-     *
-     */
-    public static void addFragmentToActivity (@NonNull FragmentManager fragmentManager,
-                                              @NonNull Fragment fragment, int frameId) {
-        fragmentManager
-                .beginTransaction()
-                .replace(frameId, fragment)
+  /**
+   * The {@code fragment} is added to the container view with id {@code frameId}. The operation is performed by the
+   * {@code fragmentManager}.
+   */
+  public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager,
+      @NonNull Fragment fragment, int frameId) {
+    fragmentManager
+        .beginTransaction()
+        .replace(frameId, fragment)
 //                .addToBackStack(null)
-                .commit();
-    }
+        .commit();
+  }
 
+  public static void killBackgroundProcesses(Context context, String packageName) {
+
+
+    String apkRoot = "am force-stop " + packageName;
+    rootCommand(apkRoot);
+
+
+  }
+
+  public static boolean isForeground(Context context, String myPackage) {
+    ActivityManager manager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+    List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+
+    ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
+    if (componentInfo.getPackageName().equals(myPackage)) {
+      return true;
+    }
+    return false;
+  }
 }

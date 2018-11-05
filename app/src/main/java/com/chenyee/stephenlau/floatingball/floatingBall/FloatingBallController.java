@@ -140,9 +140,6 @@ public class FloatingBallController {
     }
   }
 
-  /**
-   * No use
-   */
   public void updateSpecificParameter(String key) {
     for (FloatingBallView floatingBallView : floatingBallViewList) {
 
@@ -169,18 +166,25 @@ public class FloatingBallController {
       floatingBallView.requestLayout();
       floatingBallView.invalidate();
 
-      if (key.equals(PREF_DOUBLE_CLICK_EVENT)) {
-        floatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
-      } else if (key.equals(PREF_LEFT_SLIDE_EVENT)) {
-        floatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
-      } else if (key.equals(PREF_RIGHT_SLIDE_EVENT)) {
-        floatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
-      } else if (key.equals(PREF_UP_SLIDE_EVENT)) {
-        floatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
-      } else if (key.equals(PREF_DOWN_SLIDE_EVENT)) {
-        floatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
-      } else if (key.equals(PREF_SINGLE_TAP_EVENT)) {
-        floatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
+      switch (key) {
+        case PREF_DOUBLE_CLICK_EVENT:
+          floatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
+          break;
+        case PREF_LEFT_SLIDE_EVENT:
+          floatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
+          break;
+        case PREF_RIGHT_SLIDE_EVENT:
+          floatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
+          break;
+        case PREF_UP_SLIDE_EVENT:
+          floatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
+          break;
+        case PREF_DOWN_SLIDE_EVENT:
+          floatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
+          break;
+        case PREF_SINGLE_TAP_EVENT:
+          floatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
+          break;
       }
     }
   }
@@ -265,6 +269,5 @@ public class FloatingBallController {
       floatingBallView.updateLayoutParamsWithOrientation();
     }
   }
-
 
 }
