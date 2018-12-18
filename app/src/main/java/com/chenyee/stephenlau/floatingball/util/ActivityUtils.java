@@ -20,8 +20,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 
-//import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * This provides methods to help Activities load their UI.
  */

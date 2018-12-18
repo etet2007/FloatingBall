@@ -78,10 +78,16 @@
     <item name="android:layout_height">wrap_content</item>
     <item name="android:layout_gravity">center_vertical</item>
     <item name="android:clickable">true</item>
-    <item name="android:elevation" tools:targetApi="lollipop">8dp</item>
     <item name="android:focusable">true</item>
 
   </style>
+
+    <style name="ButtonStyle">
+      <item name="android:paddingLeft">12dp</item>
+      <item name="android:paddingRight">12dp</item>
+      <item name="android:textColor">@drawable/selector_btn_textcolor</item>
+      <item name="android:background">@drawable/selector_btn_background</item>
+    </style>
 
 
 </resources>

@@ -63,7 +63,6 @@
 
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -83,7 +82,9 @@
         android:layout_gravity="bottom|right|end"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:clickable="true"
+        android:elevation="8dp"
         android:focusable="true"
+        app:layout_behavior="com.chenyee.stephenlau.floatingball.ui.BottomHideBehavior"
         android:src="@drawable/ic_floating_button" />
 
     <android.support.v7.widget.AppCompatImageView
@@ -91,6 +92,7 @@
         android:layout_width="95dp"
         android:layout_height="95dp"
         android:layout_gravity="center_horizontal"
+        android:elevation="20dp"
         android:src="@drawable/ic_floating_button"
         app:layout_anchor="@id/materialup.title_container"
         app:layout_anchorGravity="top|center_horizontal"
