@@ -31,23 +31,10 @@ public class FunctionInterfaceUtils {
     }
   };
 
-  private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 1;
   private static FunctionListener backFunctionListener = new FunctionListener() {
     @Override
     public void onFunction() {
-//      AccessibilityUtils.doBack(sFloatingBallService);
-
-      if (!UsageStatsUtils.hasPermission(sFloatingBallService)) { //若用户未开启权限，则引导用户开启“Apps with usage access”权限
-        sFloatingBallService.getApplicationContext().startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-      } else {
-        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-          try {
-            UsageStatsUtils.getTopPackageName(sFloatingBallService);
-          } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-          }
-        }
-      }
+      AccessibilityUtils.doBack(sFloatingBallService);
     }
   };
 
@@ -56,6 +43,24 @@ public class FunctionInterfaceUtils {
     public void onFunction() {
       if (!sFloatingBallService.getmCurrentPackageName().contains("launcher")) {
         ActivityUtils.killBackgroundProcesses(sFloatingBallService, sFloatingBallService.getmCurrentPackageName());
+      }
+    }
+  };
+
+  private static FunctionListener switchApp = new FunctionListener() {
+    @Override
+    public void onFunction() {
+      if (!UsageStatsUtils.hasPermission(sFloatingBallService)) { //若用户未开启权限，则引导用户开启“Apps with usage access”权限
+        sFloatingBallService.getApplicationContext().startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+      } else {
+        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+          try {
+            UsageStatsUtils.sortUsageStatsByLastTimeUsed(sFloatingBallService);
+            UsageStatsUtils.switchToRightApp(sFloatingBallService);
+          } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+          }
+        }
       }
     }
   };
@@ -156,6 +161,8 @@ public class FunctionInterfaceUtils {
       functionListener = FunctionInterfaceUtils.screenshotFunctionListener;
     } else if (key == BACK) {
       functionListener = FunctionInterfaceUtils.backFunctionListener;
+    } else if (key == KILL_PROCESS) {
+      functionListener = FunctionInterfaceUtils.killFrontProcessListener;
 
     }
 

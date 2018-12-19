@@ -7,8 +7,8 @@ android {
         applicationId "com.chenyee.stephenlau.floatingball"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 330
-        versionName "3.3.0"
+        versionCode 340
+        versionName "3.4.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -75,8 +75,8 @@ dependencies {
     // utils
     implementation 'com.jakewharton:butterknife:8.8.1' //https://github.com/JakeWharton/butterknife
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
     implementation 'com.github.didikee:AndroidDonate:0.1.0'
+
     // ui
     implementation 'org.adw.library:discrete-seekbar:1.0.1' //https://github.com/AnderWeb/discreteSeekBar
     implementation 'de.hdodenhof:circleimageview:2.2.0' //https://github.com/hdodenhof/CircleImageView

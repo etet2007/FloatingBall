@@ -28,6 +28,7 @@ public class StaticStringUtil {
     public static final String PREF_PARAM_Y_LANDSCAPE = "PREF_PARAM_Y_LANDSCAPE";
 
     public static final String PREF_IS_AVOID_KEYBOARD = "PREF_IS_AVOID_KEYBOARD";
+    public static final String PREF_IS_HIDE_WHEN_KEYBOARD_SHOW = "PREF_IS_HIDE_WHEN_KEYBOARD_SHOW";
 
     public static final String PREF_IS_VIBRATE = "PREF_IS_VIBRATE";
     public static final String PREF_IS_ROTATE_HIDE_SETTING = "PREF_IS_ROTATE_HIDE_SETTING";
@@ -54,6 +55,7 @@ public class StaticStringUtil {
     public static final int NOTIFICATION = 7;
     public static final int SCREEN_SHOT = 8;
     public static final int BACK = 9;
+    public static final int KILL_PROCESS = 10;
 
 
     public static final int OPACITY_NONE = 0;

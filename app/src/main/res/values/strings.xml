@@ -46,7 +46,7 @@
     <!--function list-->
     <string name="home">Home</string>
     <string name="lock_screen">Lock screen</string>
-    <string name="rootLockScreen">Root lock screen</string>
+    <string name="rootLockScreen">Lock screen(Root)</string>
     <string name="none">None</string>
     <string name="recent_apps">Recent apps</string>
     <string name="last_app">Last app</string>
@@ -54,6 +54,7 @@
     <string name="notification">Expand notifications</string>
     <string name="screen_shot">Screenshot</string>
     <string name="back">Back</string>
+    <string name="killProcess">Kill process(Root)</string>
 
 
     <string name="hide_notification_content_title">Hiding</string>

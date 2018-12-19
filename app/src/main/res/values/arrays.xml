@@ -11,6 +11,8 @@
         <item>@string/notification</item>
         <item>@string/screen_shot</item>
         <item>@string/back</item>
+        <item>@string/killProcess</item>
+
     </string-array>
 
     <string-array name="opacity_mode">

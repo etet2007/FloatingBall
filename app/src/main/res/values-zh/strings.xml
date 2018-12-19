@@ -58,6 +58,7 @@
     <string name="notification">打开通知栏</string>
     <string name="screen_shot">截屏</string>
   <string name="back">返回</string>
+  <string name="killProcess">关闭当前程序（Root）</string>
 
 
     <string name="hide_notification_content_title">隐藏中</string>

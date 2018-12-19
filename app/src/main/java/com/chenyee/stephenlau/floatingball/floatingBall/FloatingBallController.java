@@ -31,13 +31,19 @@ public class FloatingBallController {
   /**
    * View
    */
-//  private FloatingBallView floatingBallView;
   private ArrayList<FloatingBallView> floatingBallViewList = new ArrayList<>();
 
   private boolean isSoftKeyboardShow = false;
+  //内存中变量
   private boolean isStartedBallView = false;
-  private WindowManager windowManager;
 
+  public boolean isHideBecauseRotate() {
+    return isHideBecauseRotate;
+  }
+
+  private boolean isHideBecauseRotate = false;
+
+  private WindowManager windowManager;
 
   private FloatingBallController() {
   }
@@ -99,13 +105,34 @@ public class FloatingBallController {
     updateParameter();
   }
 
+  /**
+   * 开关中的关闭
+   */
   public void removeBallView() {
     SingleDataManager.setIsAddedBallInSetting(false);
     removeAll();
   }
 
-  public void rotateHideBallView() {
-    SingleDataManager.setIsBallHideBecauseRotate(true);
+  /**
+   * 旋转屏幕时隐藏
+   */
+  public void hideWhenRotate() {
+//    SingleDataManager.setIsBallHideBecauseRotate(true);
+    isHideBecauseRotate = true;
+    removeAll();
+  }
+
+  /**
+   * 旋转屏幕后出现
+   */
+  public void startWhenRotateBack(Context context) {
+    startBallView(context);
+//    SingleDataManager.setIsBallHideBecauseRotate(false);
+    isHideBecauseRotate = false;
+  }
+
+  //暂时与屏幕旋转隐藏冲突！
+  public void hideWhenKeyboardShow() {
     removeAll();
   }
 
@@ -120,7 +147,7 @@ public class FloatingBallController {
   private void removeAll() {
     isStartedBallView = false;
     for (FloatingBallView floatingBallView : floatingBallViewList) {
-        floatingBallView.removeBallWithAnimation();
+      floatingBallView.removeBallWithAnimation();
     }
     floatingBallViewList.clear();
   }
@@ -220,29 +247,46 @@ public class FloatingBallController {
   /**
    * According to the state of input method, move the floatingBall view.
    */
-  public void inputMethodDetect() {
-
+  public void inputMethodDetect(Context context) {
     if (InputMethodDetector.detectIsInputingWithHeight(100)) {
       onKeyboardShow();
     } else {
-      onKeyboardDisappear();
+      onKeyboardDisappear(context);
     }
   }
 
+  /**
+   * 键盘检查，可能引起隐藏或躲避
+   */
   private void onKeyboardShow() {
     if (!isSoftKeyboardShow) {
-      for (FloatingBallView floatingBallView : floatingBallViewList) {
-        floatingBallView.moveToKeyboardTop();
+
+      if (SingleDataManager.isHideWhenKeyboardShow()) {
+        hideWhenKeyboardShow();
+      } else if (SingleDataManager.isAvoidKeyboard()) {
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
+          floatingBallView.moveToKeyboardTop();
+        }
       }
+
     }
+
     isSoftKeyboardShow = true;
   }
 
-  private void onKeyboardDisappear() {
+  private void onKeyboardDisappear(Context context) {
     if (isSoftKeyboardShow) {
-      for (FloatingBallView floatingBallView : floatingBallViewList) {
-        floatingBallView.moveBackWhenKeyboardDisappear();
+
+      if (SingleDataManager.isHideWhenKeyboardShow()) {
+        if (!isHideBecauseRotate) {
+          startBallView(context);
+        }
+      } else if (SingleDataManager.isAvoidKeyboard()) {
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
+          floatingBallView.moveBackWhenKeyboardDisappear();
+        }
       }
+
     }
     isSoftKeyboardShow = false;
   }

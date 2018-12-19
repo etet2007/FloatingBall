@@ -149,6 +149,14 @@ public class SingleDataManager {
     return SharedPrefsUtils.setBooleanPreference(PREF_IS_AVOID_KEYBOARD, value);
   }
 
+  public static boolean isHideWhenKeyboardShow() {
+    return SharedPrefsUtils.getBooleanPreference(PREF_IS_HIDE_WHEN_KEYBOARD_SHOW, false);
+  }
+
+  public static boolean setIsHideWhenKeyboardShow(boolean value) {
+    return SharedPrefsUtils.setBooleanPreference(PREF_IS_HIDE_WHEN_KEYBOARD_SHOW, value);
+  }
+
   //Position
   //landscape
   public static int floatingBallLandscapeX(int idCode) {

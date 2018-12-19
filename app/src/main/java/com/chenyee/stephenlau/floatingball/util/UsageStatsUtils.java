@@ -7,11 +7,13 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,7 +26,7 @@ import java.util.TreeMap;
 /**
  * if (!UsageStatsUtils.hasPermission(sFloatingBallService)) { //若用户未开启权限，则引导用户开启“Apps with usage access”权限
  * sFloatingBallService.getApplicationContext().startActivity( new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)); }
- * else { if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) { UsageStatsUtils.getTopPackageName(sFloatingBallService); } }
+ * else { if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) { UsageStatsUtils.sortUsageStatsByLastTimeUsed(sFloatingBallService); } }
  */
 public class UsageStatsUtils {
 
@@ -53,7 +55,7 @@ public class UsageStatsUtils {
   /**
    * 更新最近应用流量列表。
    */
-  public static void getUsageStatsList(Context context) {
+  public static void getUsageStatsList(Context context) throws NoSuchFieldException {
     if (Build.VERSION.SDK_INT > VERSION_CODES.LOLLIPOP_MR1) {
 
       UsageStatsManager usageStatsManager = (UsageStatsManager) context.getApplicationContext()
@@ -64,6 +66,12 @@ public class UsageStatsUtils {
       usageStatsList = usageStatsManager
           .queryUsageStats(UsageStatsManager.INTERVAL_DAILY, currentTime - THIRTYSECOND, currentTime);
 
+      //init mLastEventField
+      if (mLastEventField == null) {
+        mLastEventField = UsageStats.class.getField("mLastEvent");
+      }
+
+      index = 1;
     }
 
   }
@@ -72,13 +80,24 @@ public class UsageStatsUtils {
    * 通过使用量统计功能获取前台应用。
    */
   @RequiresApi(api = VERSION_CODES.LOLLIPOP)
-  public static void getTopPackageName(Context context) throws NoSuchFieldException, IllegalAccessException {
+  public static void sortUsageStatsByLastTimeUsed(Context context) throws NoSuchFieldException, IllegalAccessException {
 
     getUsageStatsList(context);
 
     if (usageStatsList == null) {
       throw new NullPointerException();
     }
+
+    ArrayList<UsageStats> toRemoved = new ArrayList<>();
+    //remove Event.NONE
+    for (UsageStats usageStats : usageStatsList) {
+      int lastEvent = mLastEventField.getInt(usageStats);
+
+      if (lastEvent == Event.NONE) {
+        toRemoved.add(usageStats);
+      }
+    }
+    usageStatsList.removeAll(toRemoved);
 
     Collections.sort(usageStatsList, new Comparator<UsageStats>() {
       @Override
@@ -87,10 +106,28 @@ public class UsageStatsUtils {
       }
     });
 
-    //init mLastEventField
-    if (mLastEventField == null) {
-      mLastEventField = UsageStats.class.getField("mLastEvent");
+  }
+
+  private static int index;
+  @RequiresApi(api = VERSION_CODES.LOLLIPOP)
+  public static void switchToRightApp(Context context) {
+
+    UsageStats usageStats = usageStatsList.get(index++);
+
+    String packageName = usageStats.getPackageName();
+    Log.d(TAG, "packageName: " + packageName);
+
+    Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+    if (intent != null) {
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context.startActivity(intent);
     }
+
+    }
+
+  @RequiresApi(api = VERSION_CODES.LOLLIPOP)
+  public static String getTopPackageName() throws IllegalAccessException {
+    String topPackageName = "";
 
     for (UsageStats usageStats : usageStatsList) {
       int lastEvent = mLastEventField.getInt(usageStats);
@@ -102,42 +139,8 @@ public class UsageStatsUtils {
 //        break;
       }
     }
-
-    //Use treeMap to sort the usageStatsList by LastTimeUsed
-    TreeMap<Long, UsageStats> sortedMap = new TreeMap<>();
-    for (UsageStats usageStats : usageStatsList) {
-      sortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-    }
-
-    if (sortedMap.isEmpty()) {
-      return;
-    }
-    NavigableSet<Long> keySet = sortedMap.navigableKeySet();
-    //降序
-    Iterator iterator = keySet.descendingIterator();
-
-    //init mLastEventField
-    if (mLastEventField == null) {
-      mLastEventField = UsageStats.class.getField("mLastEvent");
-    }
-
-    while (iterator.hasNext()) {
-      UsageStats usageStats = sortedMap.get(iterator.next());
-      int lastEvent = mLastEventField.getInt(usageStats);
-//      Log.d(TAG, "packageName: " + usageStats.getPackageName() + " lastEvent: " + lastEvent);
-
-      if (lastEvent == UsageEvents.Event.MOVE_TO_FOREGROUND) {
-        topPackageName = usageStats.getPackageName();
-        break;
-      }
-
-    }
-
-    if (topPackageName == null) {
-      topPackageName = sortedMap.get(sortedMap.lastKey()).getPackageName();
-    }
-
-//    Log.d(TAG,  "topPackageName" + topPackageName);
+    Log.d(TAG,  "topPackageName" + topPackageName);
+    return topPackageName;
   }
 
 
