@@ -30,8 +30,6 @@ import android.util.Log;
 import java.lang.reflect.Method;
 import java.util.List;
 
-//import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * This provides methods to help Activities load their UI.
  */

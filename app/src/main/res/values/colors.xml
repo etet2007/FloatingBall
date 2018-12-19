@@ -7,4 +7,7 @@
 
     <color name="primary_text">#212121</color>
 
+    <color name="very_light_gray">#f1f1f1</color>
+    <color name="light_gray">#b7b7b7</color>
+
 </resources>
