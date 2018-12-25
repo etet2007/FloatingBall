@@ -81,8 +81,8 @@
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/minusFloatingActionButton"
-                        style="@style/actionFloatingButton"
-                        app:srcCompat="@drawable/minus" />
+                        style="@style/ActionFloatingButtonStyle"
+                        app:srcCompat="@drawable/amount_minus" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/amountTextView"
@@ -94,8 +94,8 @@
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/plusFloatingActionButton"
-                        style="@style/actionFloatingButton"
-                        app:srcCompat="@drawable/plus" />
+                        style="@style/ActionFloatingButtonStyle"
+                        app:srcCompat="@drawable/amount_plus" />
                 </android.support.v7.widget.LinearLayoutCompat>
 
             </RelativeLayout>

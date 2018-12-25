@@ -53,14 +53,15 @@
     <item name="android:layout_margin">7dp</item>
   </style>
 
+  <!--SwitchStyle-->
   <style name="SwitchStyle">
     <item name="android:layout_width">match_parent</item>
     <item name="android:layout_height">wrap_content</item>
     <item name="android:layout_margin">7dp</item>
     <item name="android:padding">10dp</item>
-
   </style>
 
+  <!--DialogRelativeLayoutStyle-->
   <style name="DialogRelativeLayoutStyle">
     <item name="android:layout_width">match_parent</item>
     <item name="android:layout_height">wrap_content</item>
@@ -71,7 +72,8 @@
     <item name="android:focusable">true</item>
   </style>
 
-  <style name="actionFloatingButton">
+  <!--ActionFloatingButtonStyle-->
+  <style name="ActionFloatingButtonStyle">
     <item name="fabCustomSize">24dp</item>
     <item name="fabSize">mini</item>
     <item name="android:layout_width">wrap_content</item>
@@ -79,9 +81,9 @@
     <item name="android:layout_gravity">center_vertical</item>
     <item name="android:clickable">true</item>
     <item name="android:focusable">true</item>
-
   </style>
 
+  <!--ButtonStyle-->
     <style name="ButtonStyle">
       <item name="android:paddingLeft">12dp</item>
       <item name="android:paddingRight">12dp</item>
