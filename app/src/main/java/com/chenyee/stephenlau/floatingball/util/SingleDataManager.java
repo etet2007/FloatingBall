@@ -94,35 +94,35 @@ public class SingleDataManager {
   }
 
   public static int leftSlideEvent() {
-    return SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SLIDE_EVENT, RECENT_APPS);
+    return SharedPrefsUtils.getIntegerPreference(PREF_LEFT_SWIPE_EVENT, RECENT_APPS);
   }
 
   public static void setLeftSlideEvent(int value) {
-    SharedPrefsUtils.setIntegerPreference(PREF_LEFT_SLIDE_EVENT, value);
+    SharedPrefsUtils.setIntegerPreference(PREF_LEFT_SWIPE_EVENT, value);
   }
 
   public static int rightSlideEvent() {
-    return SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SLIDE_EVENT, RECENT_APPS);
+    return SharedPrefsUtils.getIntegerPreference(PREF_RIGHT_SWIPE_EVENT, RECENT_APPS);
   }
 
   public static void setRightSlideEvent(int value) {
-    SharedPrefsUtils.setIntegerPreference(PREF_RIGHT_SLIDE_EVENT, value);
+    SharedPrefsUtils.setIntegerPreference(PREF_RIGHT_SWIPE_EVENT, value);
   }
 
   public static int upSlideEvent() {
-    return SharedPrefsUtils.getIntegerPreference(PREF_UP_SLIDE_EVENT, HOME);
+    return SharedPrefsUtils.getIntegerPreference(PREF_UP_SWIPE_EVENT, HOME);
   }
 
   public static void setUpSlideEvent(int value) {
-    SharedPrefsUtils.setIntegerPreference(PREF_UP_SLIDE_EVENT, value);
+    SharedPrefsUtils.setIntegerPreference(PREF_UP_SWIPE_EVENT, value);
   }
 
   public static int downSlideEvent() {
-    return SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SLIDE_EVENT, NOTIFICATION);
+    return SharedPrefsUtils.getIntegerPreference(PREF_DOWN_SWIPE_EVENT, NOTIFICATION);
   }
 
   public static void setDownSlideEvent(int value) {
-    SharedPrefsUtils.setIntegerPreference(PREF_DOWN_SLIDE_EVENT, value);
+    SharedPrefsUtils.setIntegerPreference(PREF_DOWN_SWIPE_EVENT, value);
   }
 
   public static int moveUpDistance() {

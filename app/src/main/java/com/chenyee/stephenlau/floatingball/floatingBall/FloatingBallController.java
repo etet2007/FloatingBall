@@ -197,16 +197,16 @@ public class FloatingBallController {
         case PREF_DOUBLE_CLICK_EVENT:
           floatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
           break;
-        case PREF_LEFT_SLIDE_EVENT:
+        case PREF_LEFT_SWIPE_EVENT:
           floatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
           break;
-        case PREF_RIGHT_SLIDE_EVENT:
+        case PREF_RIGHT_SWIPE_EVENT:
           floatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
           break;
-        case PREF_UP_SLIDE_EVENT:
+        case PREF_UP_SWIPE_EVENT:
           floatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
           break;
-        case PREF_DOWN_SLIDE_EVENT:
+        case PREF_DOWN_SWIPE_EVENT:
           floatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
           break;
         case PREF_SINGLE_TAP_EVENT:

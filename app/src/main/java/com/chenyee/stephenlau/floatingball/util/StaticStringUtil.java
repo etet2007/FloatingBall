@@ -35,10 +35,10 @@ public class StaticStringUtil {
 
     public static final String PREF_SINGLE_TAP_EVENT = "PREF_SINGLE_TAP_EVENT";
     public static final String PREF_DOUBLE_CLICK_EVENT = "DOUBLE_CLICK_EVENT";
-    public static final String PREF_RIGHT_SLIDE_EVENT = "RIGHT_SLIDE_EVENT";
-    public static final String PREF_LEFT_SLIDE_EVENT = "LEFT_SLIDE_EVENT";
-    public static final String PREF_UP_SLIDE_EVENT = "UP_SLIDE_EVENT";
-    public static final String PREF_DOWN_SLIDE_EVENT = "DOWN_SLIDE_EVENT";
+    public static final String PREF_RIGHT_SWIPE_EVENT = "RIGHT_SWIPE_EVENT";
+    public static final String PREF_LEFT_SWIPE_EVENT = "LEFT_SWIPE_EVENT";
+    public static final String PREF_UP_SWIPE_EVENT = "UP_SWIPE_EVENT";
+    public static final String PREF_DOWN_SWIPE_EVENT = "DOWN_SWIPE_EVENT";
 
     public static final String PREF_MOVE_UP_DISTANCE = "PREF_MOVE_UP_DISTANCE";
 

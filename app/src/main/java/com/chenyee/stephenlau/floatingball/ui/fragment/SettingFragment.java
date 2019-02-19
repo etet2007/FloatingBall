@@ -80,13 +80,13 @@ public class SettingFragment extends Fragment {
   AppCompatTextView singleTapTextView;
   @BindView(R.id.double_click_textView)
   AppCompatTextView doubleClickTextView;
-  @BindView(R.id.left_slide_textView)
+  @BindView(R.id.left_swipe_textView)
   AppCompatTextView leftSlideTextView;
-  @BindView(R.id.up_slide_textView)
+  @BindView(R.id.up_swipe_textView)
   AppCompatTextView upSlideTextView;
-  @BindView(R.id.down_slide_textView)
+  @BindView(R.id.down_swipe_textView)
   AppCompatTextView downSlideTextView;
-  @BindView(R.id.right_slide_textView)
+  @BindView(R.id.right_swipe_textView)
   AppCompatTextView rightSlideTextView;
   @BindView(R.id.is_rotate_hide)
   SwitchCompat isRotateHideSwitch;
@@ -434,13 +434,13 @@ public class SettingFragment extends Fragment {
     if (view.getId() == R.id.double_click_function) {
       showFunctionDialog(R.string.double_click_title, PREF_DOUBLE_CLICK_EVENT);
     } else if (view.getId() == R.id.left_function) {
-      showFunctionDialog(R.string.left_slide_title, PREF_LEFT_SLIDE_EVENT);
+      showFunctionDialog(R.string.left_swipe_title, PREF_LEFT_SWIPE_EVENT);
     } else if (view.getId() == R.id.right_function) {
-      showFunctionDialog(R.string.right_slide_title, PREF_RIGHT_SLIDE_EVENT);
+      showFunctionDialog(R.string.right_swipe_title, PREF_RIGHT_SWIPE_EVENT);
     } else if (view.getId() == R.id.up_function) {
-      showFunctionDialog(R.string.up_slide_title, PREF_UP_SLIDE_EVENT);
+      showFunctionDialog(R.string.up_swipe_title, PREF_UP_SWIPE_EVENT);
     } else if (view.getId() == R.id.down_function) {
-      showFunctionDialog(R.string.down_slide_title, PREF_DOWN_SLIDE_EVENT);
+      showFunctionDialog(R.string.down_swipe_title, PREF_DOWN_SWIPE_EVENT);
     } else if (view.getId() == R.id.single_tap_function) {
       showFunctionDialog(R.string.single_tap_title, PREF_SINGLE_TAP_EVENT);
     }

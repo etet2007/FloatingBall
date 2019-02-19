@@ -13,9 +13,9 @@ A simple and animated gesture tools to relaxed your thumb.
 - Click：Back
 - Double click：Nothing
 - Long press：Move floating ball
-- Left and right slide：Recent apps
-- Up slide：Home
-- Down slide：Notification
+- Left and right swipe：Recent apps
+- Up swipe：Home
+- Down swipe：Notification
 
 Refer to HalfStackDeveloper/FloatBall fg607/RelaxFinger。
 

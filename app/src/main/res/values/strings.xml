@@ -30,17 +30,17 @@
     <string name="double_click_title">Double click</string>
     <string name="double_click">Double click:</string>
 
-    <string name="right_slide_title">Right slide</string>
-    <string name="right_slide">Right slide:</string>
+    <string name="right_swipe_title">Swipe right</string>
+    <string name="right_swipe">Swipe right:</string>
 
-    <string name="left_slide_title">Left slide</string>
-    <string name="left_slide">Left slide:</string>
+    <string name="left_swipe_title">Swipe left</string>
+    <string name="left_swipe">Swipe left:</string>
 
-    <string name="up_slide_title">Up slide</string>
-    <string name="up_slide">Up slide:</string>
+    <string name="up_swipe_title">Swipe up</string>
+    <string name="up_swipe">Swipe up:</string>
 
-    <string name="down_slide_title">Down slide</string>
-    <string name="down_slide">Down slide:</string>
+    <string name="down_swipe_title">Swipe up</string>
+    <string name="down_swipe">Swipe up:</string>
 
     <string name="use_gray_background">Show gray background?</string>
     <!--function list-->

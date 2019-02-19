@@ -34,17 +34,17 @@
     <string name="double_click_title">双击</string>
     <string name="double_click">双击:</string>
 
-    <string name="right_slide_title">右滑</string>
-    <string name="right_slide">右滑:</string>
+    <string name="right_swipe_title">右滑</string>
+    <string name="right_swipe">右滑:</string>
 
-    <string name="left_slide_title">左滑</string>
-    <string name="left_slide">左滑:</string>
+    <string name="left_swipe_title">左滑</string>
+    <string name="left_swipe">左滑:</string>
 
-    <string name="up_slide_title">上滑</string>
-    <string name="up_slide">上滑:</string>
+    <string name="up_swipe_title">上滑</string>
+    <string name="up_swipe">上滑:</string>
 
-    <string name="down_slide_title">下滑</string>
-    <string name="down_slide">下滑:</string>
+    <string name="down_swipe_title">下滑</string>
+    <string name="down_swipe">下滑:</string>
 
     <string name="use_gray_background">是否显示灰色背景</string>
 

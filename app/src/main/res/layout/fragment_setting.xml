@@ -207,12 +207,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="@string/left_slide"
+                    android:text="@string/left_swipe"
                     android:textSize="18sp"
                   android:layout_alignParentLeft="true"/>
 
                 <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/left_slide_textView"
+                    android:id="@+id/left_swipe_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -229,12 +229,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="@string/right_slide"
+                    android:text="@string/right_swipe"
                     android:textSize="18sp"
                   android:layout_alignParentLeft="true"/>
 
                 <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/right_slide_textView"
+                    android:id="@+id/right_swipe_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -251,12 +251,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="@string/up_slide"
+                    android:text="@string/up_swipe"
                     android:textSize="18sp"
                   android:layout_alignParentLeft="true"/>
 
                 <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/up_slide_textView"
+                    android:id="@+id/up_swipe_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -273,12 +273,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="@string/down_slide"
+                    android:text="@string/down_swipe"
                     android:textSize="18sp"
                   android:layout_alignParentLeft="true"/>
 
                 <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/down_slide_textView"
+                    android:id="@+id/down_swipe_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
