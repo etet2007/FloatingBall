@@ -159,9 +159,10 @@ public class FloatingBallController {
    * @param imagePath 外部图片地址
    */
   public void setBackgroundImage(String imagePath) {
+    BitmapUtils.copyBackgroundImage(imagePath);
+
     for (FloatingBallView floatingBallView : floatingBallViewList) {
-      BitmapUtils.copyBackgroundImage(imagePath);
-      floatingBallView.refreshBitmapRead();
+      floatingBallView.setBitmapRead();
       floatingBallView.createBitmapCropFromBitmapRead();
       floatingBallView.invalidate();
     }

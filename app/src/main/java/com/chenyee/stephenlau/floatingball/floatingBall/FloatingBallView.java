@@ -22,11 +22,9 @@ import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGest
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
-import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 
 import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
-import static com.chenyee.stephenlau.floatingball.App.gScreenWidth;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
@@ -70,7 +68,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   private WindowManager windowManager;
 
   private Bitmap mBitmapRead;
-  private Bitmap mBitmapScaled;
+  private Bitmap mBitmapScaledCroped;
 
   private int userSetOpacity = 125;
 
@@ -106,7 +104,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
   public void setUseBackground(boolean useBackground) {
     if (useBackground) {
-      refreshBitmapRead();
+      setBitmapRead();
       createBitmapCropFromBitmapRead();
     } else {
       recycleBitmap();
@@ -119,8 +117,8 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     if (mBitmapRead != null && !mBitmapRead.isRecycled()) {
       mBitmapRead.recycle();
     }
-    if (!useBackground && mBitmapScaled != null && !mBitmapScaled.isRecycled()) {
-      mBitmapScaled.recycle();
+    if (!useBackground && mBitmapScaledCroped != null && !mBitmapScaledCroped.isRecycled()) {
+      mBitmapScaledCroped.recycle();
     }
   }
 
@@ -315,7 +313,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   /**
    * 更新bitmapRead的值
    */
-  public void refreshBitmapRead() {
+  public void setBitmapRead() {
     //path为app内部目录
     String path = getContext().getFilesDir().toString();
     mBitmapRead = BitmapFactory.decodeFile(path + "/ballBackground.png");
@@ -334,15 +332,17 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
     //bitmapRead可能已被回收
     if (mBitmapRead == null || mBitmapRead.isRecycled()) {
-      refreshBitmapRead();
+      setBitmapRead();
     }
 
     int edge = (int) floatingBallDrawer.ballRadius * 2;
 
+    //缩放到edge的大小
     Bitmap scaledBitmap = Bitmap.createScaledBitmap(mBitmapRead, edge, edge, true);
-    //进行裁切后的bitmapCrop
-    mBitmapScaled = Bitmap.createBitmap(edge, edge, Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(mBitmapScaled);
+
+    //对scaledBitmap进行裁切
+    mBitmapScaledCroped = Bitmap.createBitmap(edge, edge, Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(mBitmapScaledCroped);
     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     //x y r
     canvas
@@ -416,8 +416,8 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     Paint ballPaint = floatingBallPaint.getBallPaint();
 
     if (useBackground) {
-      canvas.drawBitmap(mBitmapScaled, -mBitmapScaled.getWidth() / 2 + floatingBallDrawer.ballCenterX,
-          -mBitmapScaled.getHeight() / 2 + floatingBallDrawer.ballCenterY, ballPaint);
+      canvas.drawBitmap(mBitmapScaledCroped, -mBitmapScaledCroped.getWidth() / 2 + floatingBallDrawer.ballCenterX,
+          -mBitmapScaledCroped.getHeight() / 2 + floatingBallDrawer.ballCenterY, ballPaint);
     }
   }
 
