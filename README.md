@@ -1,4 +1,4 @@
-![](http://image.coolapk.com/apk_logo/2018/0202/ic_launcher_app-176355-o_1c5a29vo4hf8u8qrasvte1cuuq-uid-1318509@512x512.png)
+
 # FloatingBall
 Inspired by smart touch in Flyme OS.
 A simple and animated gesture tools to relaxed your thumb. 
