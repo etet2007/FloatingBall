@@ -17,7 +17,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
+import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 
@@ -77,13 +77,13 @@ public class FloatingBallService extends AccessibilityService {
 
     mFloatingBallController.startBallView(FloatingBallService.this);
 
-    SingleDataManager.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
+    BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
   public void onCreate() {
     super.onCreate();
-    SingleDataManager.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
+    BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
@@ -94,7 +94,7 @@ public class FloatingBallService extends AccessibilityService {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    SingleDataManager.unregisterOnDataChangeListener(mOnSharedPreferenceChangeListener);
+    BallSettingRepo.unregisterOnDataChangeListener(mOnSharedPreferenceChangeListener);
   }
 
   @Override
@@ -102,12 +102,12 @@ public class FloatingBallService extends AccessibilityService {
     super.onConfigurationChanged(newConfig);
 
     //没有打开
-    boolean isAddedBall = SingleDataManager.isAddedBallInSetting();
+    boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
     if (!isAddedBall) {
       return;
     }
 
-    if (SingleDataManager.isRotateHideSetting()) { //LANDSCAPE 隐藏
+    if (BallSettingRepo.isRotateHideSetting()) { //LANDSCAPE 隐藏
 
       if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         mFloatingBallController.hideWhenRotate();
@@ -133,7 +133,7 @@ public class FloatingBallService extends AccessibilityService {
     }
 
     //没有打开
-    boolean isAddedBall = SingleDataManager.isAddedBallInSetting();
+    boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
     if (!isAddedBall) {
       return;
     }
@@ -181,7 +181,7 @@ public class FloatingBallService extends AccessibilityService {
         }
 
         if (type == TYPE_ADD) {
-          mFloatingBallController.addFloatingBallView(FloatingBallService.this, SingleDataManager.amount() - 1);
+          mFloatingBallController.addFloatingBallView(FloatingBallService.this, BallSettingRepo.amount() - 1);
         }
         if (type == TYPE_REMOVE_LAST) {
           mFloatingBallController.removeLastFloatingBall();

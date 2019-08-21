@@ -6,7 +6,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
-import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
+import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
 
 public class FloatingBallGestureListener implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
@@ -53,7 +53,7 @@ public class FloatingBallGestureListener implements GestureDetector.OnGestureLis
   }
 
   public void updateFieldBySingleDataManager() {
-    isVibrate = SingleDataManager.isVibrate();
+    isVibrate = BallSettingRepo.isVibrate();
   }
 
   //GestureDetector.OnGestureListener

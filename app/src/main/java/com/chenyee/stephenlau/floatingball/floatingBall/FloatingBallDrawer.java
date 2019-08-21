@@ -11,7 +11,7 @@ import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.Keep;
-import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
+import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
 @Keep
 public class FloatingBallDrawer {
@@ -70,7 +70,7 @@ public class FloatingBallDrawer {
   }
 
   public void updateFieldBySingleDataManager() {
-    useGrayBackground = SingleDataManager.isUseGrayBackground();
+    useGrayBackground = BallSettingRepo.isUseGrayBackground();
   }
 
   public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {

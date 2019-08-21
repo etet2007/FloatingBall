@@ -10,11 +10,12 @@ import android.view.WindowManager.LayoutParams;
 
 
 import com.chenyee.stephenlau.floatingball.App;
+import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
-import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
+
 import java.util.ArrayList;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
@@ -63,7 +64,7 @@ public class FloatingBallController {
     windowManager = (WindowManager) App.getApplication().getApplicationContext()
         .getSystemService(Context.WINDOW_SERVICE);
 
-    int amount = SingleDataManager.amount();
+    int amount = BallSettingRepo.amount();
     for (int id = 0; id < amount; id++) {
       addFloatingBallView(context, id);
     }
@@ -109,7 +110,7 @@ public class FloatingBallController {
    * 开关中的关闭
    */
   public void removeBallView() {
-    SingleDataManager.setIsAddedBallInSetting(false);
+    BallSettingRepo.setIsAddedBallInSetting(false);
     removeAll();
   }
 
@@ -117,7 +118,7 @@ public class FloatingBallController {
    * 旋转屏幕时隐藏
    */
   public void hideWhenRotate() {
-//    SingleDataManager.setIsBallHideBecauseRotate(true);
+//    BallSettingRepo.setIsBallHideBecauseRotate(true);
     isHideBecauseRotate = true;
     removeAll();
   }
@@ -127,7 +128,7 @@ public class FloatingBallController {
    */
   public void startWhenRotateBack(Context context) {
     startBallView(context);
-//    SingleDataManager.setIsBallHideBecauseRotate(false);
+//    BallSettingRepo.setIsBallHideBecauseRotate(false);
     isHideBecauseRotate = false;
   }
 
@@ -173,16 +174,16 @@ public class FloatingBallController {
 
       switch (key) {
         case PREF_OPACITY:
-          floatingBallView.setOpacity(SingleDataManager.opacity());
+          floatingBallView.setOpacity(BallSettingRepo.opacity());
           break;
         case PREF_OPACITY_MODE:
           floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
           break;
         case PREF_SIZE:
-          floatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
+          floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
           break;
         case PREF_USE_BACKGROUND:
-          floatingBallView.setUseBackground(SingleDataManager.isUseBackground());
+          floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
           break;
         case PREF_USE_GRAY_BACKGROUND:
         case PREF_IS_VIBRATE:
@@ -196,22 +197,22 @@ public class FloatingBallController {
 
       switch (key) {
         case PREF_DOUBLE_CLICK_EVENT:
-          floatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
+          floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
           break;
         case PREF_LEFT_SWIPE_EVENT:
-          floatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
+          floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
           break;
         case PREF_RIGHT_SWIPE_EVENT:
-          floatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
+          floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
           break;
         case PREF_UP_SWIPE_EVENT:
-          floatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
+          floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
           break;
         case PREF_DOWN_SWIPE_EVENT:
-          floatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
+          floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
           break;
         case PREF_SINGLE_TAP_EVENT:
-          floatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
+          floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
           break;
       }
     }
@@ -225,10 +226,10 @@ public class FloatingBallController {
 
       floatingBallView.updateLayoutParamsWithOrientation();
       /* View */
-      floatingBallView.setOpacity(SingleDataManager.opacity());
+      floatingBallView.setOpacity(BallSettingRepo.opacity());
       floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
-      floatingBallView.changeFloatBallSizeWithRadius(SingleDataManager.size());
-      floatingBallView.setUseBackground(SingleDataManager.isUseBackground());
+      floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
+      floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
 
       floatingBallView.updateModelData();
 
@@ -236,12 +237,12 @@ public class FloatingBallController {
       floatingBallView.invalidate();
 
       /* Function */
-      floatingBallView.setDoubleClickEventType(SingleDataManager.doubleClickEvent());
-      floatingBallView.setLeftFunctionListener(SingleDataManager.leftSlideEvent());
-      floatingBallView.setRightFunctionListener(SingleDataManager.rightSlideEvent());
-      floatingBallView.setUpFunctionListener(SingleDataManager.upSlideEvent());
-      floatingBallView.setDownFunctionListener(SingleDataManager.downSlideEvent());
-      floatingBallView.setSingleTapFunctionListener(SingleDataManager.singleTapEvent());
+      floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
+      floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
+      floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
+      floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
+      floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
+      floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
     }
   }
 
@@ -262,9 +263,9 @@ public class FloatingBallController {
   private void onKeyboardShow() {
     if (!isSoftKeyboardShow) {
 
-      if (SingleDataManager.isHideWhenKeyboardShow()) {
+      if (BallSettingRepo.isHideWhenKeyboardShow()) {
         hideWhenKeyboardShow();
-      } else if (SingleDataManager.isAvoidKeyboard()) {
+      } else if (BallSettingRepo.isAvoidKeyboard()) {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
           floatingBallView.moveToKeyboardTop();
         }
@@ -278,11 +279,11 @@ public class FloatingBallController {
   private void onKeyboardDisappear(Context context) {
     if (isSoftKeyboardShow) {
 
-      if (SingleDataManager.isHideWhenKeyboardShow()) {
+      if (BallSettingRepo.isHideWhenKeyboardShow()) {
         if (!isHideBecauseRotate) {
           startBallView(context);
         }
-      } else if (SingleDataManager.isAvoidKeyboard()) {
+      } else if (BallSettingRepo.isAvoidKeyboard()) {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
           floatingBallView.moveBackWhenKeyboardDisappear();
         }

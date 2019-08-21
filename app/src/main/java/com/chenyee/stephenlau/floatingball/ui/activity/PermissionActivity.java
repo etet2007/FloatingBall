@@ -2,7 +2,6 @@ package com.chenyee.stephenlau.floatingball.ui.activity;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,8 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtils;
 import com.chenyee.stephenlau.floatingball.util.LockScreenUtils;
 
@@ -24,7 +23,7 @@ import butterknife.ButterKnife;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 
 public class PermissionActivity extends AppCompatActivity {
-    private static final String TAG =PermissionActivity.class.getSimpleName();
+    private static final String TAG = PermissionActivity.class.getSimpleName();
 
     @BindView(R.id.drawOverlays_button) Button drawOverlaysButton;
     @BindView(R.id.accessibility_button) Button accessibilityButton;
@@ -38,7 +37,7 @@ public class PermissionActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        logoImageView.animate().translationYBy(dip2px(getApplicationContext(),100)).setDuration(3000).start();
+        logoImageView.animate().translationYBy(dip2px(getApplicationContext(), 100)).setDuration(3000).start();
 
         drawOverlaysButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,13 +68,13 @@ public class PermissionActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
+
         boolean hasDrawPermission = false;
         boolean hasAccessibilityPermission = false;
         boolean hasLockScreenPermission = false;
@@ -108,15 +107,15 @@ public class PermissionActivity extends AppCompatActivity {
     }
 
     private void requestDrawOverlaysPermission() {
-            //Setting :The Settings provider contains global system-level device preferences.
-            //Checks if the specified context can draw on top of other apps. As of API level 23,
-            // an app cannot draw on top of other apps unless it declares the SYSTEM_ALERT_WINDOW permission
-            // in its manifest, and the user specifically grants the app this capability.
-            // To prompt the user to grant this approval, the app must send an intent with the action
-            // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
+        //Setting :The Settings provider contains global system-level device preferences.
+        //Checks if the specified context can draw on top of other apps. As of API level 23,
+        // an app cannot draw on top of other apps unless it declares the SYSTEM_ALERT_WINDOW permission
+        // in its manifest, and the user specifically grants the app this capability.
+        // To prompt the user to grant this approval, the app must send an intent with the action
+        // ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivityForResult(intent, 1);
         }
     }

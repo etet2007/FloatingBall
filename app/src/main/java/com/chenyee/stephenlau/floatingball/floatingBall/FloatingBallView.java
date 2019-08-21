@@ -20,11 +20,11 @@ import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
+import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
-import com.chenyee.stephenlau.floatingball.util.SingleDataManager;
 
-import static com.chenyee.stephenlau.floatingball.App.gScreenHeight;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.gScreenHeight;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
 
 /**
@@ -263,11 +263,11 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   private void saveLayoutParams() {
     Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
     if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      SingleDataManager.setFloatingBallLandscapeX(ballViewLayoutParams.x, idCode);
-      SingleDataManager.setFloatingBallLandscapeY(ballViewLayoutParams.y, idCode);
+      BallSettingRepo.setFloatingBallLandscapeX(ballViewLayoutParams.x, idCode);
+      BallSettingRepo.setFloatingBallLandscapeY(ballViewLayoutParams.y, idCode);
     } else if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-      SingleDataManager.setFloatingBallPortraitX(ballViewLayoutParams.x, idCode);
-      SingleDataManager.setFloatingBallPortraitY(ballViewLayoutParams.y, idCode);
+      BallSettingRepo.setFloatingBallPortraitX(ballViewLayoutParams.x, idCode);
+      BallSettingRepo.setFloatingBallPortraitY(ballViewLayoutParams.y, idCode);
     }
   }
 
@@ -282,12 +282,12 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
       int x = 0, y = 0;
       if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        x = SingleDataManager.floatingBallLandscapeX(idCode);
-        y = SingleDataManager.floatingBallLandscapeY(idCode);
+        x = BallSettingRepo.floatingBallLandscapeX(idCode);
+        y = BallSettingRepo.floatingBallLandscapeY(idCode);
 
       } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-        x = SingleDataManager.floatingBallPortraitX(idCode);
-        y = SingleDataManager.floatingBallPortraitY(idCode);
+        x = BallSettingRepo.floatingBallPortraitX(idCode);
+        y = BallSettingRepo.floatingBallPortraitY(idCode);
       }
 
       ballViewLayoutParams.x = x;
@@ -443,7 +443,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
   public void updateModelData() {
     floatingBallDrawer.updateFieldBySingleDataManager();
     floatingBallGestureListener.updateFieldBySingleDataManager();
-    moveUpDistance = SingleDataManager.moveUpDistance();
+    moveUpDistance = BallSettingRepo.moveUpDistance();
   }
 
   @Override

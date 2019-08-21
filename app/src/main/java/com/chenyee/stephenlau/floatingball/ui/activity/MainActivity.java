@@ -185,7 +185,6 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
-
   private void setupToolbar() {
     setSupportActionBar(toolbar);//顺序会有影响
 
