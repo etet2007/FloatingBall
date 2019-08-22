@@ -31,6 +31,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
+import com.chenyee.stephenlau.floatingball.ui.activity.MainActivity;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -115,6 +116,15 @@ public class SettingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Activity activity = getActivity();
+        if (activity instanceof MainActivity) {
+            refreshViews(((MainActivity) activity).isBallSwitchIsChecked());
+        }
     }
 
     @Override
@@ -207,7 +217,7 @@ public class SettingFragment extends Fragment {
 
         //        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
         //        //hasAddedBall代表两种状态
-        //        updateViewsState(hasAddedBall);
+        //        refreshViews(hasAddedBall);
 
         opacitySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
@@ -364,7 +374,7 @@ public class SettingFragment extends Fragment {
         opacityModeTextView.setText(opacityModeList[opacityMode]);
     }
 
-    public void updateViewsState(boolean hasAddedBall) {
+    public void refreshViews(boolean hasAddedBall) {
         if (hasAddedBall) {
             enableAll(rootLinearLayout, true);
         } else {
@@ -391,7 +401,6 @@ public class SettingFragment extends Fragment {
             else if (top instanceof View) {
                 top.setEnabled(enanbled);
             }
-
         }
     }
 
