@@ -59,7 +59,7 @@
 
         <!--主Service-->
         <service
-            android:name=".floatingBall.FloatingBallService"
+            android:name=".floatingBall.service.FloatingBallService"
             android:configChanges="orientation|keyboard|keyboardHidden"
             android:excludeFromRecents="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -74,7 +74,7 @@
 
         <!--锁屏-->
         <receiver
-            android:name=".receiver.LockRequestReceiver"
+            android:name=".common_receiver.LockRequestReceiver"
             android:description="@string/app_name"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -87,7 +87,7 @@
         </receiver>
 
         <!-- 自启动 -->
-        <receiver android:name=".receiver.StartServiceAtBootReceiver">
+        <receiver android:name=".common_receiver.StartServiceAtBootReceiver">
             <intent-filter android:priority="2147483647">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -95,7 +95,7 @@
 
         <!-- Quick Setting-->
         <service
-            android:name=".QuickSettingService"
+            android:name=".quick_setting.QuickSettingService"
             android:icon="@drawable/ic_floating_button_quick_setting"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">

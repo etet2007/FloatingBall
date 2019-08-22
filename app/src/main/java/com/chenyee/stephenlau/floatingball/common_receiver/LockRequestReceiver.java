@@ -1,8 +1,6 @@
-package com.chenyee.stephenlau.floatingball.receiver;
+package com.chenyee.stephenlau.floatingball.common_receiver;
 
 import android.app.admin.DeviceAdminReceiver;
-import android.content.Context;
-import android.content.Intent;
 
 /**
  * Created by lqtian on 2017/9/29.

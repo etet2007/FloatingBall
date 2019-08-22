@@ -27,7 +27,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,8 +35,8 @@ import com.artitk.licensefragment.ScrollViewLicenseFragment;
 import com.artitk.licensefragment.model.License;
 import com.artitk.licensefragment.model.LicenseType;
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
-import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
+import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.common_receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.ui.fragment.SettingFragment;
 import com.chenyee.stephenlau.floatingball.util.ActivityUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
@@ -45,7 +44,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.chenyee.stephenlau.floatingball.QuickSettingService.QUICK_SETTING_REFRESH_MAIN_ACTIVITY_ACTION;
+import static com.chenyee.stephenlau.floatingball.quick_setting.QuickSettingService.QUICK_SETTING_REFRESH_MAIN_ACTIVITY_ACTION;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 

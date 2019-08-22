@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball;
+package com.chenyee.stephenlau.floatingball.quick_setting;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.service.quicksettings.TileService;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;

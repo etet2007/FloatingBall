@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.SwitchCompat;
@@ -25,11 +26,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.ui.activity.MainActivity;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
@@ -57,52 +56,31 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE
 
 
 public class SettingFragment extends Fragment {
-
     private static final String TAG = SettingFragment.class.getSimpleName();
     // 调用系统相册-选择图片
-    private static final int REQUEST_CODE_IMAGE = 1;
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_CODE_BACKGROUND_IMAGE = 1;
+    private static final int REQUEST_EXTERNAL_STORAGE = 2;
     // Widgets
-    @BindView(R.id.root_linearLayout)
-    LinearLayoutCompat rootLinearLayout;
-    @BindView(R.id.opacity_seekbar)
-    DiscreteSeekBar opacitySeekBar;
-    @BindView(R.id.size_seekbar)
-    DiscreteSeekBar sizeSeekBar;
-    @BindView(R.id.minusFloatingActionButton)
-    FloatingActionButton minusButton;
-    @BindView(R.id.amountTextView)
-    AppCompatTextView amountTextView;
-    @BindView(R.id.plusFloatingActionButton)
-    FloatingActionButton plusButton;
-    @BindView(R.id.opacity_mode_textView)
-    AppCompatTextView opacityModeTextView;
-    @BindView(R.id.choosePic_button)
-    Button choosePicButton;
-    @BindView(R.id.background_switch)
-    SwitchCompat backgroundSwitch;
-    @BindView(R.id.use_gray_background_switch)
-    SwitchCompat useGrayBackgroundSwitch;
-    @BindView(R.id.single_tap_textView)
-    AppCompatTextView singleTapTextView;
-    @BindView(R.id.double_click_textView)
-    AppCompatTextView doubleClickTextView;
-    @BindView(R.id.left_swipe_textView)
-    AppCompatTextView leftSlideTextView;
-    @BindView(R.id.up_swipe_textView)
-    AppCompatTextView upSlideTextView;
-    @BindView(R.id.down_swipe_textView)
-    AppCompatTextView downSlideTextView;
-    @BindView(R.id.right_swipe_textView)
-    AppCompatTextView rightSlideTextView;
-    @BindView(R.id.is_rotate_hide)
-    SwitchCompat isRotateHideSwitch;
-    @BindView(R.id.vibrate_switch)
-    SwitchCompat vibrateSwitch;
-    @BindView(R.id.avoid_keyboard_switch)
-    SwitchCompat avoidKeyboardSwitch;
-    @BindView(R.id.upDistance_seekbar)
-    DiscreteSeekBar upDistanceSeekBar;
+    @BindView(R.id.root_linearLayout) LinearLayoutCompat rootLinearLayout;
+    @BindView(R.id.opacity_seekbar) DiscreteSeekBar opacitySeekBar;
+    @BindView(R.id.size_seekbar) DiscreteSeekBar sizeSeekBar;
+    @BindView(R.id.minusFloatingActionButton) FloatingActionButton minusButton;
+    @BindView(R.id.amountTextView) AppCompatTextView amountTextView;
+    @BindView(R.id.plusFloatingActionButton) FloatingActionButton plusButton;
+    @BindView(R.id.opacity_mode_textView) AppCompatTextView opacityModeTextView;
+    @BindView(R.id.choosePic_button) AppCompatButton choosePicButton;
+    @BindView(R.id.background_switch) SwitchCompat backgroundSwitch;
+    @BindView(R.id.use_gray_background_switch) SwitchCompat useGrayBackgroundSwitch;
+    @BindView(R.id.single_tap_textView) AppCompatTextView singleTapTextView;
+    @BindView(R.id.double_click_textView) AppCompatTextView doubleClickTextView;
+    @BindView(R.id.left_swipe_textView) AppCompatTextView leftSlideTextView;
+    @BindView(R.id.up_swipe_textView) AppCompatTextView upSlideTextView;
+    @BindView(R.id.down_swipe_textView) AppCompatTextView downSlideTextView;
+    @BindView(R.id.right_swipe_textView) AppCompatTextView rightSlideTextView;
+    @BindView(R.id.is_rotate_hide) SwitchCompat isRotateHideSwitch;
+    @BindView(R.id.vibrate_switch) SwitchCompat vibrateSwitch;
+    @BindView(R.id.avoid_keyboard_switch) SwitchCompat avoidKeyboardSwitch;
+    @BindView(R.id.upDistance_seekbar) DiscreteSeekBar upDistanceSeekBar;
     private Unbinder butterKnifeUnBinder;
 
     public SettingFragment() {
@@ -121,6 +99,7 @@ public class SettingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
         Activity activity = getActivity();
         if (activity instanceof MainActivity) {
             refreshViews(((MainActivity) activity).isBallSwitchIsChecked());
@@ -163,7 +142,7 @@ public class SettingFragment extends Fragment {
         Log.d(TAG, "onActivityResult: SettingFragment");
 
         //选取图片的回调
-        if (requestCode == REQUEST_CODE_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == REQUEST_CODE_BACKGROUND_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             if (selectedImage == null) {
                 return;
@@ -196,10 +175,6 @@ public class SettingFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_EXTERNAL_STORAGE) {
-            //判断是否成功
-            //            成功继续打开图片？
-        }
     }
 
     private void initContentViews() {
@@ -212,6 +187,7 @@ public class SettingFragment extends Fragment {
         avoidKeyboardSwitch.setChecked(BallSettingRepo.isAvoidKeyboard());
         isRotateHideSwitch.setChecked(BallSettingRepo.isRotateHideSetting());
         upDistanceSeekBar.setProgress(BallSettingRepo.moveUpDistance());
+
         updateFunctionListView();
         updateOpacityModeView();
 
@@ -233,6 +209,7 @@ public class SettingFragment extends Fragment {
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
             }
         });
+
         sizeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
@@ -247,85 +224,58 @@ public class SettingFragment extends Fragment {
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
             }
         });
-        plusButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BallSettingRepo.setAmount(BallSettingRepo.amount() + 1);
 
+        plusButton.setOnClickListener(v -> {
+            BallSettingRepo.setAmount(BallSettingRepo.amount() + 1);
+
+            Intent intent = new Intent(getActivity(), FloatingBallService.class);
+            Bundle data = new Bundle();
+            data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+            intent.putExtras(data);
+            getActivity().startService(intent);
+
+            amountTextView.setText(String.valueOf(BallSettingRepo.amount()));
+            refreshMinusButton();
+        });
+
+        refreshMinusButton();
+        minusButton.setOnClickListener(v -> {
+            int amount = BallSettingRepo.amount();
+
+            if (amount >= 2) {
+                BallSettingRepo.setAmount(amount - 1);
                 Intent intent = new Intent(getActivity(), FloatingBallService.class);
+
                 Bundle data = new Bundle();
-                data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+                data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE_LAST);
                 intent.putExtras(data);
                 getActivity().startService(intent);
 
                 amountTextView.setText(String.valueOf(BallSettingRepo.amount()));
-
             }
+
+            refreshMinusButton();
         });
 
-        minusButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int amount = BallSettingRepo.amount();
-                if (amount >= 2) {
-                    BallSettingRepo.setAmount(amount - 1);
-                    Intent intent = new Intent(getActivity(), FloatingBallService.class);
+        backgroundSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> SharedPrefsUtils.setBooleanPreference(PREF_USE_BACKGROUND, isChecked));
 
-                    Bundle data = new Bundle();
-                    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE_LAST);
-                    intent.putExtras(data);
-                    getActivity().startService(intent);
+        choosePicButton.setOnClickListener(v -> {
+            //检查权限 请求权限 选图片
+            requestStoragePermission();
 
-                    amountTextView.setText(String.valueOf(BallSettingRepo.amount()));
-
-                } else {
-                    //最少是1个
-                }
-            }
-        });
-
-        backgroundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPrefsUtils.setBooleanPreference(PREF_USE_BACKGROUND, isChecked);
-            }
-        });
-        choosePicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //检查权限 请求权限 选图片
-                requestStoragePermission();
-
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, REQUEST_CODE_IMAGE);//onActivityResult
-            }
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, REQUEST_CODE_BACKGROUND_IMAGE);//onActivityResult
         });
         useGrayBackgroundSwitch
-                .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        BallSettingRepo.setIsUseGrayBackground(isChecked);
-                    }
-                });
-        isRotateHideSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                BallSettingRepo.setIsRotateHideSetting(isChecked);
-            }
-        });
-        vibrateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                BallSettingRepo.setIsVibrate(isChecked);
-            }
-        });
-        avoidKeyboardSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                BallSettingRepo.setIsAvoidKeyboard(isChecked);
-            }
-        });
+                .setOnCheckedChangeListener((buttonView, isChecked) -> BallSettingRepo.setIsUseGrayBackground(isChecked));
+
+        isRotateHideSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> BallSettingRepo.setIsRotateHideSetting(isChecked));
+
+        vibrateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> BallSettingRepo.setIsVibrate(isChecked));
+
+        avoidKeyboardSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> BallSettingRepo.setIsAvoidKeyboard(isChecked));
+
         upDistanceSeekBar.setOnProgressChangeListener(new OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
@@ -342,6 +292,15 @@ public class SettingFragment extends Fragment {
 
             }
         });
+    }
+
+    private void refreshMinusButton() {
+        int amountInit = BallSettingRepo.amount();
+        if (amountInit == 1) {
+            minusButton.setEnabled(false);
+        } else {
+            minusButton.setEnabled(true);
+        }
     }
 
     private void updateFunctionListView() {
@@ -370,6 +329,7 @@ public class SettingFragment extends Fragment {
     private void updateOpacityModeView() {
         Resources res = getResources();
         String[] opacityModeList = res.getStringArray(R.array.opacity_mode);
+
         int opacityMode = SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE);
         opacityModeTextView.setText(opacityModeList[opacityMode]);
     }
@@ -460,11 +420,9 @@ public class SettingFragment extends Fragment {
     private void showFunctionDialog(int titleId, final String prefKey) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(titleId)
-                .setItems(R.array.function_array, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPrefsUtils.setIntegerPreference(prefKey, which);
-                        updateFunctionListView();
-                    }
+                .setItems(R.array.function_array, (dialog, which) -> {
+                    SharedPrefsUtils.setIntegerPreference(prefKey, which);
+                    updateFunctionListView();
                 }).show();
     }
 
@@ -472,11 +430,9 @@ public class SettingFragment extends Fragment {
     public void onOpacityModeClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.opacity_mode)
-                .setItems(R.array.opacity_mode, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
-                        updateOpacityModeView();
-                    }
+                .setItems(R.array.opacity_mode, (dialog, which) -> {
+                    SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
+                    updateOpacityModeView();
                 }).show();
     }
 }

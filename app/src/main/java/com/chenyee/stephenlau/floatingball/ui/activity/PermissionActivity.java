@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
+import com.chenyee.stephenlau.floatingball.common_receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtils;
 import com.chenyee.stephenlau.floatingball.util.LockScreenUtils;
 
@@ -100,8 +100,8 @@ public class PermissionActivity extends AppCompatActivity {
             hasLockScreenPermission = true;
         }
 
-        if (true) {
-//        if (hasDrawPermission & hasAccessibilityPermission & hasLockScreenPermission) {
+//        if (true) {
+        if (hasDrawPermission & hasAccessibilityPermission & hasLockScreenPermission) {
             startActivity(MainActivity.getStartIntent(getApplicationContext()));
             finish();
         }

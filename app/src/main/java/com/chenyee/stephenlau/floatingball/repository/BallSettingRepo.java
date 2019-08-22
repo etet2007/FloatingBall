@@ -82,7 +82,7 @@ public class BallSettingRepo {
     }
 
     public static int size() {
-        return SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 25);
+        return SharedPrefsUtils.getIntegerPreference(PREF_SIZE, 22);
     }
 
     public static void setSize(int value) {

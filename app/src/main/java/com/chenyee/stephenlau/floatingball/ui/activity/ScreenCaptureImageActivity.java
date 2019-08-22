@@ -31,7 +31,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
 import com.chenyee.stephenlau.floatingball.util.ScreenshotCallback;
 import com.chenyee.stephenlau.floatingball.util.ScreenshotUtil;

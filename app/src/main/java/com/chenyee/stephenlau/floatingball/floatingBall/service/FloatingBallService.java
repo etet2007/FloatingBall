@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.floatingBall;
+package com.chenyee.stephenlau.floatingball.floatingBall.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.Notification;
@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallController;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;

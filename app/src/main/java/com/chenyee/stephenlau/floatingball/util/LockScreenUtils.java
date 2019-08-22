@@ -5,7 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
-import com.chenyee.stephenlau.floatingball.receiver.LockRequestReceiver;
+import com.chenyee.stephenlau.floatingball.common_receiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.R;
 
 /**
