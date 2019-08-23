@@ -39,8 +39,8 @@
     <string name="up_swipe_title">Swipe up</string>
     <string name="up_swipe">Swipe up:</string>
 
-    <string name="down_swipe_title">Swipe up</string>
-    <string name="down_swipe">Swipe up:</string>
+    <string name="down_swipe_title">Swipe down</string>
+    <string name="down_swipe">Swipe down:</string>
 
     <string name="use_gray_background">Show gray background?</string>
     <!--function list-->

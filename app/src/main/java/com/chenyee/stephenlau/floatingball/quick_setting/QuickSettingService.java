@@ -12,7 +12,7 @@ import android.util.Log;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 
 /**
@@ -79,7 +79,7 @@ public class QuickSettingService extends TileService {
     private void addFloatBall() {
         Intent intent = new Intent(QuickSettingService.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_START);
+        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_START);
         intent.putExtras(data);
         startService(intent);
     }
@@ -87,7 +87,7 @@ public class QuickSettingService extends TileService {
     private void removeFloatBall() {
         Intent intent = new Intent(QuickSettingService.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE_ALL);
+        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_REMOVE_ALL);
         intent.putExtras(data);
         startService(intent);
     }

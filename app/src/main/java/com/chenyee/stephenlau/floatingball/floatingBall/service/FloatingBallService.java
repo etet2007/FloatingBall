@@ -14,13 +14,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallController;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 
 
 /**
@@ -40,10 +41,10 @@ public class FloatingBallService extends AccessibilityService {
   public static final int TYPE_ADD = 5;
   public static final int TYPE_REMOVE_LAST = 6;
 
-  private String mCurrentPackageName;
+  private String currentPackageName;
 
-  public String getmCurrentPackageName() {
-    return mCurrentPackageName;
+  public String getCurrentPackageName() {
+    return currentPackageName;
   }
 
   private FloatingBallController mFloatingBallController;
@@ -129,7 +130,7 @@ public class FloatingBallService extends AccessibilityService {
 
     switch (type) {
       case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-        mCurrentPackageName = event.getPackageName() == null ? "" : event.getPackageName().toString();
+        currentPackageName = event.getPackageName() == null ? "" : event.getPackageName().toString();
         break;
     }
 
@@ -158,7 +159,7 @@ public class FloatingBallService extends AccessibilityService {
 
       Bundle data = intent.getExtras();
       if (data != null) {
-        int type = data.getInt(EXTRA_TYPE);
+        int type = data.getInt(EXTRAS_COMMAND);
 
         if (type == TYPE_START) {
           mFloatingBallController.startBallView(FloatingBallService.this);
@@ -169,7 +170,7 @@ public class FloatingBallService extends AccessibilityService {
         }
 
         if (type == TYPE_HIDE) {
-          mFloatingBallController.setBallViewVisibility(data.getBoolean("isHide"));
+          mFloatingBallController.setBallViewIsHide(data.getBoolean("isHide"));
         }
 
         //intent中传图片地址，也可以换为sharedPreference吧
@@ -193,10 +194,13 @@ public class FloatingBallService extends AccessibilityService {
     return super.onStartCommand(intent, flags, startId);
   }
 
-  public void hideBall() {
+  public void hideBallTemporary() {
+    mFloatingBallController.setBallViewIsHide(true);
+  }
+
+  public void hideBallForLongTime() {
     getFloatingBallController();
     mFloatingBallController.removeBallView();
-
     sendHideBallNotification();
   }
 
@@ -214,7 +218,7 @@ public class FloatingBallService extends AccessibilityService {
 
     Intent intent = new Intent(this, FloatingBallService.class);
     Bundle data = new Bundle();
-    data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_START);
+    data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_START);
     intent.putExtras(data);
     PendingIntent addBallPendingIntent = PendingIntent.getService(this, 0, intent, 0);
 

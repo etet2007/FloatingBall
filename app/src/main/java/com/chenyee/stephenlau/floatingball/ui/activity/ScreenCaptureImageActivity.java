@@ -22,35 +22,58 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.VirtualDisplay;
+import android.media.Image;
+import android.media.ImageReader;
+import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
-import com.chenyee.stephenlau.floatingball.util.ScreenshotCallback;
-import com.chenyee.stephenlau.floatingball.util.ScreenshotUtil;
+import com.chenyee.stephenlau.floatingball.util.DimensionUtils;
 
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 
 public class ScreenCaptureImageActivity extends Activity {
     public static final String TAG = ScreenCaptureImageActivity.class.getSimpleName();
 
-    private static final int REQUEST_MEDIA_PROJECTION = 1;
-    private static final int REQUEST_EXTERNAL_STORAGE = 2;
+    private static final int REQUEST_CODE_MEDIA_PROJECTION = 1;
+    private static final int REQUEST_CODE_STORAGE = 2;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    private MediaProjectionManager mediaProjectionManager;
+    private VirtualDisplay virtualDisplay;
+    private MediaProjection mediaProjection;
+
+    private static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_CODE_STORAGE
+            );
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,15 +91,11 @@ public class ScreenCaptureImageActivity extends Activity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void takeScreenshot() {
-        //隐藏悬浮球
-        setBallIsHide(true);
-
-        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)
-                getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        mediaProjectionManager = (MediaProjectionManager) getApplicationContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         if (mediaProjectionManager != null) {
             startActivityForResult(
                     mediaProjectionManager.createScreenCaptureIntent(),
-                    REQUEST_MEDIA_PROJECTION);
+                    REQUEST_CODE_MEDIA_PROJECTION);
         }
     }
 
@@ -87,68 +106,91 @@ public class ScreenCaptureImageActivity extends Activity {
      * @param resultCode
      * @param data
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_MEDIA_PROJECTION) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_MEDIA_PROJECTION && resultCode == RESULT_OK) {
 
-                //返回的数据在data中
-                ScreenshotUtil.sInstance//其实不懂为什么要使用单例？
-                        .takeScreenshot(getApplicationContext(), resultCode, data, new ScreenshotCallback() {
-                            @Override
-                            public void onScreenshot(final Bitmap bitmap) {
-                                Log.d(TAG, "onScreenshot: ");
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hhmmss");
-                                Date date = new Date();
-                                String strDate = dateFormat.format(date);
-                                String fileName = strDate + ".jpg";
+            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
 
-                                String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/Screenshots/";
+            ImageReader imageReader = ImageReader.newInstance(DimensionUtils.gScreenWidth, DimensionUtils.gScreenHeight, PixelFormat.RGBA_8888, 2);
+            HandlerThread processingThread = new HandlerThread("processingThread");
+            processingThread.start();
+            Handler processingThreadHandler = new Handler(processingThread.getLooper());
 
-                                BitmapUtils.copyImageToExternal(bitmap, dir, fileName);
-                                bitmap.recycle();
+            imageReader.setOnImageAvailableListener(reader -> {
+                Image image = null;
+                try {
+                    image = reader.acquireLatestImage();
 
+                    if (image == null) {
+                        return;
+                    }
+                    //图片宽高
+                    int width1 = image.getWidth();
+                    int height1 = image.getHeight();
 
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setBallIsHide(false);
-                                        Toast.makeText(getApplicationContext(), getString(R.string.screenshot_succeed), Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    }
-                                });
-                            }
-                        });
-            } else {
-                Toast.makeText(ScreenCaptureImageActivity.this, getString(R.string.screenshot_fail), Toast.LENGTH_SHORT).show();
-            }
+                    final Image.Plane[] planes = image.getPlanes();
+                    //数据缓冲区
+                    final ByteBuffer buffer = planes[0].getBuffer();
+                    //像素间距4行填充32
+                    int pixelStride = planes[0].getPixelStride();
+                    //行间距4352表示存储图片每行的数据
+                    int rowStride = planes[0].getRowStride();
+                    int rowPadding = rowStride - pixelStride * width1;
+
+                    Bitmap bitmap = Bitmap.createBitmap(width1 + rowPadding / pixelStride, height1, Bitmap.Config.ARGB_8888);
+                    bitmap.copyPixelsFromBuffer(buffer);
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width1, height1);
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hhmmss");
+                    Date date = new Date();
+                    String strDate = dateFormat.format(date);
+                    String screenshotFileName = strDate + ".jpg";
+                    String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/Screenshots/";
+                    BitmapUtils.copyImageToExternal(bitmap, dir, screenshotFileName);
+                    bitmap.recycle();
+
+                    Toast.makeText(getApplicationContext(), getString(R.string.screenshot_succeed), Toast.LENGTH_SHORT).show();
+
+                } catch (Exception ignored) {
+                    Toast.makeText(this, getString(R.string.screenshot_fail), Toast.LENGTH_SHORT).show();
+                } finally {
+                    if (image != null) {
+                        image.close();
+                    }
+                    imageReader.close();
+
+                    if (virtualDisplay != null) {
+                        virtualDisplay.release();
+                        virtualDisplay = null;
+                    }
+                    if (mediaProjection != null) {
+                        mediaProjection.stop();
+                        mediaProjection = null;
+                    }
+                    finish();
+                }
+            }, processingThreadHandler);
+
+            virtualDisplay = mediaProjection.createVirtualDisplay("screenshot", DimensionUtils.gScreenWidth, DimensionUtils.gScreenHeight,
+                    DimensionUtils.gScreenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.getSurface(), null, null);
         } else {
             Toast.makeText(this, getString(R.string.screenshot_fail), Toast.LENGTH_SHORT).show();
         }
     }
 
-    public static void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-        }
-    }
-
     @Override
-    public void onBackPressed() {
-        moveTaskToBack(false);
+    protected void onDestroy() {
+        setBallIsHide(false);
+        super.onDestroy();
     }
 
     private void setBallIsHide(boolean isHide) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_HIDE);
+        bundle.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_HIDE);
         bundle.putBoolean("isHide", isHide);
+
         Intent intent = new Intent(this, FloatingBallService.class)
                 .putExtras(bundle);
         startService(intent);

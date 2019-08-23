@@ -3,7 +3,6 @@ package com.chenyee.stephenlau.floatingball.ui.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -23,9 +22,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
@@ -43,7 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRA_TYPE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
@@ -161,7 +158,7 @@ public class SettingFragment extends Fragment {
 
             //发送Intent给FloatingBallService
             Bundle bundle = new Bundle();
-            bundle.putInt(EXTRA_TYPE, FloatingBallService.TYPE_IMAGE);
+            bundle.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_IMAGE);
             bundle.putString("imagePath", imagePath);
             Intent intent = new Intent(getActivity(), FloatingBallService.class)
                     .putExtras(bundle);
@@ -230,7 +227,7 @@ public class SettingFragment extends Fragment {
 
             Intent intent = new Intent(getActivity(), FloatingBallService.class);
             Bundle data = new Bundle();
-            data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_ADD);
+            data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_ADD);
             intent.putExtras(data);
             getActivity().startService(intent);
 
@@ -247,7 +244,7 @@ public class SettingFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), FloatingBallService.class);
 
                 Bundle data = new Bundle();
-                data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_REMOVE_LAST);
+                data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_REMOVE_LAST);
                 intent.putExtras(data);
                 getActivity().startService(intent);
 
@@ -267,6 +264,7 @@ public class SettingFragment extends Fragment {
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, REQUEST_CODE_BACKGROUND_IMAGE);//onActivityResult
         });
+
         useGrayBackgroundSwitch
                 .setOnCheckedChangeListener((buttonView, isChecked) -> BallSettingRepo.setIsUseGrayBackground(isChecked));
 
@@ -342,7 +340,7 @@ public class SettingFragment extends Fragment {
         }
     }
 
-    private void enableAll(View root, boolean enanbled) {
+    private void enableAll(View root, boolean enabled) {
         ArrayDeque stack = new ArrayDeque();
         stack.addLast(root);
         while (!stack.isEmpty()) {
@@ -356,10 +354,8 @@ public class SettingFragment extends Fragment {
                 for (int i = childCount - 1; i >= 0; i--) {
                     stack.addLast(((ViewGroup) top).getChildAt(i));
                 }
-            }
-            //如果栈顶为View类型，输出
-            else if (top instanceof View) {
-                top.setEnabled(enanbled);
+            } else if (top != null) { //如果栈顶为View类型，输出
+                top.setEnabled(enabled);
             }
         }
     }
@@ -370,7 +366,7 @@ public class SettingFragment extends Fragment {
     private void sendClearIntentToService() {
         Intent intent = new Intent(getActivity(), FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRA_TYPE, FloatingBallService.TYPE_CLEAR);
+        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_CLEAR);
         intent.putExtras(data);
         getActivity().startService(intent);
     }
@@ -428,6 +424,7 @@ public class SettingFragment extends Fragment {
 
     @OnClick(R.id.opacity_mode_relativeLayout)
     public void onOpacityModeClicked(View view) {
+        //showOpacityModeDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.opacity_mode)
                 .setItems(R.array.opacity_mode, (dialog, which) -> {

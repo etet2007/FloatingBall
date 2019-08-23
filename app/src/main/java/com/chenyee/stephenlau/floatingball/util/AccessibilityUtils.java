@@ -39,6 +39,7 @@ public class AccessibilityUtils {
       Intent intent = new Intent();
       intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
       intent.addCategory(Intent.CATEGORY_HOME); //"android.intent.category.HOME"
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       service.startActivity(intent);
       return;
     }
@@ -48,6 +49,7 @@ public class AccessibilityUtils {
       Intent intent = new Intent();
       intent.setAction(Intent.ACTION_MAIN);// "android.intent.action.MAIN"
       intent.addCategory(Intent.CATEGORY_HOME); //"android.intent.category.HOME"
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       service.startActivity(intent);
     }
   }

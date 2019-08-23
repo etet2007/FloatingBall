@@ -304,7 +304,7 @@ public class FloatingBallController {
   /**
    * screenshot时暂时隐藏
    */
-  public void setBallViewVisibility(boolean isHide) {
+  public void setBallViewIsHide(boolean isHide) {
     for (FloatingBallView floatingBallView : floatingBallViewList) {
       floatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
     }

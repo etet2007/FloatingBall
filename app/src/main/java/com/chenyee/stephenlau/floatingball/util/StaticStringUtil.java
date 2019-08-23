@@ -42,8 +42,8 @@ public class StaticStringUtil {
 
     public static final String PREF_MOVE_UP_DISTANCE = "PREF_MOVE_UP_DISTANCE";
 
-    //EXTRA_TYPE
-    public static final String EXTRA_TYPE = "EXTRA_TYPE";
+    //EXTRAS_COMMAND
+    public static final String EXTRAS_COMMAND = "EXTRAS_COMMAND";
 
     public static final int RECENT_APPS = 0;
     public static final int LAST_APPS = 1;

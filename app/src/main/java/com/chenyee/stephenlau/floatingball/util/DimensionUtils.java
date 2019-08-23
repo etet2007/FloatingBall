@@ -1,7 +1,7 @@
 package com.chenyee.stephenlau.floatingball.util;
 
 import android.content.Context;
-import android.graphics.Point;
+import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import com.chenyee.stephenlau.floatingball.App;
@@ -9,6 +9,7 @@ import com.chenyee.stephenlau.floatingball.App;
 public class DimensionUtils {
     public static int gScreenWidth;
     public static int gScreenHeight;
+    public static int gScreenDensity;
 
     /**
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
@@ -29,10 +30,12 @@ public class DimensionUtils {
     public static void setupScreenSize() {
         WindowManager windowManager = (WindowManager) App.getApplication().getSystemService(Context.WINDOW_SERVICE);
         if (windowManager != null) {
-            Point size = new Point();
-            windowManager.getDefaultDisplay().getSize(size);
-            gScreenWidth = size.x;
-            gScreenHeight = size.y;
+            final DisplayMetrics metrics = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+
+            gScreenDensity = metrics.densityDpi;
+            gScreenWidth = metrics.widthPixels;
+            gScreenHeight = metrics.heightPixels;
         }
     }
 }
