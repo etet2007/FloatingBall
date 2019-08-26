@@ -18,7 +18,7 @@ public class StartServiceAtBootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Intent startServiceIntent = new Intent(context, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_START);
+        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_SWITCH_ON);
         startServiceIntent.putExtras(data);
     }
 }

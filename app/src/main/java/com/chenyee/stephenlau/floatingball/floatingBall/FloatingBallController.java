@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
-
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
@@ -19,302 +18,313 @@ import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import java.util.ArrayList;
 
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_VIBRATE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_LEFT_SWIPE_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_MOVE_UP_DISTANCE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_OPACITY;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_OPACITY_MODE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_RIGHT_SWIPE_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_SINGLE_TAP_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_SIZE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_UP_SWIPE_EVENT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_BACKGROUND;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_GRAY_BACKGROUND;
 
 /**
- * 管理FloatingBall的类。 单例，因为只需要一个FloatingBallView
+ * 管理FloatingBall的单例
  */
 public class FloatingBallController {
+    private static final String TAG = FloatingBallController.class.getSimpleName();
+    //Singleton
+    private static FloatingBallController sFloatingBallController = new FloatingBallController();
 
-  private static final String TAG = FloatingBallController.class.getSimpleName();
-  //Single
-  private static FloatingBallController sFloatingBallController = new FloatingBallController();
+    /**
+     * View
+     */
+    private ArrayList<FloatingBallView> floatingBallViewList = new ArrayList<>();
 
-  /**
-   * View
-   */
-  private ArrayList<FloatingBallView> floatingBallViewList = new ArrayList<>();
+    private boolean isSoftKeyboardShow = false;
+    //内存中变量
+    private boolean isStartedBallView = false;
+    private boolean isHideBecauseRotate = false;
+    private WindowManager windowManager;
 
-  private boolean isSoftKeyboardShow = false;
-  //内存中变量
-  private boolean isStartedBallView = false;
-
-  public boolean isHideBecauseRotate() {
-    return isHideBecauseRotate;
-  }
-
-  private boolean isHideBecauseRotate = false;
-
-  private WindowManager windowManager;
-
-  private FloatingBallController() {
-  }
-
-  public static FloatingBallController getInstance() {
-    return sFloatingBallController;
-  }
-
-  /**
-   * new floatingBallView and add to WindowManager
-   */
-  public void startBallView(Context context) {
-    if (isStartedBallView) {//已经开启
-      return;
+    private FloatingBallController() {
     }
 
-    windowManager = (WindowManager) App.getApplication().getApplicationContext()
-        .getSystemService(Context.WINDOW_SERVICE);
-
-    int amount = BallSettingRepo.amount();
-    for (int id = 0; id < amount; id++) {
-      addFloatingBallView(context, id);
+    public static FloatingBallController getInstance() {
+        return sFloatingBallController;
     }
 
-    updateParameter();
-
-    // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
-    FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
-
-    isStartedBallView = true;
-    SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
-  }
-
-  public void addFloatingBallView(Context context, int id) {
-    if (windowManager == null) {
-      throw new NullPointerException();
+    public boolean isHideBecauseRotate() {
+        return isHideBecauseRotate;
     }
-    FloatingBallView floatingBallView = new FloatingBallView(context, id);
-    floatingBallViewList.add(floatingBallView);
 
-    // use code to initialize layout parameters
-    LayoutParams params = new LayoutParams();
-    params.width = LayoutParams.WRAP_CONTENT;
-    params.height = LayoutParams.WRAP_CONTENT;
-    params.gravity = Gravity.START | Gravity.TOP;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
-    } else {
-      params.type = LayoutParams.TYPE_SYSTEM_ALERT;
+    /**
+     * new floatingBallView and add to WindowManager
+     */
+    public void startBallView(Context context) {
+        if (isStartedBallView) {//已经开启
+            return;
+        }
+
+        windowManager = (WindowManager) App.getApplication().getApplicationContext()
+                .getSystemService(Context.WINDOW_SERVICE);
+
+        int amount = BallSettingRepo.amount();
+        for (int id = 0; id < amount; id++) {
+            addFloatingBallView(context, id);
+        }
+
+        updateParameter();
+
+        // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
+        FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
+
+        isStartedBallView = true;
+        SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
     }
-    params.format = PixelFormat.RGBA_8888;
-    params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
-        | LayoutParams.FLAG_NOT_FOCUSABLE
-        | LayoutParams.FLAG_LAYOUT_IN_SCREEN
-        | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
-    floatingBallView.setBallViewLayoutParams(params);
-    windowManager.addView(floatingBallView, params);
 
-    updateParameter();
-  }
+    public void addFloatingBallView(Context context, int id) {
+        if (windowManager == null) {
+            return;
+        }
+        FloatingBallView floatingBallView = new FloatingBallView(context, id);
+        floatingBallViewList.add(floatingBallView);
 
-  /**
-   * 开关中的关闭
-   */
-  public void removeBallView() {
-    BallSettingRepo.setIsAddedBallInSetting(false);
-    removeAll();
-  }
+        // use code to initialize layout parameters
+        LayoutParams params = new LayoutParams();
+        params.width = LayoutParams.WRAP_CONTENT;
+        params.height = LayoutParams.WRAP_CONTENT;
+        params.gravity = Gravity.START | Gravity.TOP;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
+        } else {
+            params.type = LayoutParams.TYPE_SYSTEM_ALERT;
+        }
+        params.format = PixelFormat.RGBA_8888;
+        params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | LayoutParams.FLAG_NOT_FOCUSABLE
+                | LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
+        floatingBallView.setBallViewLayoutParams(params);
+        windowManager.addView(floatingBallView, params);
 
-  /**
-   * 旋转屏幕时隐藏
-   */
-  public void hideWhenRotate() {
-//    BallSettingRepo.setIsBallHideBecauseRotate(true);
-    isHideBecauseRotate = true;
-    removeAll();
-  }
-
-  /**
-   * 旋转屏幕后出现
-   */
-  public void startWhenRotateBack(Context context) {
-    startBallView(context);
-//    BallSettingRepo.setIsBallHideBecauseRotate(false);
-    isHideBecauseRotate = false;
-  }
-
-  //暂时与屏幕旋转隐藏冲突！
-  public void hideWhenKeyboardShow() {
-    removeAll();
-  }
-
-  public void removeLastFloatingBall() {
-    if (floatingBallViewList.size() > 1) {//最小数量为1
-      FloatingBallView floatingBallView = floatingBallViewList.get(floatingBallViewList.size() - 1);
-      floatingBallView.removeBallWithAnimation();
-      floatingBallViewList.remove(floatingBallView);
+        updateParameter();
     }
-  }
 
-  private void removeAll() {
-    isStartedBallView = false;
-    for (FloatingBallView floatingBallView : floatingBallViewList) {
-      floatingBallView.removeBallWithAnimation();
+    /**
+     * 开关中的关闭
+     */
+    public void removeBallView() {
+        BallSettingRepo.setIsAddedBallInSetting(false);
+        removeAll();
     }
-    floatingBallViewList.clear();
-  }
 
-
-  /**
-   * 设置背景图 复制外部路径的图片到目录中去，更新bitmapRead，再进行裁剪
-   *
-   * @param imagePath 外部图片地址
-   */
-  public void setBackgroundImage(String imagePath) {
-    BitmapUtils.copyBackgroundImage(imagePath);
-
-    for (FloatingBallView floatingBallView : floatingBallViewList) {
-      floatingBallView.setBitmapRead();
-      floatingBallView.createBitmapCropFromBitmapRead();
-      floatingBallView.invalidate();
+    /**
+     * 旋转屏幕时隐藏
+     */
+    public void hideWhenRotate() {
+        //    BallSettingRepo.setIsBallHideBecauseRotate(true);
+        isHideBecauseRotate = true;
+        removeAll();
     }
-  }
 
-  public void updateSpecificParameter(String key) {
-    for (FloatingBallView floatingBallView : floatingBallViewList) {
-
-      switch (key) {
-        case PREF_OPACITY:
-          floatingBallView.setOpacity(BallSettingRepo.opacity());
-          break;
-        case PREF_OPACITY_MODE:
-          floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
-          break;
-        case PREF_SIZE:
-          floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
-          break;
-        case PREF_USE_BACKGROUND:
-          floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
-          break;
-        case PREF_USE_GRAY_BACKGROUND:
-        case PREF_IS_VIBRATE:
-        case PREF_MOVE_UP_DISTANCE:
-          floatingBallView.updateModelData();
-          break;
-      }
-      //refresh the layout and draw the view
-      floatingBallView.requestLayout();
-      floatingBallView.invalidate();
-
-      switch (key) {
-        case PREF_DOUBLE_CLICK_EVENT:
-          floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
-          break;
-        case PREF_LEFT_SWIPE_EVENT:
-          floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
-          break;
-        case PREF_RIGHT_SWIPE_EVENT:
-          floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
-          break;
-        case PREF_UP_SWIPE_EVENT:
-          floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
-          break;
-        case PREF_DOWN_SWIPE_EVENT:
-          floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
-          break;
-        case PREF_SINGLE_TAP_EVENT:
-          floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
-          break;
-      }
+    /**
+     * 旋转屏幕后出现
+     */
+    public void startWhenRotateBack(Context context) {
+        startBallView(context);
+        //    BallSettingRepo.setIsBallHideBecauseRotate(false);
+        isHideBecauseRotate = false;
     }
-  }
 
-  /**
-   * Use sharedPreference data to update all parameter
-   */
-  private void updateParameter() {
-    for (FloatingBallView floatingBallView : floatingBallViewList) {
-
-      floatingBallView.updateLayoutParamsWithOrientation();
-      /* View */
-      floatingBallView.setOpacity(BallSettingRepo.opacity());
-      floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
-      floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
-      floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
-
-      floatingBallView.updateModelData();
-
-      floatingBallView.requestLayout();
-      floatingBallView.invalidate();
-
-      /* Function */
-      floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
-      floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
-      floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
-      floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
-      floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
-      floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
+    //暂时与屏幕旋转隐藏冲突！
+    public void hideWhenKeyboardShow() {
+        removeAll();
     }
-  }
 
-  /**
-   * According to the state of input method, move the floatingBall view.
-   */
-  public void inputMethodDetect(Context context) {
-    if (InputMethodDetector.detectIsInputingWithHeight(100)) {
-      onKeyboardShow();
-    } else {
-      onKeyboardDisappear(context);
+    public void removeLastFloatingBall() {
+        if (floatingBallViewList.size() > 1) {//最小数量为1
+            FloatingBallView floatingBallView = floatingBallViewList.get(floatingBallViewList.size() - 1);
+            floatingBallView.removeBallWithAnimation();
+            floatingBallViewList.remove(floatingBallView);
+        }
     }
-  }
 
-  /**
-   * 键盘检查，可能引起隐藏或躲避
-   */
-  private void onKeyboardShow() {
-    if (!isSoftKeyboardShow) {
-
-      if (BallSettingRepo.isHideWhenKeyboardShow()) {
-        hideWhenKeyboardShow();
-      } else if (BallSettingRepo.isAvoidKeyboard()) {
+    private void removeAll() {
+        isStartedBallView = false;
         for (FloatingBallView floatingBallView : floatingBallViewList) {
-          floatingBallView.moveToKeyboardTop();
+            floatingBallView.removeBallWithAnimation();
         }
-      }
-
+        floatingBallViewList.clear();
     }
 
-    isSoftKeyboardShow = true;
-  }
 
-  private void onKeyboardDisappear(Context context) {
-    if (isSoftKeyboardShow) {
+    /**
+     * 设置背景图 复制外部路径的图片到目录中去，更新bitmapRead，再进行裁剪
+     *
+     * @param imagePath 外部图片地址
+     */
+    public void setBackgroundImage(String imagePath) {
+        BitmapUtils.copyBackgroundImage(imagePath);
 
-      if (BallSettingRepo.isHideWhenKeyboardShow()) {
-        if (!isHideBecauseRotate) {
-          startBallView(context);
-        }
-      } else if (BallSettingRepo.isAvoidKeyboard()) {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
-          floatingBallView.moveBackWhenKeyboardDisappear();
+            floatingBallView.setBitmapRead();
+            floatingBallView.createBitmapCropFromBitmapRead();
+            floatingBallView.invalidate();
         }
-      }
-
     }
-    isSoftKeyboardShow = false;
-  }
 
+    public void updateSpecificParameter(String key) {
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
 
-  public void recycleBitmapMemory() {
-    for (FloatingBallView floatingBallView : floatingBallViewList) {
-      floatingBallView.recycleBitmap();
+            switch (key) {
+                case PREF_OPACITY:
+                    floatingBallView.setOpacity(BallSettingRepo.opacity());
+                    break;
+                case PREF_OPACITY_MODE:
+                    floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
+                    break;
+                case PREF_SIZE:
+                    floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
+                    break;
+                case PREF_USE_BACKGROUND:
+                    floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
+                    break;
+                case PREF_USE_GRAY_BACKGROUND:
+                case PREF_IS_VIBRATE:
+                case PREF_MOVE_UP_DISTANCE:
+                    floatingBallView.updateModelData();
+                    break;
+            }
+            //refresh the layout and draw the view
+            floatingBallView.requestLayout();
+            floatingBallView.invalidate();
+
+            switch (key) {
+                case PREF_DOUBLE_CLICK_EVENT:
+                    floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
+                    break;
+                case PREF_LEFT_SWIPE_EVENT:
+                    floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
+                    break;
+                case PREF_RIGHT_SWIPE_EVENT:
+                    floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
+                    break;
+                case PREF_UP_SWIPE_EVENT:
+                    floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
+                    break;
+                case PREF_DOWN_SWIPE_EVENT:
+                    floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
+                    break;
+                case PREF_SINGLE_TAP_EVENT:
+                    floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
+                    break;
+            }
+        }
     }
-  }
 
-  /**
-   * screenshot时暂时隐藏
-   */
-  public void setBallViewIsHide(boolean isHide) {
-    for (FloatingBallView floatingBallView : floatingBallViewList) {
-      floatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
+    /**
+     * Use sharedPreference data to update all parameter
+     */
+    private void updateParameter() {
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
+
+            floatingBallView.updateLayoutParamsWithOrientation();
+            /* View */
+            floatingBallView.setOpacity(BallSettingRepo.opacity());
+            floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
+            floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
+            floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
+
+            floatingBallView.updateModelData();
+
+            floatingBallView.requestLayout();
+            floatingBallView.invalidate();
+
+            /* Function */
+            floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
+            floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
+            floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
+            floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
+            floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
+            floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
+        }
     }
-  }
 
-
-  public void updateBallViewLayout() {
-    for (FloatingBallView floatingBallView : floatingBallViewList) {
-      floatingBallView.updateLayoutParamsWithOrientation();
+    /**
+     * According to the state of input method, move the floatingBall view.
+     */
+    public void inputMethodDetect(Context context) {
+        if (InputMethodDetector.detectIsInputingWithHeight(100)) {
+            onKeyboardShow();
+        } else {
+            onKeyboardDisappear(context);
+        }
     }
-  }
+
+    /**
+     * 键盘检查，可能引起隐藏或躲避
+     */
+    private void onKeyboardShow() {
+        if (!isSoftKeyboardShow) {
+
+            if (BallSettingRepo.isHideWhenKeyboardShow()) {
+                hideWhenKeyboardShow();
+            } else if (BallSettingRepo.isAvoidKeyboard()) {
+                for (FloatingBallView floatingBallView : floatingBallViewList) {
+                    floatingBallView.moveToKeyboardTop();
+                }
+            }
+
+        }
+
+        isSoftKeyboardShow = true;
+    }
+
+    private void onKeyboardDisappear(Context context) {
+        if (isSoftKeyboardShow) {
+
+            if (BallSettingRepo.isHideWhenKeyboardShow()) {
+                if (!isHideBecauseRotate) {
+                    startBallView(context);
+                }
+            } else if (BallSettingRepo.isAvoidKeyboard()) {
+                for (FloatingBallView floatingBallView : floatingBallViewList) {
+                    floatingBallView.moveBackWhenKeyboardDisappear();
+                }
+            }
+
+        }
+        isSoftKeyboardShow = false;
+    }
+
+
+    public void recycleBitmapMemory() {
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
+            floatingBallView.recycleBitmap();
+        }
+    }
+
+    /**
+     * screenshot时暂时隐藏
+     */
+    public void setBallViewIsHide(boolean isHide) {
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
+            floatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
+        }
+    }
+
+
+    public void updateBallViewLayout() {
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
+            floatingBallView.updateLayoutParamsWithOrientation();
+        }
+    }
 
 }

@@ -158,7 +158,7 @@ public class SettingFragment extends Fragment {
 
             //发送Intent给FloatingBallService
             Bundle bundle = new Bundle();
-            bundle.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_IMAGE);
+            bundle.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_IMAGE_PATH);
             bundle.putString("imagePath", imagePath);
             Intent intent = new Intent(getActivity(), FloatingBallService.class)
                     .putExtras(bundle);

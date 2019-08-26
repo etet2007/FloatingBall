@@ -79,7 +79,7 @@ public class QuickSettingService extends TileService {
     private void addFloatBall() {
         Intent intent = new Intent(QuickSettingService.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_START);
+        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_SWITCH_ON);
         intent.putExtras(data);
         startService(intent);
     }

@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -14,8 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallController;
@@ -23,233 +22,200 @@ import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 
-
 /**
  * Accessibility services should only be used to assist users with disabilities in using Android devices and apps. Such
  * a service can optionally随意地 request the capability能力 for querying the content of the active window.
  */
 
 public class FloatingBallService extends AccessibilityService {
+    public static final int TYPE_SWITCH_ON = 0;
+    public static final int TYPE_REMOVE_ALL = 1;
+    public static final int TYPE_IMAGE_PATH = 2;
+    public static final int TYPE_CLEAR = 3;
+    public static final int TYPE_HIDE_TEMPORARILY = 4;
+    public static final int TYPE_ADD = 5;
+    public static final int TYPE_REMOVE_LAST = 6;
 
-  private static final String TAG = FloatingBallService.class.getSimpleName();
+    private static final String TAG = FloatingBallService.class.getSimpleName();
 
-  public static final int TYPE_START = 0;
-  public static final int TYPE_REMOVE_ALL = 1;
-  public static final int TYPE_IMAGE = 2;
-  public static final int TYPE_CLEAR = 3;
-  public static final int TYPE_HIDE = 4;
-  public static final int TYPE_ADD = 5;
-  public static final int TYPE_REMOVE_LAST = 6;
+    private String targetPackageName;
+    private FloatingBallController floatingBallController = FloatingBallController.getInstance();
 
-  private String currentPackageName;
+    private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            Log.d(TAG, "onSharedPreferenceChanged: ");
+            floatingBallController.updateSpecificParameter(key);
+        }
+    };
 
-  public String getCurrentPackageName() {
-    return currentPackageName;
-  }
-
-  private FloatingBallController mFloatingBallController;
-
-  private void getFloatingBallController() {
-    if (mFloatingBallController == null) {
-      mFloatingBallController = FloatingBallController.getInstance();
+    public String getTargetPackageName() {
+        return targetPackageName;
     }
-  }
 
-  public static Intent getStartIntent(Context context) {
-    return new Intent(context, FloatingBallService.class);
-  }
-
-  private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-      Log.d(TAG, "onSharedPreferenceChanged: ");
-      mFloatingBallController.updateSpecificParameter(key);
-    }
-  };
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        Log.d(TAG, "onServiceConnected: ");
+        Toast.makeText(this, "onServiceConnected", Toast.LENGTH_LONG).show();
+        floatingBallController.startBallView(FloatingBallService.this);
 
-  /**
-   * 初始化
-   */
-  @Override
-  protected void onServiceConnected() {
-    super.onServiceConnected();
-    Log.d(TAG, "onServiceConnected: ");
-
-    getFloatingBallController();
-
-    mFloatingBallController.startBallView(FloatingBallService.this);
-
-    BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
-  }
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
-  }
-
-  @Override
-  public void onInterrupt() {
-
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    BallSettingRepo.unregisterOnDataChangeListener(mOnSharedPreferenceChangeListener);
-  }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-
-    //没有打开
-    boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
-    if (!isAddedBall) {
-      return;
+        BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
     }
 
-    if (BallSettingRepo.isRotateHideSetting()) { //LANDSCAPE 隐藏
-
-      if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        mFloatingBallController.hideWhenRotate();
-      } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT &&
-          mFloatingBallController.isHideBecauseRotate()) {
-        mFloatingBallController.startWhenRotateBack(FloatingBallService.this);
-      }
-
-    } else { //LANDSCAPE 不隐藏，更新位置
-      mFloatingBallController.updateBallViewLayout();
+    @Override
+    public void onInterrupt() {
     }
 
-  }
-
-  @Override
-  public void onAccessibilityEvent(AccessibilityEvent event) {
-    int type = event.getEventType();
-
-    switch (type) {
-      case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-        currentPackageName = event.getPackageName() == null ? "" : event.getPackageName().toString();
-        break;
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        BallSettingRepo.unregisterOnDataChangeListener(mOnSharedPreferenceChangeListener);
     }
 
-    //没有打开
-    boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
-    if (!isAddedBall) {
-      return;
-    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-    if (mFloatingBallController != null) {
-      //触发输入法检测
-      mFloatingBallController.inputMethodDetect(FloatingBallService.this);
-    }
-  }
-
-  /**
-   * 转化外界的指令
-   */
-  @Override
-  public int onStartCommand(Intent intent, int flags, int startId) {
-    Log.d(TAG, "onStartCommand");
-
-    if (intent != null) {
-      //mFloatBallManager的判断是因为生命周期有时候有问题
-      getFloatingBallController();
-
-      Bundle data = intent.getExtras();
-      if (data != null) {
-        int type = data.getInt(EXTRAS_COMMAND);
-
-        if (type == TYPE_START) {
-          mFloatingBallController.startBallView(FloatingBallService.this);
+        //没有在设置中打开
+        boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
+        if (!isAddedBall) {
+            return;
         }
 
-        if (type == TYPE_REMOVE_ALL) {
-          mFloatingBallController.removeBallView();
+        if (BallSettingRepo.isRotateHideSetting()) { //LANDSCAPE 隐藏
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                floatingBallController.hideWhenRotate();
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT &&
+                    floatingBallController.isHideBecauseRotate()) {
+                floatingBallController.startWhenRotateBack(FloatingBallService.this);
+            }
+        } else { //LANDSCAPE 不隐藏，更新位置
+            floatingBallController.updateBallViewLayout();
         }
-
-        if (type == TYPE_HIDE) {
-          mFloatingBallController.setBallViewIsHide(data.getBoolean("isHide"));
-        }
-
-        //intent中传图片地址，也可以换为sharedPreference吧
-        if (type == TYPE_IMAGE) {
-          mFloatingBallController.setBackgroundImage(data.getString("imagePath"));
-        }
-
-        if (type == TYPE_CLEAR) {
-          mFloatingBallController.recycleBitmapMemory();
-        }
-
-        if (type == TYPE_ADD) {
-          mFloatingBallController.addFloatingBallView(FloatingBallService.this, BallSettingRepo.amount() - 1);
-        }
-        if (type == TYPE_REMOVE_LAST) {
-          mFloatingBallController.removeLastFloatingBall();
-        }
-
-      }
-    }
-    return super.onStartCommand(intent, flags, startId);
-  }
-
-  public void hideBallTemporary() {
-    mFloatingBallController.setBallViewIsHide(true);
-  }
-
-  public void hideBallForLongTime() {
-    getFloatingBallController();
-    mFloatingBallController.removeBallView();
-    sendHideBallNotification();
-  }
-
-  /**
-   * send notification when hiding
-   */
-  private void sendHideBallNotification() {
-    String contentTitle = getString(R.string.hide_notification_content_title);
-    String contentText = getString(R.string.hideNotificationContentText);
-    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-    if (notificationManager == null) {
-      return;
     }
 
-    Intent intent = new Intent(this, FloatingBallService.class);
-    Bundle data = new Bundle();
-    data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_START);
-    intent.putExtras(data);
-    PendingIntent addBallPendingIntent = PendingIntent.getService(this, 0, intent, 0);
+    @Override
+    public void onAccessibilityEvent(AccessibilityEvent event) {
+        //没有打开
+        boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
+        if (!isAddedBall) {
+            return;
+        }
 
-    if (Build.VERSION.SDK_INT >= 26) {
-      String channelID = "1";
-      String channelName = "channel_name";
-      NotificationChannel mChannel = new NotificationChannel(channelID, channelName,
-          NotificationManager.IMPORTANCE_LOW);
+        int type = event.getEventType();
 
-      notificationManager.createNotificationChannel(mChannel);
+        if (type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            targetPackageName = event.getPackageName() == null ? "" : event.getPackageName().toString();
+        }
 
-      Notification notification = new Notification.Builder(this, channelID)
-          .setSmallIcon(R.mipmap.ic_launcher_app)
-          .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
-          .setContentTitle(contentTitle)
-          .setContentText(contentText)
-          .setAutoCancel(true)
-          .setContentIntent(addBallPendingIntent)
-          .build();
-      notificationManager.notify(1, notification);
-
-    } else {
-      Notification notification = new NotificationCompat.Builder(this)
-          .setSmallIcon(R.mipmap.ic_launcher_app)
-          .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
-          .setContentTitle(contentTitle)
-          .setContentText(contentText)
-          .setAutoCancel(true)
-          .setContentIntent(addBallPendingIntent)
-          .build();
-      notificationManager.notify(1, notification);
+        //触发输入法检测
+        floatingBallController.inputMethodDetect(FloatingBallService.this);
     }
-  }
+
+    /**
+     * 接受其他组件的信息
+     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
+
+        if (intent != null) {
+
+            Bundle data = intent.getExtras();
+            if (data != null) {
+                int type = data.getInt(EXTRAS_COMMAND);
+
+                if (type == TYPE_SWITCH_ON) {
+                    floatingBallController.startBallView(FloatingBallService.this);
+                }
+                if (type == TYPE_REMOVE_ALL) {
+                    floatingBallController.removeBallView();
+                }
+                if (type == TYPE_HIDE_TEMPORARILY) {
+                    floatingBallController.setBallViewIsHide(data.getBoolean("isHide"));
+                }
+                //intent中传图片地址，也可以换为sharedPreference吧
+                if (type == TYPE_IMAGE_PATH) {
+                    floatingBallController.setBackgroundImage(data.getString("imagePath"));
+                }
+                if (type == TYPE_CLEAR) {
+                    floatingBallController.recycleBitmapMemory();
+                }
+
+                if (type == TYPE_ADD) {
+                    floatingBallController.addFloatingBallView(FloatingBallService.this, BallSettingRepo.amount() - 1);
+                }
+                if (type == TYPE_REMOVE_LAST) {
+                    floatingBallController.removeLastFloatingBall();
+                }
+
+            }
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    /**
+     * 暂时隐藏，通过Visibility
+     */
+    public void hideBallTemporarily() {
+        floatingBallController.setBallViewIsHide(true);
+    }
+
+    /**
+     * 长时间隐藏，通过remove
+     */
+    public void hideBallForLongTime() {
+        floatingBallController.removeBallView();
+        sendHideBallNotification();
+    }
+
+    /**
+     * send notification when hiding
+     */
+    private void sendHideBallNotification() {
+        String contentTitle = getString(R.string.hide_notification_content_title);
+        String contentText = getString(R.string.hideNotificationContentText);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if (notificationManager == null) {
+            return;
+        }
+
+        Intent intent = new Intent(this, FloatingBallService.class);
+        Bundle data = new Bundle();
+        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_SWITCH_ON);
+        intent.putExtras(data);
+        PendingIntent addBallPendingIntent = PendingIntent.getService(this, 0, intent, 0);
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            String channelID = "1";
+            String channelName = "channel_name";
+            NotificationChannel mChannel = new NotificationChannel(channelID, channelName,
+                    NotificationManager.IMPORTANCE_LOW);
+
+            notificationManager.createNotificationChannel(mChannel);
+
+            Notification notification = new Notification.Builder(this, channelID)
+                    .setSmallIcon(R.mipmap.ic_launcher_app)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
+                    .setContentTitle(contentTitle)
+                    .setContentText(contentText)
+                    .setAutoCancel(true)
+                    .setContentIntent(addBallPendingIntent)
+                    .build();
+            notificationManager.notify(1, notification);
+
+        } else {
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher_app)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_app))
+                    .setContentTitle(contentTitle)
+                    .setContentText(contentText)
+                    .setAutoCancel(true)
+                    .setContentIntent(addBallPendingIntent)
+                    .build();
+            notificationManager.notify(1, notification);
+        }
+    }
 }

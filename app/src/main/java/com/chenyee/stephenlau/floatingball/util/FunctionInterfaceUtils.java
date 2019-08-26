@@ -41,8 +41,8 @@ public class FunctionInterfaceUtils {
   private static FunctionListener killFrontProcessListener = new FunctionListener() {
     @Override
     public void onFunction() {
-      if (!sFloatingBallService.getCurrentPackageName().contains("launcher")) {
-        ActivityUtils.killBackgroundProcesses(sFloatingBallService, sFloatingBallService.getCurrentPackageName());
+      if (!sFloatingBallService.getTargetPackageName().contains("launcher")) {
+        ActivityUtils.killBackgroundProcesses(sFloatingBallService, sFloatingBallService.getTargetPackageName());
       }
     }
   };
@@ -134,7 +134,7 @@ public class FunctionInterfaceUtils {
   private static FunctionListener screenshotFunctionListener = new FunctionListener() {
     @Override
     public void onFunction() {
-      sFloatingBallService.hideBallTemporary();
+      sFloatingBallService.hideBallTemporarily();
 
       Intent intent = new Intent(sFloatingBallService, ScreenCaptureImageActivity.class);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );

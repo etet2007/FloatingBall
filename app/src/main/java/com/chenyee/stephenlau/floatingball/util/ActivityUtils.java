@@ -49,12 +49,8 @@ public class ActivityUtils {
   }
 
   public static void killBackgroundProcesses(Context context, String packageName) {
-
-
     String apkRoot = "am force-stop " + packageName;
     rootCommand(apkRoot);
-
-
   }
 
   public static boolean isForeground(Context context, String myPackage) {

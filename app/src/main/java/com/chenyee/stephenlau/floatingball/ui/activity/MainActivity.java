@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity
     private void sendAddFloatBallIntent() {
         Intent intent = new Intent(MainActivity.this, FloatingBallService.class);
         Bundle data = new Bundle();
-        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_START);
+        data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_SWITCH_ON);
         intent.putExtras(data);
         startService(intent);
     }

@@ -188,7 +188,7 @@ public class ScreenCaptureImageActivity extends Activity {
 
     private void setBallIsHide(boolean isHide) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_HIDE);
+        bundle.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_HIDE_TEMPORARILY);
         bundle.putBoolean("isHide", isHide);
 
         Intent intent = new Intent(this, FloatingBallService.class)
