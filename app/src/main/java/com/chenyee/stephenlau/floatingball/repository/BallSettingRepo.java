@@ -15,7 +15,6 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOU
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_AVOID_KEYBOARD;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_BALL_HIDE_BECAUSE_ROTATE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_HIDE_WHEN_KEYBOARD_SHOW;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ROTATE_HIDE_SETTING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_VIBRATE;
@@ -55,14 +54,6 @@ public class BallSettingRepo {
 
     public static void setIsAddedBallInSetting(boolean value) {
         SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, value);
-    }
-
-    public static boolean isBallHideBecauseRotate() {
-        return SharedPrefsUtils.getBooleanPreference(PREF_IS_BALL_HIDE_BECAUSE_ROTATE, false);
-    }
-
-    public static void setIsBallHideBecauseRotate(boolean value) {
-        SharedPrefsUtils.setBooleanPreference(PREF_IS_BALL_HIDE_BECAUSE_ROTATE, value);
     }
 
     public static boolean isRotateHideSetting() {

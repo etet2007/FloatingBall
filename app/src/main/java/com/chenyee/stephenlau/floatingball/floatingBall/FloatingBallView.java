@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.support.annotation.Keep;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,15 +74,37 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         super(context);
         this.idCode = idCode;
 
+        init(context);
+    }
+
+    /**
+     * 用于在xml中测试
+     *
+     * @param context
+     * @param attrs
+     */
+    public FloatingBallView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        init(context);
+
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setOpacity(100);
+        setOpacityMode(NONE);
+    }
+
+    public FloatingBallView(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs);
+    }
+
+    private void init(Context context) {
         floatingBallPaint = new FloatingBallPaint();
 
         floatingBallDrawer = new FloatingBallDrawer(this, floatingBallPaint);
 
         floatingBallAnimator = new FloatingBallAnimator(this, floatingBallDrawer);
-
         floatingBallAnimator.performAddAnimator();
-
-        changeFloatBallSizeWithRadius(25);
+        changeFloatBallSizeWithRadius(50);
 
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
@@ -90,7 +113,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
         gestureDetector = new GestureDetector(context, floatingBallGestureListener);
 
-        refreshOpacityMode();
     }
 
     public int getIdCode() {
@@ -212,20 +234,12 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         return floatingBallDrawer;
     }
 
-    public void setFloatingBallDrawer(FloatingBallDrawer floatingBallDrawer) {
-        this.floatingBallDrawer = floatingBallDrawer;
-    }
-
     public FloatingBallPaint getFloatingBallPaint() {
         return floatingBallPaint;
     }
 
-    public void setFloatingBallPaint(FloatingBallPaint floatingBallPaint) {
-        this.floatingBallPaint = floatingBallPaint;
-    }
-
     public int getMeasureLength() {
-        if (floatingBallAnimator != null) {
+        if (floatingBallDrawer != null) {
             return floatingBallDrawer.measuredSideLength;
         } else {
             return 0;
@@ -381,7 +395,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         }
 
     }
-
 
     /**
      * 绘制

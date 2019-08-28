@@ -42,16 +42,15 @@ public class FloatingBallController {
     //Singleton
     private static FloatingBallController sFloatingBallController = new FloatingBallController();
 
-    /**
-     * View
-     */
     private ArrayList<FloatingBallView> floatingBallViewList = new ArrayList<>();
 
     private boolean isSoftKeyboardShow = false;
     //内存中变量
     private boolean isStartedBallView = false;
     private boolean isHideBecauseRotate = false;
-    private WindowManager windowManager;
+
+    private WindowManager windowManager = (WindowManager) App.getApplication().getApplicationContext()
+            .getSystemService(Context.WINDOW_SERVICE);
 
     private FloatingBallController() {
     }
@@ -71,21 +70,18 @@ public class FloatingBallController {
         if (isStartedBallView) {//已经开启
             return;
         }
-
-        windowManager = (WindowManager) App.getApplication().getApplicationContext()
-                .getSystemService(Context.WINDOW_SERVICE);
+        isStartedBallView = true;
 
         int amount = BallSettingRepo.amount();
         for (int id = 0; id < amount; id++) {
             addFloatingBallView(context, id);
         }
-
-        updateParameter();
+        updateViewsParameter();
 
         // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
         FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
 
-        isStartedBallView = true;
+//        辅助设置里打开，等于在设置中打开。
         SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
     }
 
@@ -93,6 +89,7 @@ public class FloatingBallController {
         if (windowManager == null) {
             return;
         }
+
         FloatingBallView floatingBallView = new FloatingBallView(context, id);
         floatingBallViewList.add(floatingBallView);
 
@@ -106,7 +103,7 @@ public class FloatingBallController {
         } else {
             params.type = LayoutParams.TYPE_SYSTEM_ALERT;
         }
-        params.format = PixelFormat.RGBA_8888;
+        params.format = PixelFormat.RGBA_8888;//默认为不透明 会有黑色背景
         params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | LayoutParams.FLAG_NOT_FOCUSABLE
                 | LayoutParams.FLAG_LAYOUT_IN_SCREEN
@@ -114,7 +111,7 @@ public class FloatingBallController {
         floatingBallView.setBallViewLayoutParams(params);
         windowManager.addView(floatingBallView, params);
 
-        updateParameter();
+        updateViewsParameter();
     }
 
     /**
@@ -163,7 +160,6 @@ public class FloatingBallController {
         }
         floatingBallViewList.clear();
     }
-
 
     /**
      * 设置背景图 复制外部路径的图片到目录中去，更新bitmapRead，再进行裁剪
@@ -232,7 +228,7 @@ public class FloatingBallController {
     /**
      * Use sharedPreference data to update all parameter
      */
-    private void updateParameter() {
+    private void updateViewsParameter() {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
 
             floatingBallView.updateLayoutParamsWithOrientation();

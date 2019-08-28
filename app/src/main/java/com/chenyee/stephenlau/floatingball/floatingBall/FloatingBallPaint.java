@@ -45,4 +45,5 @@ public class FloatingBallPaint {
   public Paint getBallEmptyPaint() {
     return ballEmptyPaint;
   }
+
 }
