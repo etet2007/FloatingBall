@@ -91,5 +91,17 @@
       <item name="android:background">@drawable/selector_btn_background</item>
     </style>
 
+  <style name="style_function_right_textView">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_alignParentEnd">true</item>
+    <item name="android:layout_alignParentRight">true</item>
+    <item name="android:layout_centerVertical">true</item>
+    <item name="android:textAlignment" tools:targetApi="jelly_bean_mr1">viewEnd</item>
+    <item name="android:lines">1</item>
+    <item name="android:gravity">end</item>
+    <item name="android:textColor">@color/colorPrimaryDark</item>
+  </style>
+
 
 </resources>

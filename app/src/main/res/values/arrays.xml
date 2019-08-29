@@ -12,6 +12,8 @@
         <item>@string/screen_shot</item>
         <item>@string/back</item>
         <item>@string/killProcess</item>
+        <item>@string/systemLockScreen</item>
+        <item>@string/system_screen_shot</item>
 
     </string-array>
 

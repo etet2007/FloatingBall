@@ -50,6 +50,8 @@ public class StaticStringUtil {
     public static final int SCREEN_SHOT = 8;
     public static final int BACK = 9;
     public static final int KILL_PROCESS = 10;
+    public static final int SYSTEM_LOCK_SCREEN = 11;
+    public static final int SYSTEM_SCREEN_SHOT = 12;
 
     public static final int OPACITY_NONE = 0;
     public static final int OPACITY_REDUCE = 1;

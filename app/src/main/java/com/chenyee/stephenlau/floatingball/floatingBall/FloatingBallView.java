@@ -465,7 +465,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
                 }
                 break;
             case FloatingBallGestureListener.STATE_DOWN:
-                if (upFunctionListener != null) {
+                if (downFunctionListener != null) {
                     downFunctionListener.onFunction();
                 }
                 break;

@@ -162,12 +162,20 @@ public class FloatingBallService extends AccessibilityService {
         floatingBallController.setBallViewIsHide(true);
     }
 
+    public void showBall() {
+        floatingBallController.setBallViewIsHide(false);
+    }
+
     /**
      * 长时间隐藏，通过remove
      */
     public void hideBallForLongTime() {
         floatingBallController.removeBallView();
         sendHideBallNotification();
+    }
+
+    public void postRunnable(Runnable r) {
+        floatingBallController.postRunnable(r);
     }
 
     /**

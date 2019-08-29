@@ -313,6 +313,7 @@ public class FloatingBallController {
     public void setBallViewIsHide(boolean isHide) {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
             floatingBallView.setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
+            floatingBallView.invalidate();
         }
     }
 
@@ -323,4 +324,10 @@ public class FloatingBallController {
         }
     }
 
+    public void postRunnable(Runnable r) {
+        if (!floatingBallViewList.isEmpty()) {
+            View view = floatingBallViewList.get(0);
+            view.post(r);
+        }
+    }
 }

@@ -73,7 +73,7 @@ public class SettingFragment extends Fragment {
     @BindView(R.id.left_swipe_textView) AppCompatTextView leftSlideTextView;
     @BindView(R.id.up_swipe_textView) AppCompatTextView upSlideTextView;
     @BindView(R.id.down_swipe_textView) AppCompatTextView downSlideTextView;
-    @BindView(R.id.right_swipe_textView) AppCompatTextView rightSlideTextView;
+    @BindView(R.id.swipe_right_textView) AppCompatTextView rightSlideTextView;
     @BindView(R.id.is_rotate_hide) SwitchCompat isRotateHideSwitch;
     @BindView(R.id.vibrate_switch) SwitchCompat vibrateSwitch;
     @BindView(R.id.avoid_keyboard_switch) SwitchCompat avoidKeyboardSwitch;
@@ -302,8 +302,7 @@ public class SettingFragment extends Fragment {
     }
 
     private void updateFunctionListView() {
-        Resources res = getResources();
-        String[] functionList = res.getStringArray(R.array.function_array);
+        String[] functionList = getResources().getStringArray(R.array.function_array);
 
         int singleTapEvent = BallSettingRepo.singleTapEvent();
         singleTapTextView.setText(functionList[singleTapEvent]);
