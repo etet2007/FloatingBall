@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.support.annotation.Keep;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -52,11 +53,11 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     private FunctionListener leftFunctionListener;
     private FunctionListener rightFunctionListener;
     //标志位
-    private boolean useBackground = false;
+    private boolean useBackgroundImage = false;
     private GestureDetector gestureDetector;
     private WindowManager windowManager;
-    private Bitmap mBitmapRead;
-    private Bitmap mBitmapScaledCroped;
+    private Bitmap bitmapRead;
+    private Bitmap bitmapScaledCrop;
     private int userSetOpacity = 125;
     private int opacityMode;
     private WindowManager.LayoutParams ballViewLayoutParams;
@@ -136,23 +137,23 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
     }
 
-    public void setUseBackground(boolean useBackground) {
-        if (useBackground) {
+    public void setUseBackgroundImage(boolean useBackgroundImage) {
+        if (useBackgroundImage) {
             setBitmapRead();
             createBitmapCropFromBitmapRead();
         } else {
             recycleBitmap();
         }
 
-        this.useBackground = useBackground;
+        this.useBackgroundImage = useBackgroundImage;
     }
 
     public void recycleBitmap() {
-        if (mBitmapRead != null && !mBitmapRead.isRecycled()) {
-            mBitmapRead.recycle();
+        if (bitmapRead != null && !bitmapRead.isRecycled()) {
+            bitmapRead.recycle();
         }
-        if (!useBackground && mBitmapScaledCroped != null && !mBitmapScaledCroped.isRecycled()) {
-            mBitmapScaledCroped.recycle();
+        if (!useBackgroundImage && bitmapScaledCrop != null && !bitmapScaledCrop.isRecycled()) {
+            bitmapScaledCrop.recycle();
         }
     }
 
@@ -301,7 +302,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
         floatingBallDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
 
-        if (useBackground) {
+        if (useBackgroundImage) {
             createBitmapCropFromBitmapRead();
         }
 
@@ -314,12 +315,12 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     public void setBitmapRead() {
         //path为app内部目录
         String path = getContext().getFilesDir().toString();
-        mBitmapRead = BitmapFactory.decodeFile(path + "/ballBackground.png");
+        bitmapRead = BitmapFactory.decodeFile(path + "/ballBackground.png");
 
         //读取不成功就取默认图片
-        if (mBitmapRead == null) {
+        if (bitmapRead == null) {
             Resources res = getResources();
-            mBitmapRead = BitmapFactory.decodeResource(res, R.drawable.joe_big);
+            bitmapRead = BitmapFactory.decodeResource(res, R.drawable.joe_big);
         }
     }
 
@@ -328,23 +329,30 @@ public class FloatingBallView extends View implements OnGestureEventListener {
             return;
         }
         //bitmapRead可能已被回收
-        if (mBitmapRead == null || mBitmapRead.isRecycled()) {
+        if (bitmapRead == null || bitmapRead.isRecycled()) {
             setBitmapRead();
         }
 
+        //边长
         int edge = (int) floatingBallDrawer.ballRadius * 2;
 
         //缩放到edge的大小
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(mBitmapRead, edge, edge, true);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapRead, edge, edge, true);
 
         //对scaledBitmap进行裁切
-        mBitmapScaledCroped = Bitmap.createBitmap(edge, edge, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(mBitmapScaledCroped);
+        bitmapScaledCrop = Bitmap.createBitmap(edge, edge, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmapScaledCrop);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setFilterBitmap(true);
+
         //x y r
         canvas
                 .drawCircle(floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, paint);
         paint.reset();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(scaledBitmap, 0, 0, paint);
 
@@ -407,9 +415,10 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
         Paint ballPaint = floatingBallPaint.getBallPaint();
 
-        if (useBackground) {
-            canvas.drawBitmap(mBitmapScaledCroped, -mBitmapScaledCroped.getWidth() / 2 + floatingBallDrawer.ballCenterX,
-                    -mBitmapScaledCroped.getHeight() / 2 + floatingBallDrawer.ballCenterY, ballPaint);
+        if (useBackgroundImage) {
+//            canvas.drawBitmap(bitmapScaledCrop, -bitmapScaledCrop.getWidth() / 2 + floatingBallDrawer.ballCenterX,
+//                    -bitmapScaledCrop.getHeight() / 2 + floatingBallDrawer.ballCenterY, ballPaint);
+            canvas.drawBitmap(bitmapScaledCrop,null,floatingBallDrawer.getBallRect(),ballPaint);
         }
     }
 

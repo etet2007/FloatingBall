@@ -190,7 +190,7 @@ public class FloatingBallController {
                     floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
                     break;
                 case PREF_USE_BACKGROUND:
-                    floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
+                    floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
                     break;
                 case PREF_USE_GRAY_BACKGROUND:
                 case PREF_IS_VIBRATE:
@@ -236,7 +236,7 @@ public class FloatingBallController {
             floatingBallView.setOpacity(BallSettingRepo.opacity());
             floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
             floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
-            floatingBallView.setUseBackground(BallSettingRepo.isUseBackground());
+            floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
 
             floatingBallView.updateModelData();
 

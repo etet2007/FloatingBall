@@ -2,6 +2,7 @@ package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.support.annotation.Keep;
 
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
@@ -17,14 +18,16 @@ import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 @Keep
 public class FloatingBallDrawer {
 
-    public final float edge = dip2px(getApplication(), 4);
+    //灰色背景长度
+    public final float greyBackgroundLength = dip2px(getApplication(), 4);
     public final float ballRadiusDeltaMaxInAnimation = 7;
     public final int scrollGestureMoveDistance = 18;
     public float ballRadius;
-    public float backgroundRadius;
+    public float grayBackgroundRadius;
     public int measuredSideLength;
     public float ballCenterY = 0;
     public float ballCenterX = 0;
+    private RectF ballRect = new RectF();
     private FloatingBallView view;
     private FloatingBallPaint floatingballPaint;
     private boolean useGrayBackground = true;
@@ -33,6 +36,43 @@ public class FloatingBallDrawer {
                               FloatingBallPaint floatingballPaint) {
         this.view = view;
         this.floatingballPaint = floatingballPaint;
+    }
+
+    public RectF getBallRect() {
+        ballRect.set(ballCenterX - ballRadius,
+                ballCenterY - ballRadius,
+                ballCenterX + ballRadius,
+                ballCenterY + ballRadius
+        );
+        return ballRect;
+    }
+
+    public void drawBallWithThisModel(Canvas canvas) {
+        canvas.translate(measuredSideLength / 2, measuredSideLength / 2);
+        Paint grayBackgroundPaint = floatingballPaint.getBackgroundPaint();
+
+        if (useGrayBackground) {
+            //            canvas.drawCircle(0, 0, grayBackgroundRadius, floatingballPaint.getShadowPaint());
+            canvas.drawCircle(0, 0, grayBackgroundRadius, grayBackgroundPaint);
+        }
+
+        Paint ballEmptyPaint = floatingballPaint.getBallEmptyPaint();
+        Paint ballPaint = floatingballPaint.getBallPaint();
+
+        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballEmptyPaint);
+
+        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballPaint);
+    }
+
+    public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
+        this.ballRadius = ballRadius;
+
+        grayBackgroundRadius = ballRadius + greyBackgroundLength;
+
+        //r + moveDistance + r在动画变大的值 = r + greyBackgroundLength + gap
+        int frameGap = (int) (scrollGestureMoveDistance + ballRadiusDeltaMaxInAnimation - greyBackgroundLength);
+
+        measuredSideLength = (int) (grayBackgroundRadius + frameGap) * 2;
     }
 
     public float getBallRadius() {
@@ -68,33 +108,6 @@ public class FloatingBallDrawer {
         useGrayBackground = BallSettingRepo.isUseGrayBackground();
     }
 
-    public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
-        this.ballRadius = ballRadius;
-
-        backgroundRadius = ballRadius + edge;
-
-        //View宽高 r + moveDistance + r在动画变大的值 = r + edge + gap
-        int frameGap = (int) (scrollGestureMoveDistance + ballRadiusDeltaMaxInAnimation - edge);
-
-        measuredSideLength = (int) (backgroundRadius + frameGap) * 2;
-    }
-
-    public void drawBallWithThisModel(Canvas canvas) {
-        canvas.translate(measuredSideLength / 2, measuredSideLength / 2);
-        Paint backgroundPaint = floatingballPaint.getBackgroundPaint();
-
-        if (useGrayBackground) {
-            canvas.drawCircle(0, 0, backgroundRadius, backgroundPaint);
-        }
-
-        Paint ballEmptyPaint = floatingballPaint.getBallEmptyPaint();
-        Paint ballPaint = floatingballPaint.getBallPaint();
-
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballEmptyPaint);
-
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballPaint);
-    }
-
     public void moveBallViewWithCurrentGestureState(int currentGestureState) {
         switch (currentGestureState) {
             case STATE_UP:
@@ -120,5 +133,6 @@ public class FloatingBallDrawer {
         }
         view.invalidate();
     }
+
 
 }

@@ -21,6 +21,11 @@ public class FloatingBallAnimator {
   private ObjectAnimator onTouchAnimator;
   private ObjectAnimator unTouchAnimator;
 
+  /**
+   * 持有drawer 控制drawer参数
+   * @param view
+   * @param floatingBallDrawer
+   */
   public FloatingBallAnimator(FloatingBallView view, FloatingBallDrawer floatingBallDrawer) {
     this.view = view;
     this.floatingBallDrawer = floatingBallDrawer;
