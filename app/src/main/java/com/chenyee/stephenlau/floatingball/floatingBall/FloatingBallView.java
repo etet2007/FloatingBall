@@ -39,22 +39,19 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     private static final String TAG = FloatingBallView.class.getSimpleName();
 
     //function list
-    public FunctionListener singleTapFunctionListener;
-    public FunctionListener doubleTapFunctionListener;
+    private FunctionListener singleTapFunctionListener;
+    private FunctionListener doubleTapFunctionListener;
     private FunctionListener downFunctionListener;
     private FunctionListener upFunctionListener;
     private FunctionListener leftFunctionListener;
     private FunctionListener rightFunctionListener;
 
-    public boolean isUseDoubleClick = false;
     //View
     private FloatingBallPaint floatingBallPaint;
     private FloatingBallDrawer floatingBallDrawer;
     private FloatingBallAnimator floatingBallAnimator;
     //Interact
     private FloatingBallGestureProcessor floatingBallGestureProcessor;
-    //GestureDetector处理双击事件
-    private GestureDetector gestureDetector;
 
     //ballView的Id
     private int idCode;
@@ -116,8 +113,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
         floatingBallGestureProcessor = new FloatingBallGestureProcessor(this,this);
-
-        gestureDetector = new GestureDetector(context, floatingBallGestureProcessor);
     }
 
     public int getIdCode() {
@@ -179,18 +174,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         }
     }
 
-    public void setDoubleClickEventType(int doubleClickEventType) {
-        doubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
-
-
-        isUseDoubleClick = doubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
-        if (isUseDoubleClick) {
-            gestureDetector.setOnDoubleTapListener(floatingBallGestureProcessor);
-        } else {
-            gestureDetector.setOnDoubleTapListener(null);
-        }
-    }
-
     /**
      * 设置透明度的模式，设置完后需要立刻刷新起效。
      */
@@ -205,6 +188,13 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         userSetOpacity = opacity;
 
         refreshOpacityMode();
+    }
+
+    public void setDoubleClickEventType(int doubleClickEventType) {
+        doubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
+
+        boolean isUseDoubleClick = doubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
+        floatingBallGestureProcessor.setUseDoubleClick(isUseDoubleClick);
     }
 
     public void setDownFunctionListener(int downFunctionListenerType) {
@@ -424,11 +414,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //GestureDetector处理双击事件
-        gestureDetector.onTouchEvent(event);
-
         floatingBallGestureProcessor.onTouchEvent(event);
-
         return true;
     }
 
@@ -452,37 +438,44 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     @Override
     public void onActionUp() {
         floatingBallAnimator.startUnTouchAnimator();
-
         if (opacityMode == OPACITY_REDUCE) {
             floatingBallAnimator.startReduceOpacityAnimator();
         }
     }
 
-    public void onFunctionWithCurrentGestureState(int currentGestureState) {
-        switch (currentGestureState) {
-            case FloatingBallGestureProcessor.STATE_UP:
-                if (upFunctionListener != null) {
-                    upFunctionListener.onFunction();
-                }
-                break;
-            case FloatingBallGestureProcessor.STATE_DOWN:
-                if (downFunctionListener != null) {
-                    downFunctionListener.onFunction();
-                }
-                break;
-            case FloatingBallGestureProcessor.STATE_LEFT:
-                if (leftFunctionListener != null) {
-                    leftFunctionListener.onFunction();
-                }
-                break;
-            case FloatingBallGestureProcessor.STATE_RIGHT:
-                if (rightFunctionListener != null) {
-                    rightFunctionListener.onFunction();
-                }
-                break;
-            case FloatingBallGestureProcessor.STATE_NONE:
-                break;
-        }
+    @Override
+    public void onMove(int x,int y) {
+        setLayoutPositionParamsAndSave(x,y);
+    }
+
+    @Override
+    public void onSingeTap() {
+        singleTapFunctionListener.onFunction();
+    }
+
+    @Override
+    public void onDoubleTap() {
+        doubleTapFunctionListener.onFunction();
+    }
+
+    @Override
+    public void upGesture() {
+        upFunctionListener.onFunction();
+    }
+
+    @Override
+    public void downGesture() {
+        downFunctionListener.onFunction();
+    }
+
+    @Override
+    public void leftGesture() {
+        leftFunctionListener.onFunction();
+    }
+
+    @Override
+    public void rightGesture() {
+        rightFunctionListener.onFunction();
     }
 
     @Override
