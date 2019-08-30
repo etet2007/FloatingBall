@@ -9,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.support.annotation.Keep;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -20,7 +19,7 @@ import android.view.WindowManager.LayoutParams;
 
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureListener;
+import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
@@ -37,24 +36,31 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_
  */
 @Keep
 public class FloatingBallView extends View implements OnGestureEventListener {
-
     private static final String TAG = FloatingBallView.class.getSimpleName();
+
     //function list
     public FunctionListener singleTapFunctionListener;
     public FunctionListener doubleTapFunctionListener;
-    public boolean isUseDoubleClick = false;
-    private FloatingBallGestureListener floatingBallGestureListener;
-    private FloatingBallPaint floatingBallPaint;
-    private FloatingBallDrawer floatingBallDrawer;
-    private FloatingBallAnimator floatingBallAnimator;
-    private int idCode;
     private FunctionListener downFunctionListener;
     private FunctionListener upFunctionListener;
     private FunctionListener leftFunctionListener;
     private FunctionListener rightFunctionListener;
+
+    public boolean isUseDoubleClick = false;
+    //View
+    private FloatingBallPaint floatingBallPaint;
+    private FloatingBallDrawer floatingBallDrawer;
+    private FloatingBallAnimator floatingBallAnimator;
+    //Interact
+    private FloatingBallGestureProcessor floatingBallGestureProcessor;
+    //GestureDetector处理双击事件
+    private GestureDetector gestureDetector;
+
+    //ballView的Id
+    private int idCode;
     //标志位
     private boolean useBackgroundImage = false;
-    private GestureDetector gestureDetector;
+
     private WindowManager windowManager;
     private Bitmap bitmapRead;
     private Bitmap bitmapScaledCrop;
@@ -109,11 +115,9 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-        floatingBallGestureListener = new FloatingBallGestureListener(this);
-        floatingBallGestureListener.setOnGestureEventListener(this);
+        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this,this);
 
-        gestureDetector = new GestureDetector(context, floatingBallGestureListener);
-
+        gestureDetector = new GestureDetector(context, floatingBallGestureProcessor);
     }
 
     public int getIdCode() {
@@ -157,18 +161,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         }
     }
 
-    public void setDoubleClickEventType(int doubleClickEventType) {
-        doubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
-
-        isUseDoubleClick = doubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
-
-        if (isUseDoubleClick) {
-            gestureDetector.setOnDoubleTapListener(floatingBallGestureListener);
-        } else {
-            gestureDetector.setOnDoubleTapListener(null);
-        }
-    }
-
     private void refreshOpacityMode() {
         if (opacityMode == OPACITY_NONE) {
             floatingBallPaint.setPaintAlpha(userSetOpacity);
@@ -187,8 +179,16 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         }
     }
 
-    public int getOpacityMode() {
-        return opacityMode;
+    public void setDoubleClickEventType(int doubleClickEventType) {
+        doubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
+
+
+        isUseDoubleClick = doubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
+        if (isUseDoubleClick) {
+            gestureDetector.setOnDoubleTapListener(floatingBallGestureProcessor);
+        } else {
+            gestureDetector.setOnDoubleTapListener(null);
+        }
     }
 
     /**
@@ -197,10 +197,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     public void setOpacityMode(int mOpacityMode) {
         this.opacityMode = mOpacityMode;
         refreshOpacityMode();
-    }
-
-    public FloatingBallAnimator getFloatingBallAnimator() {
-        return floatingBallAnimator;
     }
 
     public void setOpacity(int opacity) {
@@ -404,9 +400,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     }
 
-    /**
-     * 绘制
-     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -416,9 +409,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         Paint ballPaint = floatingBallPaint.getBallPaint();
 
         if (useBackgroundImage) {
-//            canvas.drawBitmap(bitmapScaledCrop, -bitmapScaledCrop.getWidth() / 2 + floatingBallDrawer.ballCenterX,
-//                    -bitmapScaledCrop.getHeight() / 2 + floatingBallDrawer.ballCenterY, ballPaint);
-            canvas.drawBitmap(bitmapScaledCrop,null,floatingBallDrawer.getBallRect(),ballPaint);
+          canvas.drawBitmap(bitmapScaledCrop,null,floatingBallDrawer.getBallRect(),ballPaint);
         }
     }
 
@@ -433,9 +424,10 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        //GestureDetector处理双击事件
         gestureDetector.onTouchEvent(event);
 
-        floatingBallGestureListener.processEvent(event);
+        floatingBallGestureProcessor.onTouchEvent(event);
 
         return true;
     }
@@ -443,10 +435,11 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     public void updateModelData() {
         floatingBallDrawer.updateFieldBySingleDataManager();
-        floatingBallGestureListener.updateFieldBySingleDataManager();
+        floatingBallGestureProcessor.updateFieldBySingleDataManager();
         moveUpDistance = BallSettingRepo.moveUpDistance();
     }
 
+    //手势处理的回调函数
     @Override
     public void onActionDown() {
         floatingBallAnimator.startOnTouchAnimator();
@@ -454,7 +447,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         if (opacityMode == OPACITY_REDUCE) {
             floatingBallPaint.setPaintAlpha(userSetOpacity);
         }
-
     }
 
     @Override
@@ -468,27 +460,27 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     public void onFunctionWithCurrentGestureState(int currentGestureState) {
         switch (currentGestureState) {
-            case FloatingBallGestureListener.STATE_UP:
+            case FloatingBallGestureProcessor.STATE_UP:
                 if (upFunctionListener != null) {
                     upFunctionListener.onFunction();
                 }
                 break;
-            case FloatingBallGestureListener.STATE_DOWN:
+            case FloatingBallGestureProcessor.STATE_DOWN:
                 if (downFunctionListener != null) {
                     downFunctionListener.onFunction();
                 }
                 break;
-            case FloatingBallGestureListener.STATE_LEFT:
+            case FloatingBallGestureProcessor.STATE_LEFT:
                 if (leftFunctionListener != null) {
                     leftFunctionListener.onFunction();
                 }
                 break;
-            case FloatingBallGestureListener.STATE_RIGHT:
+            case FloatingBallGestureProcessor.STATE_RIGHT:
                 if (rightFunctionListener != null) {
                     rightFunctionListener.onFunction();
                 }
                 break;
-            case FloatingBallGestureListener.STATE_NONE:
+            case FloatingBallGestureProcessor.STATE_NONE:
                 break;
         }
     }

@@ -44,9 +44,9 @@ public class FloatingBallController {
 
     private ArrayList<FloatingBallView> floatingBallViewList = new ArrayList<>();
 
-    private boolean isSoftKeyboardShow = false;
     //内存中变量
     private boolean isStartedBallView = false;
+    private boolean isSoftKeyboardShow = false;
     private boolean isHideBecauseRotate = false;
 
     private WindowManager windowManager = (WindowManager) App.getApplication().getApplicationContext()
@@ -86,9 +86,6 @@ public class FloatingBallController {
     }
 
     public void addFloatingBallView(Context context, int id) {
-        if (windowManager == null) {
-            return;
-        }
 
         FloatingBallView floatingBallView = new FloatingBallView(context, id);
         floatingBallViewList.add(floatingBallView);

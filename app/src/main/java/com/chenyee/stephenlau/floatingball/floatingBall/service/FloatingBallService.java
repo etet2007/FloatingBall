@@ -57,7 +57,7 @@ public class FloatingBallService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected: ");
-        Toast.makeText(this, "onServiceConnected", Toast.LENGTH_LONG).show();
+        
         floatingBallController.startBallView(FloatingBallService.this);
 
         BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
