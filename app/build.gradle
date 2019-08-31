@@ -87,7 +87,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     // leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
 
 //    implementation 'eu.chainfire:libsuperuser:1.0.0+'
 

@@ -20,8 +20,8 @@ public class FloatingBallDrawer {
 
     //灰色背景长度
     public final float greyBackgroundLength = dip2px(getApplication(), 4);
-    public final float ballRadiusDeltaMaxInAnimation = 7;
-    public final int scrollGestureMoveDistance = 18;
+    public final float ballRadiusDeltaMaxInAnimation = dip2px(getApplication(), 2.5f);
+    public final int scrollGestureMoveDistance = dip2px(getApplication(), 6.6f);//18
     public float ballRadius;
     public float grayBackgroundRadius;
     public int measuredSideLength;
