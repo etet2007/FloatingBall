@@ -7,10 +7,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
-import android.provider.CalendarContract;
 import android.support.annotation.Keep;
-
-import static com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallDrawer.ballRadius;
 
 @Keep
 public class FloatingBallPaint {
@@ -30,7 +27,15 @@ public class FloatingBallPaint {
 
         ballEmptyPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         backgroundPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-
+        
+//        RadialGradient radialGradient = new RadialGradient(
+//                0, 0,
+//                FloatingBallDrawer.ballRadius + FloatingBallDrawer.greyBackgroundLength,
+//                Color.parseColor("#E91E63"),
+//                Color.parseColor("#2196F3"),
+//                Shader.TileMode.CLAMP);
+//
+//        backgroundPaint.setShader(radialGradient);
     }
 
     public void setPaintAlpha(int opacity) {
