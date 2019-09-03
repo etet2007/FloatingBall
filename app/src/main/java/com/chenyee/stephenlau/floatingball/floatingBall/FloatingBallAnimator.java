@@ -13,7 +13,6 @@ public class FloatingBallAnimator {
 
   private FloatingBallView view;
   private FloatingBallDrawer floatingBallDrawer;
-  private FloatingBallPaint floatingBallPaint;
 
   private ObjectAnimator reduceOpacityAnimator;
   private ObjectAnimator breathingOpacityAnimator;
@@ -29,7 +28,6 @@ public class FloatingBallAnimator {
   public FloatingBallAnimator(FloatingBallView view, FloatingBallDrawer floatingBallDrawer) {
     this.view = view;
     this.floatingBallDrawer = floatingBallDrawer;
-    floatingBallPaint = view.getFloatingBallPaint();
   }
 
   public void setUpReduceAnimator(int opacity) {
@@ -37,7 +35,7 @@ public class FloatingBallAnimator {
     Keyframe kf2 = Keyframe.ofInt(0.5f, opacity);
     Keyframe kf3 = Keyframe.ofInt(1f, (int) (opacity * 0.6));
     PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1, kf2, kf3);
-    reduceOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallPaint, pVH);
+    reduceOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, pVH);
     reduceOpacityAnimator.setDuration(3000);
     reduceOpacityAnimator.addUpdateListener(animation -> view.invalidate());
   }
@@ -56,7 +54,7 @@ public class FloatingBallAnimator {
     Keyframe kf4 = Keyframe.ofInt(0.65f, opacity);
     Keyframe kf5 = Keyframe.ofInt(1f, (int) (opacity * 0.4));
     PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1, kf2, kf3, kf4, kf5);
-    breathingOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallPaint, pVH);
+    breathingOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, pVH);
     breathingOpacityAnimator.setRepeatCount(ValueAnimator.INFINITE);
     breathingOpacityAnimator.setRepeatMode(ValueAnimator.RESTART);
     breathingOpacityAnimator.setDuration(4000);

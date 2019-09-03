@@ -27,7 +27,7 @@ public class FloatingBallPaint {
 
         ballEmptyPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         backgroundPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-        
+
 //        RadialGradient radialGradient = new RadialGradient(
 //                0, 0,
 //                FloatingBallDrawer.ballRadius + FloatingBallDrawer.greyBackgroundLength,

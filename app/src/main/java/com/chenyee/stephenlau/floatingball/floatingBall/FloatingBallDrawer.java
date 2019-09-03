@@ -40,10 +40,9 @@ public class FloatingBallDrawer {
 
     private BackgroundImageHelper backgroundImageHelper;
 
-    public FloatingBallDrawer(FloatingBallView view,
-                              FloatingBallPaint floatingballPaint) {
+    public FloatingBallDrawer(FloatingBallView view) {
         this.view = view;
-        this.floatingballPaint = floatingballPaint;
+        this.floatingballPaint = new FloatingBallPaint();
         backgroundImageHelper = new BackgroundImageHelper();
     }
 
@@ -148,6 +147,10 @@ public class FloatingBallDrawer {
                 break;
         }
         view.invalidate();
+    }
+
+    public void setPaintAlpha(int userSetOpacity) {
+        floatingballPaint.setPaintAlpha(userSetOpacity);
     }
 
     public static class BackgroundImageHelper {
