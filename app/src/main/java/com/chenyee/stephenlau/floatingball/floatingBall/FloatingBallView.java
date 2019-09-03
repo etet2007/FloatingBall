@@ -2,23 +2,16 @@ package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.support.annotation.Keep;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 import com.chenyee.stephenlau.floatingball.App;
-import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
@@ -46,7 +39,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     private FunctionListener leftFunctionListener;
     private FunctionListener rightFunctionListener;
 
-    //View
+    //Draw
     private FloatingBallPaint floatingBallPaint;
     private FloatingBallDrawer floatingBallDrawer;
     private FloatingBallAnimator floatingBallAnimator;
@@ -55,12 +48,10 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     //ballView的Id
     private int idCode;
-    //标志位
-    private boolean useBackgroundImage = false;
+
 
     private WindowManager windowManager;
-    private Bitmap bitmapRead;
-    private Bitmap bitmapScaledCrop;
+
     private int userSetOpacity = 125;
     private int opacityMode;
     private WindowManager.LayoutParams ballViewLayoutParams;
@@ -108,11 +99,12 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
         floatingBallAnimator = new FloatingBallAnimator(this, floatingBallDrawer);
         floatingBallAnimator.performAddAnimator();
+
         changeFloatBallSizeWithRadius(50);
 
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this,this);
+        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, this);
     }
 
     public int getIdCode() {
@@ -137,23 +129,15 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
 
     public void setUseBackgroundImage(boolean useBackgroundImage) {
-        if (useBackgroundImage) {
-            setBitmapRead();
-            createBitmapCropFromBitmapRead();
-        } else {
-            recycleBitmap();
-        }
-
-        this.useBackgroundImage = useBackgroundImage;
+        floatingBallDrawer.setUseBackgroundImage(useBackgroundImage);
     }
 
-    public void recycleBitmap() {
-        if (bitmapRead != null && !bitmapRead.isRecycled()) {
-            bitmapRead.recycle();
-        }
-        if (!useBackgroundImage && bitmapScaledCrop != null && !bitmapScaledCrop.isRecycled()) {
-            bitmapScaledCrop.recycle();
-        }
+    /**
+     * 设置透明度的模式，设置完后需要立刻刷新起效。
+     */
+    public void setOpacityMode(int mOpacityMode) {
+        this.opacityMode = mOpacityMode;
+        refreshOpacityMode();
     }
 
     private void refreshOpacityMode() {
@@ -174,17 +158,8 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         }
     }
 
-    /**
-     * 设置透明度的模式，设置完后需要立刻刷新起效。
-     */
-    public void setOpacityMode(int mOpacityMode) {
-        this.opacityMode = mOpacityMode;
-        refreshOpacityMode();
-    }
-
     public void setOpacity(int opacity) {
         floatingBallPaint.setPaintAlpha(opacity);
-
         userSetOpacity = opacity;
 
         refreshOpacityMode();
@@ -285,65 +260,11 @@ public class FloatingBallView extends View implements OnGestureEventListener {
      * 改变悬浮球大小，需要改变所有与Size相关的东西
      */
     public void changeFloatBallSizeWithRadius(int ballRadius) {
-
         floatingBallDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
-
-        if (useBackgroundImage) {
-            createBitmapCropFromBitmapRead();
-        }
 
         floatingBallAnimator.setUpTouchAnimator(ballRadius);
     }
 
-    /**
-     * 更新bitmapRead的值
-     */
-    public void setBitmapRead() {
-        //path为app内部目录
-        String path = getContext().getFilesDir().toString();
-        bitmapRead = BitmapFactory.decodeFile(path + "/ballBackground.png");
-
-        //读取不成功就取默认图片
-        if (bitmapRead == null) {
-            Resources res = getResources();
-            bitmapRead = BitmapFactory.decodeResource(res, R.drawable.joe_big);
-        }
-    }
-
-    public void createBitmapCropFromBitmapRead() {
-        if (floatingBallDrawer.ballRadius <= 0) {
-            return;
-        }
-        //bitmapRead可能已被回收
-        if (bitmapRead == null || bitmapRead.isRecycled()) {
-            setBitmapRead();
-        }
-
-        //边长
-        int edge = (int) floatingBallDrawer.ballRadius * 2;
-
-        //缩放到edge的大小
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapRead, edge, edge, true);
-
-        //对scaledBitmap进行裁切
-        bitmapScaledCrop = Bitmap.createBitmap(edge, edge, Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmapScaledCrop);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setFilterBitmap(true);
-
-        //x y r
-        canvas
-                .drawCircle(floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, floatingBallDrawer.ballRadius, paint);
-        paint.reset();
-        paint.setAntiAlias(true);
-        paint.setFilterBitmap(true);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(scaledBitmap, 0, 0, paint);
-
-        scaledBitmap.recycle();
-    }
 
     public void removeBallWithAnimation() {
         floatingBallAnimator.performRemoveAnimatorWithEndAction(new Runnable() {
@@ -387,7 +308,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
             floatingBallAnimator.startParamsYAnimationTo(lastLayoutParamsY);
         }
-
     }
 
     @Override
@@ -396,11 +316,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
         floatingBallDrawer.drawBallWithThisModel(canvas);
 
-        Paint ballPaint = floatingBallPaint.getBallPaint();
-
-        if (useBackgroundImage) {
-          canvas.drawBitmap(bitmapScaledCrop,null,floatingBallDrawer.getBallRect(),ballPaint);
-        }
     }
 
     /**
@@ -444,8 +359,8 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
 
     @Override
-    public void onMove(int x,int y) {
-        setLayoutPositionParamsAndSave(x,y);
+    public void onMove(int x, int y) {
+        setLayoutPositionParamsAndSave(x, y);
     }
 
     @Override

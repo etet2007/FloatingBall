@@ -39,12 +39,7 @@ public class FloatingBallAnimator {
     PropertyValuesHolder pVH = PropertyValuesHolder.ofKeyframe("paintAlpha", kf1, kf2, kf3);
     reduceOpacityAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallPaint, pVH);
     reduceOpacityAnimator.setDuration(3000);
-    reduceOpacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        view.invalidate();
-      }
-    });
+    reduceOpacityAnimator.addUpdateListener(animation -> view.invalidate());
   }
 
   public void startReduceOpacityAnimator() {
@@ -65,12 +60,7 @@ public class FloatingBallAnimator {
     breathingOpacityAnimator.setRepeatCount(ValueAnimator.INFINITE);
     breathingOpacityAnimator.setRepeatMode(ValueAnimator.RESTART);
     breathingOpacityAnimator.setDuration(4000);
-    breathingOpacityAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        view.invalidate();
-      }
-    });
+    breathingOpacityAnimator.addUpdateListener(animation -> view.invalidate());
   }
 
   public void startBreathingAnimator() {
@@ -110,12 +100,7 @@ public class FloatingBallAnimator {
     PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0, kf1, kf2);
     onTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, onTouch);
     onTouchAnimator.setDuration(300);
-    onTouchAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        view.invalidate();
-      }
-    });
+    onTouchAnimator.addUpdateListener(animation -> view.invalidate());
 
     Keyframe kf3 = Keyframe.ofFloat(0f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);
     Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);

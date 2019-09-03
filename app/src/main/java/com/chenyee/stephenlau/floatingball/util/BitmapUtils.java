@@ -22,14 +22,12 @@ public class BitmapUtils {
             out = new FileOutputStream(file);
             isSucceed = bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             try {
                 if (out != null) {
                     out.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return isSucceed;
@@ -68,7 +66,7 @@ public class BitmapUtils {
     /**
      * 复制图片置软件文件夹内。
      */
-    public static void copyBackgroundImage(String imagePath) {
+    public static void copyBackgroundImageToAppFolder(String imagePath) {
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
         if (bitmap == null) {
             Toast.makeText(App.getApplication(), "Read image error", Toast.LENGTH_LONG).show();
