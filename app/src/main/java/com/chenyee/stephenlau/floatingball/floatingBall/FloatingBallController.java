@@ -81,7 +81,7 @@ public class FloatingBallController {
         // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
         FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
 
-//        辅助设置里打开，等于在设置中打开。
+        //        辅助设置里打开，等于在设置中打开。
         SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
     }
 
@@ -164,11 +164,12 @@ public class FloatingBallController {
      * @param imagePath 外部图片地址
      */
     public void setBackgroundImage(String imagePath) {
-        BitmapUtils.copyBackgroundImage(imagePath);
+        BitmapUtils.copyBackgroundImageToAppFolder(imagePath);
+
+        FloatingBallDrawer.setBitmapRead();
+        FloatingBallDrawer.createBitmapCropFromBitmapRead();
 
         for (FloatingBallView floatingBallView : floatingBallViewList) {
-            floatingBallView.setBitmapRead();
-            floatingBallView.createBitmapCropFromBitmapRead();
             floatingBallView.invalidate();
         }
     }
@@ -297,11 +298,8 @@ public class FloatingBallController {
         isSoftKeyboardShow = false;
     }
 
-
     public void recycleBitmapMemory() {
-        for (FloatingBallView floatingBallView : floatingBallViewList) {
-            floatingBallView.recycleBitmap();
-        }
+        FloatingBallDrawer.recycleBitmap();
     }
 
     /**
