@@ -129,7 +129,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
 
     public void setUseBackgroundImage(boolean useBackgroundImage) {
-        floatingBallDrawer.setUseBackgroundImage(useBackgroundImage);
+        FloatingBallDrawer.BackgroundImageHelper.setUseBackgroundImage(useBackgroundImage);
     }
 
     /**
@@ -267,12 +267,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
 
     public void removeBallWithAnimation() {
-        floatingBallAnimator.performRemoveAnimatorWithEndAction(new Runnable() {
-            @Override
-            public void run() {
-                removeBallWithoutAnimation();
-            }
-        });
+        floatingBallAnimator.performRemoveAnimatorWithEndAction(this::removeBallWithoutAnimation);
     }
 
     private void removeBallWithoutAnimation() {

@@ -166,8 +166,8 @@ public class FloatingBallController {
     public void setBackgroundImage(String imagePath) {
         BitmapUtils.copyBackgroundImageToAppFolder(imagePath);
 
-        FloatingBallDrawer.setBitmapRead();
-        FloatingBallDrawer.createBitmapCropFromBitmapRead();
+        FloatingBallDrawer.BackgroundImageHelper.setBitmapRead();
+        FloatingBallDrawer.BackgroundImageHelper.createBitmapCropFromBitmapRead();
 
         for (FloatingBallView floatingBallView : floatingBallViewList) {
             floatingBallView.invalidate();
@@ -299,7 +299,7 @@ public class FloatingBallController {
     }
 
     public void recycleBitmapMemory() {
-        FloatingBallDrawer.recycleBitmap();
+        FloatingBallDrawer.BackgroundImageHelper.recycleBitmap();
     }
 
     /**
