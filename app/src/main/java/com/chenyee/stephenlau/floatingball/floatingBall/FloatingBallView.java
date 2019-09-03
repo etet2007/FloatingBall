@@ -3,7 +3,6 @@ package com.chenyee.stephenlau.floatingball.floatingBall;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.support.annotation.Keep;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -40,7 +39,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     private FunctionListener rightFunctionListener;
 
     //Draw
-    private FloatingBallPaint floatingBallPaint;
     private FloatingBallDrawer floatingBallDrawer;
     private FloatingBallAnimator floatingBallAnimator;
     //Interact
@@ -48,7 +46,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     //ballView的Id
     private int idCode;
-
 
     private WindowManager windowManager;
 
@@ -93,9 +90,8 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
 
     private void init(Context context) {
-        floatingBallPaint = new FloatingBallPaint();
 
-        floatingBallDrawer = new FloatingBallDrawer(this, floatingBallPaint);
+        floatingBallDrawer = new FloatingBallDrawer(this);
 
         floatingBallAnimator = new FloatingBallAnimator(this, floatingBallDrawer);
         floatingBallAnimator.performAddAnimator();
@@ -142,7 +138,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     private void refreshOpacityMode() {
         if (opacityMode == OPACITY_NONE) {
-            floatingBallPaint.setPaintAlpha(userSetOpacity);
+            floatingBallDrawer.setPaintAlpha(userSetOpacity);
         }
 
         if (opacityMode == OPACITY_REDUCE) {
@@ -159,7 +155,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
 
     public void setOpacity(int opacity) {
-        floatingBallPaint.setPaintAlpha(opacity);
+        floatingBallDrawer.setPaintAlpha(opacity);
         userSetOpacity = opacity;
 
         refreshOpacityMode();
@@ -194,10 +190,6 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     public FloatingBallDrawer getFloatingBallDrawer() {
         return floatingBallDrawer;
-    }
-
-    public FloatingBallPaint getFloatingBallPaint() {
-        return floatingBallPaint;
     }
 
     public int getMeasureLength() {
@@ -341,7 +333,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         floatingBallAnimator.startOnTouchAnimator();
 
         if (opacityMode == OPACITY_REDUCE) {
-            floatingBallPaint.setPaintAlpha(userSetOpacity);
+            floatingBallDrawer.setPaintAlpha(userSetOpacity);
         }
     }
 
