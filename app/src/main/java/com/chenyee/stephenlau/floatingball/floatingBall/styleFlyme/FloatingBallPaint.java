@@ -1,16 +1,16 @@
-package com.chenyee.stephenlau.floatingball.floatingBall;
+package com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme;
 
 import android.graphics.BlurMaskFilter;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RadialGradient;
-import android.graphics.Shader;
 import android.support.annotation.Keep;
 
+import com.chenyee.stephenlau.floatingball.floatingBall.base.BallPaint;
+
 @Keep
-public class FloatingBallPaint {
+public class FloatingBallPaint implements BallPaint {
 
     private Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint ballPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -28,16 +28,9 @@ public class FloatingBallPaint {
         ballEmptyPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         backgroundPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
 
-//        RadialGradient radialGradient = new RadialGradient(
-//                0, 0,
-//                FloatingBallDrawer.ballRadius + FloatingBallDrawer.greyBackgroundLength,
-//                Color.parseColor("#E91E63"),
-//                Color.parseColor("#2196F3"),
-//                Shader.TileMode.CLAMP);
-//
-//        backgroundPaint.setShader(radialGradient);
     }
 
+    @Override
     public void setPaintAlpha(int opacity) {
         backgroundPaint.setAlpha(opacity);
         ballPaint.setAlpha(opacity);

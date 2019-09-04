@@ -107,7 +107,7 @@ public class FloatingBallGestureProcessor implements GestureDetector.OnGestureLi
         }
         if (currentGestureState != lastGestureState) {
             scrollGestureChangeCount++;
-            floatingBallView.getFloatingBallDrawer().moveBallViewWithCurrentGestureState(currentGestureState);
+            onGestureEventListener.onScrollStateChange(currentGestureState);
             lastGestureState = currentGestureState;
         }
         return false;

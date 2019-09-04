@@ -16,4 +16,6 @@ public interface OnGestureEventListener {
   void downGesture();
   void leftGesture();
   void rightGesture();
+
+  void onScrollStateChange(int currentGestureState);
 }

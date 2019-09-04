@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 import com.chenyee.stephenlau.floatingball.App;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.BitmapUtils;

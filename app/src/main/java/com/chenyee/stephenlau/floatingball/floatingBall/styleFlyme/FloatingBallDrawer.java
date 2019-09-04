@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.floatingBall;
+package com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,11 +8,11 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.support.annotation.Keep;
-
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
+import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
-
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_DOWN;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_LEFT;
@@ -22,14 +22,12 @@ import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingB
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 
 @Keep
-public class FloatingBallDrawer {
+public class FloatingBallDrawer extends BallDrawer {
 
     //灰色背景长度
     public static final float greyBackgroundLength = dip2px(getApplication(), 4);
-    public static float ballRadius;
     public final float ballRadiusDeltaMaxInAnimation = dip2px(getApplication(), 2.5f);
     private final int scrollGestureMoveDistance = dip2px(getApplication(), 6.6f);//18
-    public int measuredSideLength;
     private float grayBackgroundRadius;
     private float ballCenterY = 0;
     private float ballCenterX = 0;
@@ -38,12 +36,10 @@ public class FloatingBallDrawer {
     private FloatingBallPaint floatingballPaint;
     private boolean useGrayBackground = true;
 
-    private BackgroundImageHelper backgroundImageHelper;
-
     public FloatingBallDrawer(FloatingBallView view) {
+        super(new FloatingBallPaint());
         this.view = view;
-        this.floatingballPaint = new FloatingBallPaint();
-        backgroundImageHelper = new BackgroundImageHelper();
+        this.floatingballPaint = (FloatingBallPaint) ballPaint;
     }
 
     public RectF getBallRect() {
@@ -56,9 +52,9 @@ public class FloatingBallDrawer {
     }
 
     public void drawBallWithThisModel(Canvas canvas) {
-        canvas.translate(measuredSideLength / 2, measuredSideLength / 2);
-        Paint grayBackgroundPaint = floatingballPaint.getGrayBackgroundPaint();
+        super.drawBallWithThisModel(canvas);
 
+        Paint grayBackgroundPaint = floatingballPaint.getGrayBackgroundPaint();
         if (useGrayBackground) {
             //            canvas.drawCircle(0, 0, grayBackgroundRadius, floatingballPaint.getShadowPaint());
             canvas.drawCircle(0, 0, grayBackgroundRadius, grayBackgroundPaint);
@@ -76,8 +72,9 @@ public class FloatingBallDrawer {
         }
     }
 
+    @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
-        this.ballRadius = ballRadius;
+        super.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
 
         grayBackgroundRadius = ballRadius + greyBackgroundLength;
 
@@ -89,14 +86,6 @@ public class FloatingBallDrawer {
         if (BackgroundImageHelper.isUseBackgroundImage()) {
             BackgroundImageHelper.createBitmapCropFromBitmapRead();
         }
-    }
-
-    public float getBallRadius() {
-        return ballRadius;
-    }
-
-    public void setBallRadius(float ballRadius) {
-        this.ballRadius = ballRadius;
     }
 
     public float getBallCenterY() {
@@ -123,6 +112,7 @@ public class FloatingBallDrawer {
         useGrayBackground = BallSettingRepo.isUseGrayBackground();
     }
 
+    @Override
     public void moveBallViewWithCurrentGestureState(int currentGestureState) {
         switch (currentGestureState) {
             case STATE_UP:
@@ -147,10 +137,6 @@ public class FloatingBallDrawer {
                 break;
         }
         view.invalidate();
-    }
-
-    public void setPaintAlpha(int userSetOpacity) {
-        floatingballPaint.setPaintAlpha(userSetOpacity);
     }
 
     public static class BackgroundImageHelper {
