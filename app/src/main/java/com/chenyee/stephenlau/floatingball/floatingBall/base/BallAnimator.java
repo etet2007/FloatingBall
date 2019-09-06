@@ -29,7 +29,7 @@ public abstract class BallAnimator {
     abstract public void startUnTouchAnimator();
     abstract public void startOnTouchAnimator();
 
-        public void setUpReduceAnimator(int opacity) {
+    public void setUpReduceAnimator(int opacity) {
         Keyframe kf1 = Keyframe.ofInt(0f, opacity);
         Keyframe kf2 = Keyframe.ofInt(0.5f, opacity);
         Keyframe kf3 = Keyframe.ofInt(1f, (int) (opacity * 0.6));

@@ -176,8 +176,9 @@ public class FloatingBallController {
     }
 
     public void updateSpecificParameter(String key) {
-        for (FloatingBallView floatingBallView : floatingBallViewList) {
 
+
+        for (FloatingBallView floatingBallView : floatingBallViewList) {
             switch (key) {
                 case PREF_OPACITY:
                     floatingBallView.setOpacity(BallSettingRepo.opacity());

@@ -3,7 +3,6 @@ package com.chenyee.stephenlau.floatingball.floatingBall.styleGradient;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallEventListener;
 
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_NONE;
 
 public class GradientBallEventListener extends BallEventListener {
     public GradientBallEventListener(FloatingBallView floatingBallView) {
@@ -12,7 +11,8 @@ public class GradientBallEventListener extends BallEventListener {
 
     @Override
     public void onScrollEnd() {
-        floatingBallView.ballDrawer.moveBallViewWithCurrentGestureState(STATE_NONE);
+        GradientBallAnimator gradientBallAnimator = (GradientBallAnimator) floatingBallView.ballAnimator;
+        gradientBallAnimator.startMoveBackAnimator();
     }
 
     @Override

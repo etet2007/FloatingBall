@@ -1,5 +1,6 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.styleGradient;
 
+import android.graphics.BlurMaskFilter;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -9,6 +10,9 @@ import android.graphics.Shader;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallPaint;
 
+import static com.chenyee.stephenlau.floatingball.App.getApplication;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
+
 public class GradientBallPaint implements BallPaint {
 
     private Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -17,6 +21,8 @@ public class GradientBallPaint implements BallPaint {
 
     public GradientBallPaint() {
         backgroundPaint.setColor(Color.GRAY);
+        backgroundPaint.setMaskFilter(new BlurMaskFilter(5, BlurMaskFilter.Blur.SOLID));
+
         matrix = new Matrix();
     }
 
@@ -42,8 +48,9 @@ public class GradientBallPaint implements BallPaint {
         backgroundPaint.setShader(radialGradient);
     }
 
-    public void traslate(float dx, float dy) {
+    public void translate(float dx, float dy) {
         matrix.setTranslate(dx,dy);
         radialGradient.setLocalMatrix(matrix);
     }
+
 }

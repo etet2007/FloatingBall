@@ -225,6 +225,7 @@ public class SettingFragment extends Fragment {
         plusButton.setOnClickListener(v -> {
             BallSettingRepo.setAmount(BallSettingRepo.amount() + 1);
 
+            //动态变化的需要通过intent ShardPref无法区分是增还是减。
             Intent intent = new Intent(getActivity(), FloatingBallService.class);
             Bundle data = new Bundle();
             data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_ADD);

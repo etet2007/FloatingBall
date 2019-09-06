@@ -2,6 +2,8 @@ package com.chenyee.stephenlau.floatingball.floatingBall.styleGradient;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.annotation.Keep;
+import android.util.Log;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
@@ -13,12 +15,24 @@ import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingB
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_RIGHT;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_UP;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
-
+@Keep
 public class GradientBallDrawer extends BallDrawer {
 
     public static final float padding = dip2px(getApplication(), 2);
     private GradientBallPaint gradientBallPaint;
     private FloatingBallView view;
+
+
+    public float getDx() {
+        return dx;
+    }
+
+    public float getDy() {
+        return dy;
+    }
+
+    private float dx;
+    private float dy;
 
     public GradientBallDrawer(FloatingBallView view) {
         super(new GradientBallPaint());
@@ -29,7 +43,7 @@ public class GradientBallDrawer extends BallDrawer {
     @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
         super.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
-        measuredSideLength = (int) (ballRadius + padding) * 2;
+        measuredSideLength = (int) (ballRadius * 2 * 1.25);
 
         gradientBallPaint.refreshPaint();
     }
@@ -51,21 +65,39 @@ public class GradientBallDrawer extends BallDrawer {
     public void moveBallViewWithCurrentGestureState(int currentGestureState) {
         switch (currentGestureState) {
             case STATE_UP:
-                gradientBallPaint.traslate(0, -ballRadius * 0.8f);
+                dx = 0;
+                dy = -ballRadius * 0.8f;
                 break;
             case STATE_DOWN:
-                gradientBallPaint.traslate(0, ballRadius * 0.8f);
+                dx = 0;
+                dy = ballRadius * 0.8f;
                 break;
             case STATE_LEFT:
-                gradientBallPaint.traslate(-ballRadius * 0.8f,0);
+                dx = -ballRadius * 0.8f;
+                dy = 0;
                 break;
             case STATE_RIGHT:
-                gradientBallPaint.traslate(ballRadius * 0.8f,0);
+                dx = ballRadius * 0.8f;
+                dy = 0;
                 break;
             case STATE_NONE:
-                gradientBallPaint.traslate(0,0);
+                dx = 0;
+                dy = 0;
                 break;
         }
+        gradientBallPaint.translate(dx, dy);
+
         view.invalidate();
     }
+
+    public void setDx(float dx) {
+        this.dx = dx;
+        gradientBallPaint.translate(dx,dy);
+    }
+
+    public void setDy(float dy) {
+        this.dy = dy;
+        gradientBallPaint.translate(dx,dy);
+    }
+
 }
