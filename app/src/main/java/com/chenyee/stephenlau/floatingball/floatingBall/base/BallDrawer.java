@@ -1,8 +1,5 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.base;
-
 import android.graphics.Canvas;
-
-import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
 public abstract class BallDrawer {
     protected int measuredSideLength;

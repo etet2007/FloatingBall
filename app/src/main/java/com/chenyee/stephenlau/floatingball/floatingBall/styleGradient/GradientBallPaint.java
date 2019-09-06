@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
+import android.util.Log;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallPaint;
@@ -15,6 +16,7 @@ import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 
 public class GradientBallPaint implements BallPaint {
 
+    private static final String TAG = "GradientBallPaint";
     private Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Matrix matrix;
     private RadialGradient radialGradient;
@@ -41,7 +43,8 @@ public class GradientBallPaint implements BallPaint {
                 BallDrawer.getBallRadius(),
                 new int[]{
                         Color.parseColor("#355C7D"),
-                        Color.parseColor("#F67280")},
+                        Color.parseColor("#F67280")
+                },
                 new float[]{0.3f, 1f},
                 Shader.TileMode.CLAMP);
 

@@ -13,6 +13,7 @@ import android.view.WindowManager.LayoutParams;
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
@@ -87,11 +88,11 @@ public class FloatingBallView extends View {
         super(context, attrs);
 
         init();
-
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        setOpacity(100);
-        setOpacityMode(NONE);
-        changeFloatBallSizeWithRadius(200);
+//todo comment test code
+//        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//        setOpacity(100);
+//        setOpacityMode(NONE);
+//        changeFloatBallSizeWithRadius(200);
     }
 
     public FloatingBallView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -100,21 +101,19 @@ public class FloatingBallView extends View {
 
     private void init() {
 
-//        ballDrawer = new FloatingBallDrawer(this);
-//        ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
+        windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-        ballDrawer = new GradientBallDrawer(this);
-        ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
+                ballDrawer = new FloatingBallDrawer(this);
+                ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
+        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new FloatingBallEventListener(this));
 
+//        ballDrawer = new GradientBallDrawer(this);
+//        ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
+//        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
 
         ViewAnimator.performAddAnimator(this);
 
-        changeFloatBallSizeWithRadius(50);
 
-        windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-
-//        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new FloatingBallEventListener(this));
-        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
     }
 
     public int getIdCode() {

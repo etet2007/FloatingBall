@@ -19,6 +19,7 @@ import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 public class GradientBallDrawer extends BallDrawer {
 
     public static final float padding = dip2px(getApplication(), 2);
+    private static final String TAG = "GradientBallDrawer";
     private GradientBallPaint gradientBallPaint;
     private FloatingBallView view;
 
@@ -51,7 +52,7 @@ public class GradientBallDrawer extends BallDrawer {
     @Override
     public void drawBallWithThisModel(Canvas canvas) {
         super.drawBallWithThisModel(canvas);
-
+        Log.d(TAG, "lqt drawBallWithThisModel: ballRadius " + ballRadius);
         Paint grayBackgroundPaint = gradientBallPaint.getBackgroundPaint();
         canvas.drawCircle(0, 0, ballRadius, grayBackgroundPaint);
     }
