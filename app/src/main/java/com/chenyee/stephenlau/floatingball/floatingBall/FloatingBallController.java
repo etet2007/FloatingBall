@@ -83,7 +83,7 @@ public class FloatingBallController {
         FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
 
         //        辅助设置里打开，等于在设置中打开。
-        SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
+        BallSettingRepo.setIsAddedBallInSetting(true);
     }
 
     public void addFloatingBallView(Context context, int id) {

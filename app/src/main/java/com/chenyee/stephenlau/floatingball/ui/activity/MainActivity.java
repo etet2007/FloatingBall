@@ -37,6 +37,7 @@ import com.artitk.licensefragment.model.LicenseType;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.common_receiver.LockRequestReceiver;
+import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.ui.fragment.SettingFragment;
 import com.chenyee.stephenlau.floatingball.util.ActivityUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         Log.d(TAG, "onResume: ");
 
-        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
+        boolean hasAddedBall = BallSettingRepo.isAddedBallInSetting();
         refreshActivityViews(hasAddedBall);
     }
 
