@@ -8,6 +8,10 @@ public abstract class BallDrawer {
         return measuredSideLength;
     }
 
+    public static void setBallRadius(float ballRadius) {
+        BallDrawer.ballRadius = ballRadius;
+    }
+
     protected static float ballRadius;
 
     public static float getBallRadius() {
