@@ -37,10 +37,10 @@ public class GradientBallPaint implements BallPaint {
         backgroundPaint.setAlpha(opacity);
     }
 
-    public void refreshPaint() {
+    public void refreshPaint(int ballRadius) {
         radialGradient = new RadialGradient(
                 0, 0,
-                BallDrawer.getBallRadius(),
+                ballRadius,
                 new int[]{
                         Color.parseColor("#355C7D"),
                         Color.parseColor("#F67280")

@@ -36,6 +36,8 @@ public class StaticStringUtil {
     public static final String PREF_UP_SWIPE_EVENT = "UP_SWIPE_EVENT";
     public static final String PREF_DOWN_SWIPE_EVENT = "DOWN_SWIPE_EVENT";
 
+    public static final String PREF_BALL_THEME = "PREF_BALL_THEME";
+
     //EXTRAS_COMMAND
     public static final String EXTRAS_COMMAND = "EXTRAS_COMMAND";
 

@@ -8,18 +8,18 @@ public abstract class BallDrawer {
         return measuredSideLength;
     }
 
-    public static void setBallRadius(float ballRadius) {
-        BallDrawer.ballRadius = ballRadius;
+    public void setBallRadius(float ballRadius) {
+        this.ballRadius = ballRadius;
     }
 
-    protected static float ballRadius;
+    protected float ballRadius;
 
-    public static float getBallRadius() {
+    public float getBallRadius() {
         return ballRadius;
     }
 
     public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
-        BallDrawer.ballRadius = ballRadius;
+        this.ballRadius = ballRadius;
     }
 
     protected BallPaint ballPaint;

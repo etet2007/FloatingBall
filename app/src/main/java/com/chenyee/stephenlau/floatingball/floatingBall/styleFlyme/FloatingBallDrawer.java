@@ -188,7 +188,8 @@ public class FloatingBallDrawer extends BallDrawer {
          * 每次大小改变时需要重新计算
          */
         public static void createBitmapCropFromBitmapRead() {
-            if (FloatingBallDrawer.ballRadius <= 0) {
+            float ballRadius = BallSettingRepo.size();
+            if (ballRadius <= 0) {
                 return;
             }
             //bitmapRead可能已被回收
@@ -197,7 +198,7 @@ public class FloatingBallDrawer extends BallDrawer {
             }
 
             //边长
-            int edge = (int) FloatingBallDrawer.ballRadius * 2;
+            int edge = (int) ballRadius * 2;
 
             //缩放到edge的大小
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapRead, edge, edge, true);
@@ -210,7 +211,7 @@ public class FloatingBallDrawer extends BallDrawer {
             paint.setAntiAlias(true);
             paint.setFilterBitmap(true);
             //x y r
-            canvas.drawCircle(FloatingBallDrawer.ballRadius, FloatingBallDrawer.ballRadius, FloatingBallDrawer.ballRadius, paint);
+            canvas.drawCircle(ballRadius, ballRadius, ballRadius, paint);
 
             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 

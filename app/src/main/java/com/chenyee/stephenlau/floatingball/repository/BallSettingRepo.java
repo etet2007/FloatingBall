@@ -11,6 +11,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.HOME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NOTIFICATION;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_AMOUNT;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_BALL_THEME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
@@ -218,5 +219,13 @@ public class BallSettingRepo {
 
     public static void setAmount(int amount) {
         SharedPrefsUtils.setIntegerPreference(PREF_AMOUNT, amount);
+    }
+
+    public static int themeMode() {
+        return SharedPrefsUtils.getIntegerPreference(PREF_BALL_THEME, 0);
+    }
+
+    public static void setThemeMode(int amount) {
+        SharedPrefsUtils.setIntegerPreference(PREF_BALL_THEME, amount);
     }
 }

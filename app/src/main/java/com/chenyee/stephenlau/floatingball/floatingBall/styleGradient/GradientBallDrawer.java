@@ -46,7 +46,7 @@ public class GradientBallDrawer extends BallDrawer {
         super.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
         measuredSideLength = (int) (ballRadius * 2 * 1.25);
 
-        gradientBallPaint.refreshPaint();
+        gradientBallPaint.refreshPaint(ballRadius);
     }
 
     @Override

@@ -432,4 +432,16 @@ public class SettingFragment extends Fragment {
                     updateOpacityModeView();
                 }).show();
     }
+    @OnClick(R.id.style_relativeLayout)
+    public void onStyleClicked(View view) {
+        //showOpacityModeDialog
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setTitle(R.string.ballStyle)
+//                .setItems(R.array.opacity_mode, (dialog, which) -> {
+//                    SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
+//                    updateOpacityModeView();
+//                }).show();
+        BallSettingRepo.setThemeMode(0);
+
+    }
 }

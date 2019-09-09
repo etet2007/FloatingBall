@@ -26,6 +26,8 @@ import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 
+import static com.chenyee.stephenlau.floatingball.App.getApplication;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.gScreenHeight;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
@@ -88,11 +90,11 @@ public class FloatingBallView extends View {
         super(context, attrs);
 
         init();
-//todo comment test code
-//        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-//        setOpacity(100);
-//        setOpacityMode(NONE);
-//        changeFloatBallSizeWithRadius(200);
+        //todo comment test code
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setOpacity(50);
+        setOpacityMode(NONE);
+        changeFloatBallSizeWithRadius(dip2px(getApplication(), 10));
     }
 
     public FloatingBallView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -112,7 +114,6 @@ public class FloatingBallView extends View {
 //        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
 
         ViewAnimator.performAddAnimator(this);
-
 
     }
 
@@ -266,7 +267,6 @@ public class FloatingBallView extends View {
         ballAnimator.setUpTouchAnimator(ballRadius);
     }
 
-
     public void removeBallWithAnimation() {
         ViewAnimator.performRemoveAnimatorWithEndAction(this, this::removeBallWithoutAnimation);
     }
@@ -335,4 +335,15 @@ public class FloatingBallView extends View {
     }
 
 
+    public void setTheme(int themeMode) {
+        if (themeMode == 0) {
+            ballDrawer = new FloatingBallDrawer(this);
+            ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
+            floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new FloatingBallEventListener(this));
+        } else if (themeMode == 1) {
+                    ballDrawer = new GradientBallDrawer(this);
+                    ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
+                    floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
+        }
+    }
 }

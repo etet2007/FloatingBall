@@ -20,6 +20,7 @@ import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 import java.util.ArrayList;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_BALL_THEME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
@@ -176,8 +177,6 @@ public class FloatingBallController {
     }
 
     public void updateSpecificParameter(String key) {
-
-
         for (FloatingBallView floatingBallView : floatingBallViewList) {
             switch (key) {
                 case PREF_OPACITY:
@@ -191,6 +190,10 @@ public class FloatingBallController {
                     break;
                 case PREF_USE_BACKGROUND:
                     floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
+                    break;
+                case PREF_BALL_THEME:
+                    floatingBallView.setTheme(BallSettingRepo.themeMode());
+                    floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
                     break;
                 case PREF_USE_GRAY_BACKGROUND:
                 case PREF_IS_VIBRATE:
