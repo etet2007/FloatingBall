@@ -23,7 +23,7 @@ public class GradientBallAnimator extends BallAnimator {
     }
 
     @Override
-    public void setUpTouchAnimator(int ballRadius) {
+    public void setUpTouchAnimator(float ballRadius) {
 
     }
 

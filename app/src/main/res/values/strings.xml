@@ -74,6 +74,9 @@
     <string name="reduce">Reduce</string>
     <string name="breathing">Breathing</string>
 
+    <string name="ball_theme">Theme:</string>
+
+
     <string name="no_support_screenshot">Your system is not supported.</string>
     <string name="screenshot_fail">Failed to store a screenshot.</string>
     <string name="screenshot_succeed">Screenshot succeed!</string>

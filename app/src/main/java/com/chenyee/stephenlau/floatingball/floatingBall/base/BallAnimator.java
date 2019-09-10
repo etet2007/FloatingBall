@@ -25,7 +25,7 @@ public abstract class BallAnimator {
         this.ballDrawer = ballDrawer;
     }
 
-    abstract public void setUpTouchAnimator(int ballRadius);
+    abstract public void setUpTouchAnimator(float ballRadius);
     abstract public void startUnTouchAnimator();
     abstract public void startOnTouchAnimator();
 

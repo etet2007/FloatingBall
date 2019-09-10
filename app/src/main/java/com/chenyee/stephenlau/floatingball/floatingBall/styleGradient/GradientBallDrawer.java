@@ -42,7 +42,7 @@ public class GradientBallDrawer extends BallDrawer {
     }
 
     @Override
-    public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
+    public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
         super.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
         measuredSideLength = (int) (ballRadius * 2 * 1.25);
 

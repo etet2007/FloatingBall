@@ -18,7 +18,7 @@ public class FloatingBallAnimator extends BallAnimator {
         this.floatingBallDrawer = (FloatingBallDrawer) ballDrawer;
     }
 
-    public void setUpTouchAnimator(int ballRadius) {
+    public void setUpTouchAnimator(float ballRadius) {
         Keyframe kf0 = Keyframe.ofFloat(0f, ballRadius);
         Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation - 1);
         Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);

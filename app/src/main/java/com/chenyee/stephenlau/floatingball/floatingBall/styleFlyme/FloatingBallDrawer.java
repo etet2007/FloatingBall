@@ -73,7 +73,7 @@ public class FloatingBallDrawer extends BallDrawer {
     }
 
     @Override
-    public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
+    public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
         super.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
 
         grayBackgroundRadius = ballRadius + greyBackgroundLength;

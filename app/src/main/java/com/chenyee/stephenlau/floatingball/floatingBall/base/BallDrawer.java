@@ -18,7 +18,7 @@ public abstract class BallDrawer {
         return ballRadius;
     }
 
-    public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
+    public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
         this.ballRadius = ballRadius;
     }
 

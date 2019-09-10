@@ -13,11 +13,9 @@ import android.view.WindowManager.LayoutParams;
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
+import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
-import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor;
-import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
-import com.chenyee.stephenlau.floatingball.floatingBall.base.BallEventListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallEventListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallDrawer;
@@ -29,10 +27,12 @@ import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.gScreenHeight;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.FLYME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PLANTE;
 
 /**
  * Created by stephenlau on 2017/12/5.
@@ -42,33 +42,36 @@ public class FloatingBallView extends View {
     private static final String TAG = FloatingBallView.class.getSimpleName();
 
     //function list
-    public FunctionListener singleTapFunctionListener = () -> {};
-    public FunctionListener doubleTapFunctionListener = () -> {};
-    public FunctionListener downFunctionListener = () -> {};
-    public FunctionListener upFunctionListener = () -> {};
-    public FunctionListener leftFunctionListener = () -> {};
-    public FunctionListener rightFunctionListener = () -> {};
+    public FunctionListener singleTapFunctionListener = () -> {
+    };
+    public FunctionListener doubleTapFunctionListener = () -> {
+    };
+    public FunctionListener downFunctionListener = () -> {
+    };
+    public FunctionListener upFunctionListener = () -> {
+    };
+    public FunctionListener leftFunctionListener = () -> {
+    };
+    public FunctionListener rightFunctionListener = () -> {
+    };
 
     //Draw
     public BallDrawer ballDrawer;
     public BallAnimator ballAnimator;
-    //Interact
-    private FloatingBallGestureProcessor floatingBallGestureProcessor;
-
-    //ballView的Id
-    private int idCode;
-
-    private WindowManager windowManager;
-
     public int userSetOpacity = 125;
     public int opacityMode;
-    private WindowManager.LayoutParams ballViewLayoutParams;
     public int lastLayoutParamsY;
-    private int layoutParamsY;//用于使用反射
     public int keyboardTopY;
     public int moveUpDistance;
     public boolean isBallMoveUp = false;
     public boolean isKeyboardShow = false;
+    //Interact
+    private FloatingBallGestureProcessor floatingBallGestureProcessor;
+    //ballView的Id
+    private int idCode;
+    private WindowManager windowManager;
+    private WindowManager.LayoutParams ballViewLayoutParams;
+    private int layoutParamsY;//用于使用反射
 
     /**
      * 构造函数
@@ -76,6 +79,8 @@ public class FloatingBallView extends View {
     public FloatingBallView(Context context, int idCode) {
         super(context);
         this.idCode = idCode;
+
+        setTheme(BallSettingRepo.themeMode());
 
         init();
     }
@@ -90,9 +95,10 @@ public class FloatingBallView extends View {
         super(context, attrs);
 
         init();
-        //todo comment test code
+
+        setTheme(0);
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        setOpacity(50);
+        setOpacity(90);
         setOpacityMode(NONE);
         changeFloatBallSizeWithRadius(dip2px(getApplication(), 10));
     }
@@ -102,19 +108,10 @@ public class FloatingBallView extends View {
     }
 
     private void init() {
-
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-                ballDrawer = new FloatingBallDrawer(this);
-                ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
-        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new FloatingBallEventListener(this));
-
-//        ballDrawer = new GradientBallDrawer(this);
-//        ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
-//        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
 
         ViewAnimator.performAddAnimator(this);
-
     }
 
     public int getIdCode() {
@@ -223,6 +220,9 @@ public class FloatingBallView extends View {
     }
 
     private void saveLayoutParams() {
+        if (idCode < 0) {
+            return;
+        }
         Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             BallSettingRepo.setFloatingBallLandscapeX(ballViewLayoutParams.x, idCode);
@@ -237,6 +237,9 @@ public class FloatingBallView extends View {
      * 取数据更新
      */
     public void updateLayoutParamsWithOrientation() {
+        if (idCode < 0) {
+            return;
+        }
         if (windowManager != null) {
 
             Configuration configuration = App.getApplication().getResources().getConfiguration();
@@ -261,7 +264,7 @@ public class FloatingBallView extends View {
     /**
      * 改变悬浮球大小，需要改变所有与Size相关的东西
      */
-    public void changeFloatBallSizeWithRadius(int ballRadius) {
+    public void changeFloatBallSizeWithRadius(float ballRadius) {
         ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
 
         ballAnimator.setUpTouchAnimator(ballRadius);
@@ -335,15 +338,29 @@ public class FloatingBallView extends View {
     }
 
 
+    /**
+     * 设置完主题后需要重新设置大小和透明度
+     * 整个类的替换导致父类共有的数据丢失
+     * @param themeMode
+     */
     public void setTheme(int themeMode) {
-        if (themeMode == 0) {
+        float oldBallRadius = -1;
+        if (ballDrawer != null) {
+            oldBallRadius = ballDrawer.getBallRadius();
+        }
+
+        if (themeMode == FLYME) {
             ballDrawer = new FloatingBallDrawer(this);
             ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
             floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new FloatingBallEventListener(this));
-        } else if (themeMode == 1) {
-                    ballDrawer = new GradientBallDrawer(this);
-                    ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
-                    floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
+        } else if (themeMode == PLANTE) {
+            ballDrawer = new GradientBallDrawer(this);
+            ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
+            floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
         }
+        if (oldBallRadius > 0) {
+            changeFloatBallSizeWithRadius(oldBallRadius);
+        }
+        invalidate();
     }
 }

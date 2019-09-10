@@ -3,6 +3,7 @@ package com.chenyee.stephenlau.floatingball.ui.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -20,11 +21,19 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.ui.activity.MainActivity;
@@ -34,6 +43,8 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +53,7 @@ import butterknife.Unbinder;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PLANTE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_LEFT_SWIPE_EVENT;
@@ -78,6 +90,7 @@ public class SettingFragment extends Fragment {
     @BindView(R.id.vibrate_switch) SwitchCompat vibrateSwitch;
     @BindView(R.id.avoid_keyboard_switch) SwitchCompat avoidKeyboardSwitch;
     @BindView(R.id.upDistance_seekbar) DiscreteSeekBar upDistanceSeekBar;
+    @BindView(R.id.floating_ball_view) FloatingBallView settingBallView;
     private Unbinder butterKnifeUnBinder;
 
     public SettingFragment() {
@@ -432,16 +445,42 @@ public class SettingFragment extends Fragment {
                     updateOpacityModeView();
                 }).show();
     }
-    @OnClick(R.id.style_relativeLayout)
+    @OnClick(R.id.theme_relativeLayout)
     public void onStyleClicked(View view) {
-        //showOpacityModeDialog
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setTitle(R.string.ballStyle)
-//                .setItems(R.array.opacity_mode, (dialog, which) -> {
-//                    SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
-//                    updateOpacityModeView();
-//                }).show();
-        BallSettingRepo.setThemeMode(0);
+        View scrollView = getActivity().getLayoutInflater().inflate(R.layout.ball_theme_setting, null);
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog dialog = builder.setView(scrollView)
+                .setTitle(R.string.ball_theme)
+                .show();
+
+        TypedValue outValue = new TypedValue();
+        getActivity().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+
+        LinearLayoutCompat ballThemeLl = scrollView.findViewById(R.id.ball_theme_ll);
+        for (int i = 0; i <= PLANTE; i++) {
+            FrameLayout frameLayout = new FrameLayout(getActivity());
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.gravity = Gravity.CENTER;
+            frameLayout.setLayoutParams(layoutParams);
+            frameLayout.setClickable(true);
+            frameLayout.setFocusable(true);
+            frameLayout.setBackgroundResource(outValue.resourceId);
+            frameLayout.setPadding(0,15,0,15);
+            int finalI = i;
+            frameLayout.setOnClickListener(v ->{
+                BallSettingRepo.setThemeMode(finalI);
+                settingBallView.setTheme(finalI);
+                dialog.dismiss();
+            } );
+
+            FloatingBallView floatingBallView = new FloatingBallView(getActivity(),null);
+            floatingBallView.setTheme(i);
+            floatingBallView.changeFloatBallSizeWithRadius(70);
+            frameLayout.addView(floatingBallView,layoutParams);
+
+            ballThemeLl.addView(frameLayout);
+        }
     }
+
 }

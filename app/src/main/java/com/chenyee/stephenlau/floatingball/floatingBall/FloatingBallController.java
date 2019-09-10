@@ -193,7 +193,7 @@ public class FloatingBallController {
                     break;
                 case PREF_BALL_THEME:
                     floatingBallView.setTheme(BallSettingRepo.themeMode());
-                    floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
+                    updateSingleBallView(floatingBallView);
                     break;
                 case PREF_USE_GRAY_BACKGROUND:
                 case PREF_IS_VIBRATE:
@@ -234,26 +234,30 @@ public class FloatingBallController {
     private void updateViewsParameter() {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
 
-            floatingBallView.updateLayoutParamsWithOrientation();
-            /* View */
-            floatingBallView.setOpacity(BallSettingRepo.opacity());
-            floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
-            floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
-            floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
-
-            floatingBallView.updateModelData();
-
-            floatingBallView.requestLayout();
-            floatingBallView.invalidate();
-
-            /* Function */
-            floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
-            floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
-            floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
-            floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
-            floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
-            floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
+            updateSingleBallView(floatingBallView);
         }
+    }
+
+    private void updateSingleBallView(FloatingBallView floatingBallView) {
+        floatingBallView.updateLayoutParamsWithOrientation();
+        /* View */
+        floatingBallView.setOpacity(BallSettingRepo.opacity());
+        floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
+        floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
+        floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
+
+        floatingBallView.updateModelData();
+
+        floatingBallView.requestLayout();
+        floatingBallView.invalidate();
+
+        /* Function */
+        floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
+        floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
+        floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
+        floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
+        floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
+        floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
     }
 
     /**

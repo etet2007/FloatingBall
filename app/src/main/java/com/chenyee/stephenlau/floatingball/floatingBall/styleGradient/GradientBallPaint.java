@@ -37,7 +37,7 @@ public class GradientBallPaint implements BallPaint {
         backgroundPaint.setAlpha(opacity);
     }
 
-    public void refreshPaint(int ballRadius) {
+    public void refreshPaint(float ballRadius) {
         radialGradient = new RadialGradient(
                 0, 0,
                 ballRadius,

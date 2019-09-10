@@ -225,7 +225,7 @@ public class BallSettingRepo {
         return SharedPrefsUtils.getIntegerPreference(PREF_BALL_THEME, 0);
     }
 
-    public static void setThemeMode(int amount) {
-        SharedPrefsUtils.setIntegerPreference(PREF_BALL_THEME, amount);
+    public static void setThemeMode(int mode) {
+        SharedPrefsUtils.setIntegerPreference(PREF_BALL_THEME, mode);
     }
 }

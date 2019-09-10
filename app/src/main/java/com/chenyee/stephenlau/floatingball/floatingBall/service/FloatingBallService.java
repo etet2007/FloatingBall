@@ -51,13 +51,19 @@ public class FloatingBallService extends AccessibilityService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(TAG, "onCreate: ");
+
+        BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
+    }
+
+    @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected: ");
         
         floatingBallController.startBallView(FloatingBallService.this);
-
-        BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
     }
 
     @Override
