@@ -2,7 +2,6 @@ package com.chenyee.stephenlau.floatingball.floatingBall.base;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
-import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallAnimator;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
 
@@ -85,5 +84,5 @@ abstract public class BallEventListener implements OnGestureEventListener {
             }
         }
     }
-};
+}
 

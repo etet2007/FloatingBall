@@ -23,7 +23,6 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_BALL_THEME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_VIBRATE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_LEFT_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_MOVE_UP_DISTANCE;
@@ -168,7 +167,7 @@ public class FloatingBallController {
     public void setBackgroundImage(String imagePath) {
         BitmapUtils.copyBackgroundImageToAppFolder(imagePath);
 
-        FloatingBallDrawer.BackgroundImageHelper.setBitmapRead();
+        FloatingBallDrawer.BackgroundImageHelper.setupBitmapRead();
         FloatingBallDrawer.BackgroundImageHelper.createBitmapCropFromBitmapRead();
 
         for (FloatingBallView floatingBallView : floatingBallViewList) {
@@ -308,7 +307,7 @@ public class FloatingBallController {
     }
 
     public void recycleBitmapMemory() {
-        FloatingBallDrawer.BackgroundImageHelper.recycleBitmap();
+        FloatingBallDrawer.BackgroundImageHelper.recycleBitmapRead();
     }
 
     /**

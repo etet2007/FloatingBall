@@ -13,7 +13,7 @@ import android.view.WindowManager.LayoutParams;
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
-import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor;
+import com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallEventListener;
@@ -66,7 +66,7 @@ public class FloatingBallView extends View {
     public boolean isBallMoveUp = false;
     public boolean isKeyboardShow = false;
     //Interact
-    private FloatingBallGestureProcessor floatingBallGestureProcessor;
+    private GestureProcessor gestureProcessor;
     //ballView的Id
     private int idCode;
     private WindowManager windowManager;
@@ -80,9 +80,8 @@ public class FloatingBallView extends View {
         super(context);
         this.idCode = idCode;
 
-        setTheme(BallSettingRepo.themeMode());
-
         init();
+        setTheme(BallSettingRepo.themeMode());
     }
 
     /**
@@ -97,6 +96,7 @@ public class FloatingBallView extends View {
         init();
 
         setTheme(0);
+        ((FloatingBallDrawer) ballDrawer).setUseBackgroundImage(false);
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         setOpacity(90);
         setOpacityMode(NONE);
@@ -109,8 +109,7 @@ public class FloatingBallView extends View {
 
     private void init() {
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-
-
+        gestureProcessor = new GestureProcessor(this);
         ViewAnimator.performAddAnimator(this);
     }
 
@@ -136,7 +135,12 @@ public class FloatingBallView extends View {
     }
 
     public void setUseBackgroundImage(boolean useBackgroundImage) {
-        FloatingBallDrawer.BackgroundImageHelper.setUseBackgroundImage(useBackgroundImage);
+        if (ballDrawer instanceof FloatingBallDrawer) {
+            ((FloatingBallDrawer) ballDrawer).setUseBackgroundImage(useBackgroundImage);
+            FloatingBallDrawer.BackgroundImageHelper.setUseBackgroundImage(useBackgroundImage);
+        } else {
+            FloatingBallDrawer.BackgroundImageHelper.setUseBackgroundImage(false);
+        }
     }
 
     /**
@@ -176,7 +180,7 @@ public class FloatingBallView extends View {
         doubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
 
         boolean isUseDoubleClick = doubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
-        floatingBallGestureProcessor.setUseDoubleClick(isUseDoubleClick);
+        gestureProcessor.setUseDoubleClick(isUseDoubleClick);
     }
 
     public void setDownFunctionListener(int downFunctionListenerType) {
@@ -327,16 +331,15 @@ public class FloatingBallView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        floatingBallGestureProcessor.onTouchEvent(event);
+        gestureProcessor.onTouchEvent(event);
         return true;
     }
 
     public void updateModelData() {
         ballDrawer.updateFieldBySingleDataManager();
-        floatingBallGestureProcessor.updateFieldBySingleDataManager();
+        gestureProcessor.updateFieldBySingleDataManager();
         moveUpDistance = BallSettingRepo.moveUpDistance();
     }
-
 
     /**
      * 设置完主题后需要重新设置大小和透明度
@@ -352,11 +355,11 @@ public class FloatingBallView extends View {
         if (themeMode == FLYME) {
             ballDrawer = new FloatingBallDrawer(this);
             ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
-            floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new FloatingBallEventListener(this));
+            gestureProcessor.setOnGestureEventListener(new FloatingBallEventListener(this));
         } else if (themeMode == PLANTE) {
             ballDrawer = new GradientBallDrawer(this);
             ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
-            floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, new GradientBallEventListener(this));
+            gestureProcessor.setOnGestureEventListener(new GradientBallEventListener(this));
         }
         if (oldBallRadius > 0) {
             changeFloatBallSizeWithRadius(oldBallRadius);

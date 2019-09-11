@@ -445,6 +445,7 @@ public class SettingFragment extends Fragment {
                     updateOpacityModeView();
                 }).show();
     }
+
     @OnClick(R.id.theme_relativeLayout)
     public void onStyleClicked(View view) {
         View scrollView = getActivity().getLayoutInflater().inflate(R.layout.ball_theme_setting, null);
@@ -456,12 +457,12 @@ public class SettingFragment extends Fragment {
 
         TypedValue outValue = new TypedValue();
         getActivity().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = Gravity.CENTER;
 
         LinearLayoutCompat ballThemeLl = scrollView.findViewById(R.id.ball_theme_ll);
         for (int i = 0; i <= PLANTE; i++) {
             FrameLayout frameLayout = new FrameLayout(getActivity());
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            layoutParams.gravity = Gravity.CENTER;
             frameLayout.setLayoutParams(layoutParams);
             frameLayout.setClickable(true);
             frameLayout.setFocusable(true);

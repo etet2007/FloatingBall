@@ -14,11 +14,11 @@ import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_DOWN;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_LEFT;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_NONE;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_RIGHT;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_UP;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_DOWN;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_LEFT;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_NONE;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_RIGHT;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_UP;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 
 @Keep
@@ -35,6 +35,7 @@ public class FloatingBallDrawer extends BallDrawer {
     private FloatingBallView view;
     private FloatingBallPaint floatingballPaint;
     private boolean useGrayBackground = true;
+    private boolean useBackgroundImage = false;
 
     public FloatingBallDrawer(FloatingBallView view) {
         super(new FloatingBallPaint());
@@ -67,7 +68,7 @@ public class FloatingBallDrawer extends BallDrawer {
 
         canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballPaint);
 
-        if (BackgroundImageHelper.isUseBackgroundImage()) {
+        if (useBackgroundImage && BackgroundImageHelper.bitmapScaledCrop!=null) {
             canvas.drawBitmap(BackgroundImageHelper.bitmapScaledCrop, null, getBallRect(), ballPaint);
         }
     }
@@ -83,7 +84,7 @@ public class FloatingBallDrawer extends BallDrawer {
 
         measuredSideLength = (int) (grayBackgroundRadius + frameGap) * 2;
 
-        if (BackgroundImageHelper.isUseBackgroundImage()) {
+        if (useBackgroundImage) {
             BackgroundImageHelper.createBitmapCropFromBitmapRead();
         }
     }
@@ -139,41 +140,39 @@ public class FloatingBallDrawer extends BallDrawer {
         view.invalidate();
     }
 
+    public void setUseBackgroundImage(boolean useBackgroundImage) {
+        this.useBackgroundImage = useBackgroundImage;
+    }
+
     public static class BackgroundImageHelper {
-        //background image
         private static Bitmap bitmapRead;
         private static Bitmap bitmapScaledCrop;
-        //标志位
-        private static boolean useBackgroundImage = false;
 
-        public static boolean isUseBackgroundImage() {
-            return useBackgroundImage;
-        }
 
         public static void setUseBackgroundImage(boolean useBackgroundImage) {
             if (useBackgroundImage) {
-                setBitmapRead();
+                setupBitmapRead();
                 createBitmapCropFromBitmapRead();
             } else {
-                recycleBitmap();
+                if (bitmapRead != null && !bitmapRead.isRecycled()) {
+                    bitmapRead.recycle();
+                }
+                if (bitmapScaledCrop != null && !bitmapScaledCrop.isRecycled()) {
+                    bitmapScaledCrop.recycle();
+                }
             }
-
-            BackgroundImageHelper.useBackgroundImage = useBackgroundImage;
         }
 
-        public static void recycleBitmap() {
+        public static void recycleBitmapRead() {
             if (bitmapRead != null && !bitmapRead.isRecycled()) {
                 bitmapRead.recycle();
-            }
-            if (!useBackgroundImage && bitmapScaledCrop != null && !bitmapScaledCrop.isRecycled()) {
-                bitmapScaledCrop.recycle();
             }
         }
 
         /**
          * 更新bitmapRead的值
          */
-        public static void setBitmapRead() {
+        public static void setupBitmapRead() {
             //path为app内部目录
             String path = App.getApplication().getFilesDir().toString();
             bitmapRead = BitmapFactory.decodeFile(path + "/ballBackground.png");
@@ -194,7 +193,7 @@ public class FloatingBallDrawer extends BallDrawer {
             }
             //bitmapRead可能已被回收
             if (bitmapRead == null || bitmapRead.isRecycled()) {
-                setBitmapRead();
+                setupBitmapRead();
             }
 
             //边长
