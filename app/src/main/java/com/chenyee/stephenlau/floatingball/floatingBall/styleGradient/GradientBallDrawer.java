@@ -43,7 +43,6 @@ public class GradientBallDrawer extends BallDrawer {
 
     @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
-        super.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
         measuredSideLength = (int) (ballRadius * 2 * 1.25);
 
         gradientBallPaint.refreshPaint(ballRadius);
@@ -52,9 +51,9 @@ public class GradientBallDrawer extends BallDrawer {
     @Override
     public void drawBallWithThisModel(Canvas canvas) {
         super.drawBallWithThisModel(canvas);
-        Log.d(TAG, "lqt drawBallWithThisModel: ballRadius " + ballRadius);
+        Log.d(TAG, "lqt drawBallWithThisModel: ballRadius " + view.ballRadius);
         Paint grayBackgroundPaint = gradientBallPaint.getBackgroundPaint();
-        canvas.drawCircle(0, 0, ballRadius, grayBackgroundPaint);
+        canvas.drawCircle(0, 0, view.ballRadius, grayBackgroundPaint);
     }
 
     @Override
@@ -67,18 +66,18 @@ public class GradientBallDrawer extends BallDrawer {
         switch (currentGestureState) {
             case STATE_UP:
                 dx = 0;
-                dy = -ballRadius * 0.8f;
+                dy = -view.ballRadius * 0.8f;
                 break;
             case STATE_DOWN:
                 dx = 0;
-                dy = ballRadius * 0.8f;
+                dy = view.ballRadius * 0.8f;
                 break;
             case STATE_LEFT:
-                dx = -ballRadius * 0.8f;
+                dx = -view.ballRadius * 0.8f;
                 dy = 0;
                 break;
             case STATE_RIGHT:
-                dx = ballRadius * 0.8f;
+                dx = view.ballRadius * 0.8f;
                 dy = 0;
                 break;
             case STATE_NONE:

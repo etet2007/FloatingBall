@@ -44,10 +44,10 @@ public class FloatingBallDrawer extends BallDrawer {
     }
 
     public RectF getBallRect() {
-        ballRect.set(ballCenterX - ballRadius,
-                ballCenterY - ballRadius,
-                ballCenterX + ballRadius,
-                ballCenterY + ballRadius
+        ballRect.set(ballCenterX - view.ballRadius,
+                ballCenterY - view.ballRadius,
+                ballCenterX + view.ballRadius,
+                ballCenterY + view.ballRadius
         );
         return ballRect;
     }
@@ -64,9 +64,9 @@ public class FloatingBallDrawer extends BallDrawer {
         Paint ballEmptyPaint = floatingballPaint.getBallEmptyPaint();
         Paint ballPaint = floatingballPaint.getBallPaint();
 
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballEmptyPaint);
+        canvas.drawCircle(ballCenterX, ballCenterY, view.ballRadius, ballEmptyPaint);
 
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballPaint);
+        canvas.drawCircle(ballCenterX, ballCenterY, view.ballRadius, ballPaint);
 
         if (useBackgroundImage && BackgroundImageHelper.bitmapScaledCrop!=null) {
             canvas.drawBitmap(BackgroundImageHelper.bitmapScaledCrop, null, getBallRect(), ballPaint);
@@ -75,8 +75,6 @@ public class FloatingBallDrawer extends BallDrawer {
 
     @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
-        super.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
-
         grayBackgroundRadius = ballRadius + greyBackgroundLength;
 
         //r + moveDistance + r在动画变大的值 = r + greyBackgroundLength + gap

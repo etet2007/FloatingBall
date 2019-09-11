@@ -264,13 +264,15 @@ public class FloatingBallView extends View {
             windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
         }
     }
+    public float ballRadius;
 
     /**
      * 改变悬浮球大小，需要改变所有与Size相关的东西
      */
     public void changeFloatBallSizeWithRadius(float ballRadius) {
-        ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
+        this.ballRadius = ballRadius;
 
+        ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
         ballAnimator.setUpTouchAnimator(ballRadius);
     }
 
@@ -347,11 +349,6 @@ public class FloatingBallView extends View {
      * @param themeMode
      */
     public void setTheme(int themeMode) {
-        float oldBallRadius = -1;
-        if (ballDrawer != null) {
-            oldBallRadius = ballDrawer.getBallRadius();
-        }
-
         if (themeMode == FLYME) {
             ballDrawer = new FloatingBallDrawer(this);
             ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
@@ -361,9 +358,10 @@ public class FloatingBallView extends View {
             ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
             gestureProcessor.setOnGestureEventListener(new GradientBallEventListener(this));
         }
-        if (oldBallRadius > 0) {
-            changeFloatBallSizeWithRadius(oldBallRadius);
-        }
+
+        ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
+        ballAnimator.setUpTouchAnimator(ballRadius);
+
         invalidate();
     }
 }

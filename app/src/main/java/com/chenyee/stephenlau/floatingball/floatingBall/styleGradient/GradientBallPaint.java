@@ -38,17 +38,19 @@ public class GradientBallPaint implements BallPaint {
     }
 
     public void refreshPaint(float ballRadius) {
-        radialGradient = new RadialGradient(
-                0, 0,
-                ballRadius,
-                new int[]{
-                        Color.parseColor("#355C7D"),
-                        Color.parseColor("#F67280")
-                },
-                new float[]{0.3f, 1f},
-                Shader.TileMode.CLAMP);
+        if (ballRadius > 0) {
+            radialGradient = new RadialGradient(
+                    0, 0,
+                    ballRadius,
+                    new int[]{
+                            Color.parseColor("#355C7D"),
+                            Color.parseColor("#F67280")
+                    },
+                    new float[]{0.3f, 1f},
+                    Shader.TileMode.CLAMP);
 
-        backgroundPaint.setShader(radialGradient);
+            backgroundPaint.setShader(radialGradient);
+        }
     }
 
     public void translate(float dx, float dy) {
