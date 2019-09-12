@@ -79,9 +79,6 @@ public class FloatingBallController {
         }
         updateViewsParameter();
 
-        // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
-        FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
-
         //        辅助设置里打开，等于在设置中打开。
         BallSettingRepo.setIsAddedBallInSetting(true);
     }

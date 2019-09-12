@@ -23,7 +23,7 @@ public class FloatingBallAnimator extends BallAnimator {
         Keyframe kf1 = Keyframe.ofFloat(.7f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation - 1);
         Keyframe kf2 = Keyframe.ofFloat(1f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);
         PropertyValuesHolder onTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf0, kf1, kf2);
-        onTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, onTouch);
+        onTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(view, onTouch);
         onTouchAnimator.setDuration(300);
         onTouchAnimator.addUpdateListener(animation -> view.invalidate());
 
@@ -31,7 +31,7 @@ public class FloatingBallAnimator extends BallAnimator {
         Keyframe kf4 = Keyframe.ofFloat(0.3f, ballRadius + floatingBallDrawer.ballRadiusDeltaMaxInAnimation);
         Keyframe kf5 = Keyframe.ofFloat(1f, ballRadius);
         PropertyValuesHolder unTouch = PropertyValuesHolder.ofKeyframe("ballRadius", kf3, kf4, kf5);
-        unTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(floatingBallDrawer, unTouch);
+        unTouchAnimator = ObjectAnimator.ofPropertyValuesHolder(view, unTouch);
         unTouchAnimator.setInterpolator(new DecelerateInterpolator());
 
         unTouchAnimator.setDuration(400);

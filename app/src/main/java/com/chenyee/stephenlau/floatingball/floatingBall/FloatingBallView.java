@@ -14,6 +14,7 @@ import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor;
+import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallEventListener;
@@ -72,16 +73,23 @@ public class FloatingBallView extends View {
     private WindowManager windowManager;
     private WindowManager.LayoutParams ballViewLayoutParams;
     private int layoutParamsY;//用于使用反射
+    private static FunctionInterfaceUtils functionInterfaceUtils;
 
     /**
      * 构造函数
      */
     public FloatingBallView(Context context, int idCode) {
         super(context);
+
         this.idCode = idCode;
 
         init();
         setTheme(BallSettingRepo.themeMode());
+
+        if (functionInterfaceUtils == null) {
+            functionInterfaceUtils = new FunctionInterfaceUtils((FloatingBallService) context);
+        }
+
     }
 
     /**
@@ -177,30 +185,30 @@ public class FloatingBallView extends View {
     }
 
     public void setDoubleClickEventType(int doubleClickEventType) {
-        doubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
+        doubleTapFunctionListener = functionInterfaceUtils.getListener(doubleClickEventType);
 
-        boolean isUseDoubleClick = doubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
+        boolean isUseDoubleClick = doubleClickEventType != NONE;
         gestureProcessor.setUseDoubleClick(isUseDoubleClick);
     }
 
     public void setDownFunctionListener(int downFunctionListenerType) {
-        this.downFunctionListener = FunctionInterfaceUtils.getListener(downFunctionListenerType);
+        downFunctionListener = functionInterfaceUtils.getListener(downFunctionListenerType);
     }
 
     public void setUpFunctionListener(int upFunctionListenerType) {
-        this.upFunctionListener = FunctionInterfaceUtils.getListener(upFunctionListenerType);
+        upFunctionListener = functionInterfaceUtils.getListener(upFunctionListenerType);
     }
 
     public void setLeftFunctionListener(int leftFunctionListenerType) {
-        this.leftFunctionListener = FunctionInterfaceUtils.getListener(leftFunctionListenerType);
+        leftFunctionListener = functionInterfaceUtils.getListener(leftFunctionListenerType);
     }
 
     public void setRightFunctionListener(int rightFunctionListenerType) {
-        this.rightFunctionListener = FunctionInterfaceUtils.getListener(rightFunctionListenerType);
+        rightFunctionListener = functionInterfaceUtils.getListener(rightFunctionListenerType);
     }
 
     public void setSingleTapFunctionListener(int singleTapFunctionListenerType) {
-        this.singleTapFunctionListener = FunctionInterfaceUtils.getListener(singleTapFunctionListenerType);
+        singleTapFunctionListener = functionInterfaceUtils.getListener(singleTapFunctionListenerType);
     }
 
     public int getMeasureLength() {
@@ -264,7 +272,16 @@ public class FloatingBallView extends View {
             windowManager.updateViewLayout(FloatingBallView.this, ballViewLayoutParams);
         }
     }
-    public float ballRadius;
+
+    public void setBallRadius(float ballRadius) {
+        this.ballRadius = ballRadius;
+    }
+
+    public float getBallRadius() {
+        return ballRadius;
+    }
+
+    private float ballRadius;
 
     /**
      * 改变悬浮球大小，需要改变所有与Size相关的东西

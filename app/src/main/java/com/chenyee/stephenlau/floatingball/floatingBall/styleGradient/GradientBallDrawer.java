@@ -51,9 +51,8 @@ public class GradientBallDrawer extends BallDrawer {
     @Override
     public void drawBallWithThisModel(Canvas canvas) {
         super.drawBallWithThisModel(canvas);
-        Log.d(TAG, "lqt drawBallWithThisModel: ballRadius " + view.ballRadius);
         Paint grayBackgroundPaint = gradientBallPaint.getBackgroundPaint();
-        canvas.drawCircle(0, 0, view.ballRadius, grayBackgroundPaint);
+        canvas.drawCircle(0, 0, view.getBallRadius(), grayBackgroundPaint);
     }
 
     @Override
@@ -66,18 +65,18 @@ public class GradientBallDrawer extends BallDrawer {
         switch (currentGestureState) {
             case STATE_UP:
                 dx = 0;
-                dy = -view.ballRadius * 0.8f;
+                dy = -view.getBallRadius() * 0.8f;
                 break;
             case STATE_DOWN:
                 dx = 0;
-                dy = view.ballRadius * 0.8f;
+                dy = view.getBallRadius() * 0.8f;
                 break;
             case STATE_LEFT:
-                dx = -view.ballRadius * 0.8f;
+                dx = -view.getBallRadius() * 0.8f;
                 dy = 0;
                 break;
             case STATE_RIGHT:
-                dx = view.ballRadius * 0.8f;
+                dx = view.getBallRadius() * 0.8f;
                 dy = 0;
                 break;
             case STATE_NONE:

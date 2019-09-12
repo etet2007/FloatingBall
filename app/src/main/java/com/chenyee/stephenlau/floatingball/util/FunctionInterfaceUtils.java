@@ -22,62 +22,66 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;
  */
 
 public class FunctionInterfaceUtils {
-
     public static final String TAG = FunctionInterfaceUtils.class.getSimpleName();
 
-    public static FloatingBallService sFloatingBallService;
+    public FunctionInterfaceUtils(FloatingBallService floatingBallService) {
+        this.floatingBallService = floatingBallService;
+    }
 
-    private static FunctionListener nullFunctionListener = new FunctionListener() {
+    private FloatingBallService floatingBallService;
+
+
+    private class NullFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
         }
-    };
+    }
 
-    private static FunctionListener backFunctionListener = new FunctionListener() {
+    private class BackFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            AccessibilityUtils.doBack(sFloatingBallService);
+            AccessibilityUtils.doBack(floatingBallService);
         }
-    };
+    }
 
-    private static FunctionListener killFrontProcessListener = new FunctionListener() {
+    private class KillFrontProcessListener implements FunctionListener {
         @Override
         public void onFunction() {
-            if (!sFloatingBallService.getTargetPackageName().contains("launcher")) {
-                ActivityUtils.killBackgroundProcesses(sFloatingBallService, sFloatingBallService.getTargetPackageName());
+            if (!floatingBallService.getTargetPackageName().contains("launcher")) {
+                ActivityUtils.killBackgroundProcesses(floatingBallService, floatingBallService.getTargetPackageName());
             }
         }
-    };
+    }
 
-    private static FunctionListener switchApp = new FunctionListener() {
+    private class SwitchAppListener implements FunctionListener {
         @Override
         public void onFunction() {
-            if (!UsageStatsUtils.hasPermission(sFloatingBallService)) { //若用户未开启权限，则引导用户开启“Apps with usage access”权限
-                sFloatingBallService.getApplicationContext().startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+            if (!UsageStatsUtils.hasPermission(floatingBallService)) { //若用户未开启权限，则引导用户开启“Apps with usage access”权限
+                floatingBallService.getApplicationContext().startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
             } else {
                 if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
                     try {
-                        UsageStatsUtils.sortUsageStatsByLastTimeUsed(sFloatingBallService);
-                        UsageStatsUtils.switchToRightApp(sFloatingBallService);
+                        UsageStatsUtils.sortUsageStatsByLastTimeUsed(floatingBallService);
+                        UsageStatsUtils.switchToRightApp(floatingBallService);
                     } catch (NoSuchFieldException | IllegalAccessException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }
-    };
+    }
 
-    private static FunctionListener recentAppsFunctionListener = new FunctionListener() {
+    private class RecentAppsFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+            floatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
         }
-    };
+    }
 
-    private static FunctionListener lastAppFunctionListener = new FunctionListener() {
+    private class LastAppFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            final boolean isOk = sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+            final boolean isOk = floatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
             new Thread() {
                 @Override
                 public void run() {
@@ -88,112 +92,109 @@ public class FunctionInterfaceUtils {
                         e.printStackTrace();
                     }
                     if (isOk) {
-                        sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+                        floatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
                     }
                 }
             }.start();
         }
-    };
+    }
 
-    private static FunctionListener homeFunctionListener = new FunctionListener() {
+    private class HomeFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            AccessibilityUtils.doHome(sFloatingBallService);
+            AccessibilityUtils.doHome(floatingBallService);
         }
-    };
+    }
 
-    private static FunctionListener hideFunctionListener = new FunctionListener() {
+    private class HideFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            Toast.makeText(sFloatingBallService, sFloatingBallService.getString(R.string.hide), Toast.LENGTH_LONG).show();
-            sFloatingBallService.hideBallForLongTime();
+            Toast.makeText(floatingBallService, floatingBallService.getString(R.string.hide), Toast.LENGTH_LONG).show();
+            floatingBallService.hideBallForLongTime();
         }
-    };
+    }
 
-    private static FunctionListener notificationFunctionListener = new FunctionListener() {
+    private class NotificationFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);
+            floatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);
         }
-    };
+    }
 
-    private static FunctionListener deviceLockFunctionListener = new FunctionListener() {
+    private class DeviceLockFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            LockScreenUtils.lockScreen(sFloatingBallService);
+            LockScreenUtils.lockScreen(floatingBallService);
         }
-    };
+    }
 
-    private static FunctionListener rootLockFunctionListener = new FunctionListener() {
+    private class RootLockFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
             String apkRoot = "input keyevent 26";
             rootCommand(apkRoot);
-            //            Shell.SU.run(apkRoot);
         }
-    };
+    }
 
-    private static FunctionListener screenshotFunctionListener = new FunctionListener() {
+    private class ScreenshotFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            sFloatingBallService.hideBallTemporarily();
+            floatingBallService.hideBallTemporarily();
 
-            Intent intent = new Intent(sFloatingBallService, ScreenCaptureImageActivity.class);
+            Intent intent = new Intent(floatingBallService, ScreenCaptureImageActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            sFloatingBallService.startActivity(intent);
+            floatingBallService.startActivity(intent);
         }
-    };
-
-    private static FunctionListener systemScreenshotFunctionListener = new FunctionListener() {
-        @RequiresApi(api = VERSION_CODES.P)
+    }
+    private class SystemScreenshotFunctionListener implements FunctionListener {
         @Override
         public void onFunction() {
-            sFloatingBallService.hideBallTemporarily();
+            floatingBallService.hideBallTemporarily();
 
-            sFloatingBallService.postRunnable(() -> {
-                sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT);
-                sFloatingBallService.showBall();
+            floatingBallService.postRunnable(() -> {
+                floatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT);
+                floatingBallService.showBall();
             });
 
         }
-    };
+    }
 
-    private static FunctionListener systemLockScreen = new FunctionListener() {
+    private class SystemLockScreen implements FunctionListener {
         @RequiresApi(api = VERSION_CODES.P)
         @Override
         public void onFunction() {
-            sFloatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN);
+            floatingBallService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN);
         }
-    };
+    }
 
-    public static FunctionListener getListener(int key) {
-        FunctionListener functionListener = nullFunctionListener;
+    public FunctionListener getListener(int key) {
+        FunctionListener functionListener = new NullFunctionListener();
         if (key == RECENT_APPS) {
-            functionListener = FunctionInterfaceUtils.recentAppsFunctionListener;
+            functionListener = new RecentAppsFunctionListener();
         } else if (key == LAST_APPS) {
-            functionListener = FunctionInterfaceUtils.lastAppFunctionListener;
+            functionListener = new LastAppFunctionListener();
         } else if (key == HIDE) {
-            functionListener = FunctionInterfaceUtils.hideFunctionListener;
+            functionListener = new HideFunctionListener();
         } else if (key == NONE) {
-            functionListener = FunctionInterfaceUtils.nullFunctionListener;
+            functionListener = new NullFunctionListener();
         } else if (key == HOME) {
-            functionListener = FunctionInterfaceUtils.homeFunctionListener;
+            functionListener = new HomeFunctionListener();
         } else if (key == LOCK_SCREEN) {
-            functionListener = FunctionInterfaceUtils.deviceLockFunctionListener;
+            functionListener = new DeviceLockFunctionListener();
         } else if (key == ROOT_LOCK_SCREEN) {
-            functionListener = FunctionInterfaceUtils.rootLockFunctionListener;
+            functionListener = new RootLockFunctionListener();
         } else if (key == NOTIFICATION) {
-            functionListener = FunctionInterfaceUtils.notificationFunctionListener;
+            functionListener = new NotificationFunctionListener();
         } else if (key == SCREEN_SHOT) {
-            functionListener = FunctionInterfaceUtils.screenshotFunctionListener;
+            functionListener = new ScreenshotFunctionListener();
         } else if (key == BACK) {
-            functionListener = FunctionInterfaceUtils.backFunctionListener;
+            functionListener = new BackFunctionListener();
         } else if (key == KILL_PROCESS) {
-            functionListener = FunctionInterfaceUtils.killFrontProcessListener;
+            functionListener = new KillFrontProcessListener();
         } else if (key == SYSTEM_LOCK_SCREEN) {
-            functionListener = FunctionInterfaceUtils.systemLockScreen;
+            functionListener = new SystemLockScreen();
         } else if (key == SYSTEM_SCREEN_SHOT) {
-            functionListener = FunctionInterfaceUtils.systemScreenshotFunctionListener;
+            functionListener = new SystemScreenshotFunctionListener();
         }
         return functionListener;
     }
