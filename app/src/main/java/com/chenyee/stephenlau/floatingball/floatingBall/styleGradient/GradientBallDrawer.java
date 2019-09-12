@@ -21,8 +21,6 @@ public class GradientBallDrawer extends BallDrawer {
     public static final float padding = dip2px(getApplication(), 2);
     private static final String TAG = "GradientBallDrawer";
     private GradientBallPaint gradientBallPaint;
-    private FloatingBallView view;
-
 
     public float getDx() {
         return dx;
@@ -36,9 +34,13 @@ public class GradientBallDrawer extends BallDrawer {
     private float dy;
 
     public GradientBallDrawer(FloatingBallView view) {
-        super(new GradientBallPaint());
-        gradientBallPaint = (GradientBallPaint) ballPaint;
-        this.view = view;
+        super(view);
+        gradientBallPaint = new GradientBallPaint();
+    }
+
+    @Override
+    public void setPaintAlpha(int userSetOpacity) {
+        gradientBallPaint.setPaintAlpha(userSetOpacity);
     }
 
     @Override

@@ -21,6 +21,8 @@ import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallE
 import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallEventListener;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallAnimator;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallDrawer;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
@@ -34,6 +36,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PLANTE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.STICK;
 
 /**
  * Created by stephenlau on 2017/12/5.
@@ -103,12 +106,14 @@ public class FloatingBallView extends View {
 
         init();
 
-        setTheme(0);
-        ((FloatingBallDrawer) ballDrawer).setUseBackgroundImage(false);
+        setTheme(STICK);
+        if (ballDrawer instanceof FloatingBallDrawer) {
+            ((FloatingBallDrawer) ballDrawer).setUseBackgroundImage(false); //无论何时都不显示
+        }
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        setOpacity(90);
-        setOpacityMode(NONE);
+        setOpacity(100);
         changeFloatBallSizeWithRadius(dip2px(getApplication(), 10));
+        changeFloatBallSizeWithRadius(dip2px(getApplication(), 70));
     }
 
     public FloatingBallView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -374,6 +379,11 @@ public class FloatingBallView extends View {
             ballDrawer = new GradientBallDrawer(this);
             ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
             gestureProcessor.setOnGestureEventListener(new GradientBallEventListener(this));
+        } else if (themeMode == STICK) {
+            ballDrawer = new StickBallDrawer(this);
+            ballAnimator = new StickBallAnimator(this, (StickBallDrawer) ballDrawer);
+//            gestureProcessor.setOnGestureEventListener(new GradientBallEventListener(this));
+
         }
 
         ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);

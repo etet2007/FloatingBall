@@ -39,6 +39,7 @@ public class StaticStringUtil {
     public static final String PREF_BALL_THEME = "PREF_BALL_THEME";
     public static final int FLYME = 0;
     public static final int PLANTE = 1;
+    public static final int STICK = 2;
 
     //EXTRAS_COMMAND
     public static final String EXTRAS_COMMAND = "EXTRAS_COMMAND";

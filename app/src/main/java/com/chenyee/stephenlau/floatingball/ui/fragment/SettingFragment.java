@@ -62,6 +62,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_RIG
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_SINGLE_TAP_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_UP_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_BACKGROUND;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.STICK;
 
 
 public class SettingFragment extends Fragment {
@@ -461,7 +462,7 @@ public class SettingFragment extends Fragment {
         layoutParams.gravity = Gravity.CENTER;
 
         LinearLayoutCompat ballThemeLl = scrollView.findViewById(R.id.ball_theme_ll);
-        for (int i = 0; i <= PLANTE; i++) {
+        for (int i = 0; i <= STICK; i++) {
             FrameLayout frameLayout = new FrameLayout(getActivity());
             frameLayout.setLayoutParams(layoutParams);
             frameLayout.setClickable(true);

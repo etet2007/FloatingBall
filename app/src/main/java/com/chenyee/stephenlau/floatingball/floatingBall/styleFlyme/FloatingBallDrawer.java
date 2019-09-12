@@ -8,11 +8,13 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.support.annotation.Keep;
+
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
+
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_DOWN;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_LEFT;
@@ -32,15 +34,17 @@ public class FloatingBallDrawer extends BallDrawer {
     private float ballCenterY = 0;
     private float ballCenterX = 0;
     private RectF ballRect = new RectF();
-    private FloatingBallView view;
-    private FloatingBallPaint floatingballPaint;
+    private FloatingBallPaint floatingballPaint = new FloatingBallPaint();
     private boolean useGrayBackground = true;
     private boolean useBackgroundImage = false;
 
     public FloatingBallDrawer(FloatingBallView view) {
-        super(new FloatingBallPaint());
-        this.view = view;
-        this.floatingballPaint = (FloatingBallPaint) ballPaint;
+        super(view);
+    }
+
+    @Override
+    public void setPaintAlpha(int userSetOpacity) {
+        floatingballPaint.setPaintAlpha(userSetOpacity);
     }
 
     public RectF getBallRect() {
@@ -61,14 +65,12 @@ public class FloatingBallDrawer extends BallDrawer {
             canvas.drawCircle(0, 0, grayBackgroundRadius, grayBackgroundPaint);
         }
 
-        Paint ballEmptyPaint = floatingballPaint.getBallEmptyPaint();
+        canvas.drawCircle(ballCenterX, ballCenterY, view.getBallRadius(), floatingballPaint.getBallEmptyPaint());
+
         Paint ballPaint = floatingballPaint.getBallPaint();
-
-        canvas.drawCircle(ballCenterX, ballCenterY, view.getBallRadius(), ballEmptyPaint);
-
         canvas.drawCircle(ballCenterX, ballCenterY, view.getBallRadius(), ballPaint);
 
-        if (useBackgroundImage && BackgroundImageHelper.bitmapScaledCrop!=null) {
+        if (useBackgroundImage && BackgroundImageHelper.bitmapScaledCrop != null) {
             canvas.drawBitmap(BackgroundImageHelper.bitmapScaledCrop, null, getBallRect(), ballPaint);
         }
     }
