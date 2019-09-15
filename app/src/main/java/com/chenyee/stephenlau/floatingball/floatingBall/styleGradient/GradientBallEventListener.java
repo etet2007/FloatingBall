@@ -1,10 +1,12 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.styleGradient;
 
+import android.view.MotionEvent;
+
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
-import com.chenyee.stephenlau.floatingball.floatingBall.base.BallEventListener;
+import com.chenyee.stephenlau.floatingball.floatingBall.base.BaseBallEventListener;
 
 
-public class GradientBallEventListener extends BallEventListener {
+public class GradientBallEventListener extends BaseBallEventListener {
     public GradientBallEventListener(FloatingBallView floatingBallView) {
         super(floatingBallView);
     }
@@ -19,4 +21,5 @@ public class GradientBallEventListener extends BallEventListener {
     public void onScrollStateChange(int currentGestureState) {
         floatingBallView.ballDrawer.moveBallViewWithCurrentGestureState(currentGestureState);
     }
+
 }

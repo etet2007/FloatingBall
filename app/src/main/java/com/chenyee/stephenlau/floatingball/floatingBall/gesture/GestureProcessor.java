@@ -3,6 +3,7 @@ package com.chenyee.stephenlau.floatingball.floatingBall.gesture;
 import android.content.Context;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -15,6 +16,8 @@ import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
  */
 public class GestureProcessor implements GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener {
+
+    private static final String TAG = "GestureProcessor";
 
     public static final int STATE_UP = 1;
     public static final int STATE_DOWN = 2;
@@ -162,8 +165,13 @@ public class GestureProcessor implements GestureDetector.OnGestureListener,
                     int x = (int) (event.getRawX() - lastTouchEventPositionX);
                     int y = (int) (event.getRawY() - lastTouchEventPositionY);
 
+//                    Log.d(TAG, "onTouchEvent: lastTouchEventPosition" + lastTouchEventPositionX + "Y " + lastTouchEventPositionY);
+//                    Log.d(TAG, "onTouchEvent: x " + x + "y " + y);
                     onGestureEventListener.onMove(x, y);
                 }
+
+                onGestureEventListener.onTouching(event);
+
                 break;
             case MotionEvent.ACTION_UP:
                 onGestureEventListener.onActionUp();

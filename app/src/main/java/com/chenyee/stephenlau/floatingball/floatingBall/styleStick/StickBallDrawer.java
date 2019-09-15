@@ -4,18 +4,58 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.support.annotation.Keep;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
-import com.chenyee.stephenlau.floatingball.floatingBall.base.BallPaint;
 
+import static com.chenyee.stephenlau.floatingball.App.getApplication;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
+
+@Keep
 public class StickBallDrawer extends BallDrawer {
 
     private Path mPath;
     private Paint mFillCirclePaint;
 
     private VPoint p2, p4;
-    private HPoint p1, p3;
+    private HPoint p1;
+
+    public void setP2X(float value) {
+        this.p2.setX(value);
+    }
+
+    public void setP4X(float value) {
+        this.p4.setX(value);
+    }
+
+    public void setP1Y(float value) {
+        this.p1.setY(value);
+    }
+
+    public void setP3Y(float value) {
+        this.p3.setY(value);
+    }
+
+    private HPoint p3;
+    public float maxLength;
+
+    public VPoint getP2() {
+        return p2;
+    }
+
+    public VPoint getP4() {
+        return p4;
+    }
+
+    public HPoint getP1() {
+        return p1;
+    }
+
+    public HPoint getP3() {
+        return p3;
+    }
+
     private float blackMagic = 0.551915024494f;
     private float c;
 
@@ -36,19 +76,17 @@ public class StickBallDrawer extends BallDrawer {
         p1 = new HPoint();
         p3 = new HPoint();
 
-
-
     }
 
-    private void model0() {
-        p1.setY(view.getBallRadius());
-        p3.setY(-view.getBallRadius());
+    public void initState() {
         p3.x = p1.x = 0;
+        p1.setY(view.getBallRadius());//0 r
+        p3.setY(-view.getBallRadius());//0 -r
         p3.left.x = p1.left.x = -c;
         p3.right.x = p1.right.x = c;
 
-        p2.setX(view.getBallRadius());
-        p4.setX(-view.getBallRadius());
+        p2.setX(view.getBallRadius()); //r 0
+        p4.setX(-view.getBallRadius());//-r 0
         p2.y = p4.y = 0;
         p2.top.y = p4.top.y = -c;
         p2.bottom.y = p4.bottom.y = c;
@@ -61,16 +99,17 @@ public class StickBallDrawer extends BallDrawer {
 
     @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
-        measuredSideLength = (int) ballRadius*2;
-
+        measuredSideLength = (int) (( ballRadius + maxLength )* 2);
+        maxLength = (float) (ballRadius * 0.6);
         c = view.getBallRadius() * blackMagic;
-        model0();
+        initState();
     }
 
     @Override
     public void drawBallWithThisModel(Canvas canvas) {
         super.drawBallWithThisModel(canvas);
 
+        mPath.reset();
         mPath.moveTo(p1.x, p1.y);
         //四条曲线 起始默认位置 两个控制点 一个结束点，共四个点确定一条直线
         mPath.cubicTo(p1.right.x, p1.right.y, p2.bottom.x, p2.bottom.y, p2.x, p2.y);

@@ -23,6 +23,7 @@ import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBa
 import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallEventListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallDrawer;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallEventListener;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
@@ -382,8 +383,7 @@ public class FloatingBallView extends View {
         } else if (themeMode == STICK) {
             ballDrawer = new StickBallDrawer(this);
             ballAnimator = new StickBallAnimator(this, (StickBallDrawer) ballDrawer);
-//            gestureProcessor.setOnGestureEventListener(new GradientBallEventListener(this));
-
+            gestureProcessor.setOnGestureEventListener(new StickBallEventListener(this));
         }
 
         ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);

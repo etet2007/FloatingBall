@@ -1,15 +1,13 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme;
 
-import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
-import com.chenyee.stephenlau.floatingball.floatingBall.base.BallEventListener;
+import android.view.MotionEvent;
 
-public class FloatingBallEventListener extends BallEventListener {
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
+import com.chenyee.stephenlau.floatingball.floatingBall.base.BaseBallEventListener;
+
+public class FloatingBallEventListener extends BaseBallEventListener {
     public FloatingBallEventListener(FloatingBallView floatingBallView) {
         super(floatingBallView);
-    }
-    @Override
-    public void onScrollStateChange(int currentGestureState) {
-        floatingBallView.ballDrawer.moveBallViewWithCurrentGestureState(currentGestureState);
     }
 
     @Override
@@ -18,6 +16,11 @@ public class FloatingBallEventListener extends BallEventListener {
         if (floatingBallView.ballAnimator instanceof FloatingBallAnimator) {
             ((FloatingBallAnimator) floatingBallView.ballAnimator).moveFloatBallBack();
         }
+    }
+
+    @Override
+    public void onScrollStateChange(int currentGestureState) {
+        floatingBallView.ballDrawer.moveBallViewWithCurrentGestureState(currentGestureState);
     }
 
 }

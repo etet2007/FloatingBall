@@ -1,15 +1,17 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.base;
 
+import android.view.MotionEvent;
+
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
 
-abstract public class BallEventListener implements OnGestureEventListener {
+abstract public class BaseBallEventListener implements OnGestureEventListener {
 
     protected FloatingBallView floatingBallView;
 
-    public BallEventListener(FloatingBallView floatingBallView) {
+    public BaseBallEventListener(FloatingBallView floatingBallView) {
         this.floatingBallView = floatingBallView;
     }
 
@@ -83,6 +85,10 @@ abstract public class BallEventListener implements OnGestureEventListener {
                 floatingBallView.isBallMoveUp = false;
             }
         }
+    }
+
+    public void onTouching(MotionEvent event) {
+
     }
 }
 

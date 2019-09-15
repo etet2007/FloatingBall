@@ -12,7 +12,7 @@ import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 public abstract class BallAnimator {
 
     protected FloatingBallView view;
-    private BallDrawer ballDrawer;
+    protected BallDrawer ballDrawer;
     private ObjectAnimator reduceOpacityAnimator;
     private ObjectAnimator breathingOpacityAnimator;
 
