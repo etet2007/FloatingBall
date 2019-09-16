@@ -51,6 +51,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import static com.chenyee.stephenlau.floatingball.App.getApplication;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PLANTE;
@@ -478,7 +480,7 @@ public class SettingFragment extends Fragment {
 
             FloatingBallView floatingBallView = new FloatingBallView(getActivity(),null);
             floatingBallView.setTheme(i);
-            floatingBallView.changeFloatBallSizeWithRadius(70);
+            floatingBallView.changeFloatBallSizeWithRadius(dip2px(getApplication(), 25));
             frameLayout.addView(floatingBallView,layoutParams);
 
             ballThemeLl.addView(frameLayout);

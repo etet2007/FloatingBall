@@ -23,7 +23,9 @@ public class GradientBallPaint implements BallPaint {
 
     public GradientBallPaint() {
         backgroundPaint.setColor(Color.GRAY);
-        backgroundPaint.setMaskFilter(new BlurMaskFilter(5, BlurMaskFilter.Blur.SOLID));
+//        backgroundPaint.setMaskFilter(new BlurMaskFilter(5, BlurMaskFilter.Blur.SOLID));
+        backgroundPaint.setShadowLayer(5,0,0,Color.BLACK);
+
 
         matrix = new Matrix();
     }

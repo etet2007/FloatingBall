@@ -14,10 +14,6 @@ import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GesturePr
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_UP;
 
 public class StickBallEventListener extends BaseBallEventListener {
-    @Override
-    public void onMove(int x, int y) {
-
-    }
 
     public static final String TAG = "StickBallEventListener";
     private int currentGestureState;
@@ -51,13 +47,15 @@ public class StickBallEventListener extends BaseBallEventListener {
 
         stickBallDrawer.initState();
 
+        double moveUpDown = (translateYAbs - (r + maxLength * 0.7)) * 0.3 * maxLength / 2000f + r + maxLength * 0.7;
+        double moveLeftRight = (translateXAbs - (r + maxLength * 0.7)) * 0.3 * maxLength / 2000f + r + maxLength * 0.7;
         switch (currentGestureState) {
             case STATE_UP:
                 if (translateYAbs > r) {
-                    if (translateYAbs < r + maxLength * 0.7) {
+                    if (translateYAbs < r + maxLength * 0.7) {  //r ~ r + m * 0.7保持一致  r + m * 0.7 ~ r + 2000  (translateYAbs - (r + maxLength * 0.7)) 增量
                         stickBallDrawer.getP3().setY(-translateYAbs);
-                    } else if (translateYAbs < r + 2000) {
-                        float move = (float) ((translateYAbs - (r + maxLength * 0.7)) * maxLength / 2000f + r + maxLength * 0.7);
+                    } else if (translateYAbs < 2000) {
+                        float move = (float) moveUpDown;
                         stickBallDrawer.getP3().setY(-move);
                     }
                 }
@@ -66,8 +64,8 @@ public class StickBallEventListener extends BaseBallEventListener {
                 if (translateYAbs > r) {
                     if (translateYAbs < r + maxLength * 0.7) {
                         stickBallDrawer.getP1().setY(translateYAbs);
-                    } else if (translateYAbs < r + 2000) {
-                        float move = (float) ((translateYAbs - (r + maxLength * 0.7)) * maxLength / 2000f + r + maxLength * 0.7);
+                    } else if (translateYAbs < 2000) {
+                        float move = (float) moveUpDown;
                         stickBallDrawer.getP1().setY(move);
                     }
                 }
@@ -76,8 +74,8 @@ public class StickBallEventListener extends BaseBallEventListener {
                 if (translateXAbs > r) {
                     if (translateXAbs < r + maxLength * 0.7) {
                         stickBallDrawer.getP4().setX(-translateXAbs);
-                    } else if (translateXAbs < r + 2000) {
-                        float move = (float) ((translateXAbs - (r + maxLength * 0.7)) * maxLength / 2000f + r + maxLength * 0.7);
+                    } else if (translateXAbs < 2000) {
+                        float move = (float) moveLeftRight;
                         stickBallDrawer.getP4().setX(-move);
                     }
                 }
@@ -86,8 +84,8 @@ public class StickBallEventListener extends BaseBallEventListener {
                 if (translateXAbs > r) {
                     if (translateXAbs < r + maxLength * 0.7) {
                         stickBallDrawer.getP2().setX(translateXAbs);
-                    } else if (translateXAbs < r + 2000) {
-                        float move = (float) ((translateXAbs - (r + maxLength * 0.7)) * maxLength / 2000f + r + maxLength * 0.7);
+                    } else if (translateXAbs < 2000) {
+                        float move = (float) moveLeftRight;
                         stickBallDrawer.getP2().setX(move);
                     }
                 }

@@ -1,25 +1,49 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.styleStick;
 
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.RadialGradient;
+import android.graphics.Shader;
 import android.support.annotation.Keep;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 
-import static com.chenyee.stephenlau.floatingball.App.getApplication;
-import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
-
 @Keep
 public class StickBallDrawer extends BallDrawer {
 
+    public float maxLength;
     private Path mPath;
     private Paint mFillCirclePaint;
-
     private VPoint p2, p4;
-    private HPoint p1;
+    private HPoint p1, p3;
+    private float blackMagic = 0.551915024494f;
+    private float c;
+
+    public StickBallDrawer(FloatingBallView view) {
+        super(view);
+
+        mFillCirclePaint = new Paint();
+        mFillCirclePaint.setColor(0xFFF67280);
+        mFillCirclePaint.setStyle(Paint.Style.FILL);
+        mFillCirclePaint.setStrokeWidth(1);
+        mFillCirclePaint.setAntiAlias(true);
+        mFillCirclePaint.setShadowLayer(5,0,0,Color.BLACK);
+//        mFillCirclePaint.setMaskFilter(new BlurMaskFilter(5, BlurMaskFilter.Blur.SOLID));
+
+        mPath = new Path();
+
+        p2 = new VPoint();
+        p4 = new VPoint();
+
+        p1 = new HPoint();
+        p3 = new HPoint();
+    }
 
     public void setP2X(float value) {
         this.p2.setX(value);
@@ -37,9 +61,6 @@ public class StickBallDrawer extends BallDrawer {
         this.p3.setY(value);
     }
 
-    private HPoint p3;
-    public float maxLength;
-
     public VPoint getP2() {
         return p2;
     }
@@ -54,28 +75,6 @@ public class StickBallDrawer extends BallDrawer {
 
     public HPoint getP3() {
         return p3;
-    }
-
-    private float blackMagic = 0.551915024494f;
-    private float c;
-
-    public StickBallDrawer(FloatingBallView view) {
-        super(view);
-
-        mFillCirclePaint = new Paint();
-        mFillCirclePaint.setColor(0xFFfe626d);
-        mFillCirclePaint.setStyle(Paint.Style.FILL);
-        mFillCirclePaint.setStrokeWidth(1);
-        mFillCirclePaint.setAntiAlias(true);
-        mPath = new Path();
-
-
-        p2 = new VPoint();
-        p4 = new VPoint();
-
-        p1 = new HPoint();
-        p3 = new HPoint();
-
     }
 
     public void initState() {
@@ -94,15 +93,21 @@ public class StickBallDrawer extends BallDrawer {
 
     @Override
     public void setPaintAlpha(int userSetOpacity) {
-
+        mFillCirclePaint.setAlpha(userSetOpacity);
     }
 
     @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
-        measuredSideLength = (int) (( ballRadius + maxLength )* 2);
         maxLength = (float) (ballRadius * 0.6);
-        c = view.getBallRadius() * blackMagic;
+        measuredSideLength = (int) ((ballRadius + maxLength) * 2 * 1.2);
+        c = ballRadius * blackMagic;
         initState();
+
+        if (ballRadius > 0) {
+            Shader shader = new LinearGradient(0, -ballRadius, 0, ballRadius, Color.parseColor("#d9afd9"),
+                    Color.parseColor("#97d9e1"), Shader.TileMode.CLAMP);
+            mFillCirclePaint.setShader(shader);
+        }
     }
 
     @Override
@@ -118,7 +123,6 @@ public class StickBallDrawer extends BallDrawer {
         mPath.cubicTo(p4.bottom.x, p4.bottom.y, p1.left.x, p1.left.y, p1.x, p1.y);
 
         canvas.drawPath(mPath, mFillCirclePaint);
-
     }
 
     @Override

@@ -113,8 +113,7 @@ public class FloatingBallView extends View {
         }
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         setOpacity(100);
-        changeFloatBallSizeWithRadius(dip2px(getApplication(), 10));
-        changeFloatBallSizeWithRadius(dip2px(getApplication(), 70));
+        changeFloatBallSizeWithRadius(dip2px(getApplication(), 15));
     }
 
     public FloatingBallView(Context context, AttributeSet attrs, int defStyleAttr) {

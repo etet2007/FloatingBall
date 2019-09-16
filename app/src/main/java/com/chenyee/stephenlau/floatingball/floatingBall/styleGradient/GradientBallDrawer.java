@@ -18,7 +18,6 @@ import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 @Keep
 public class GradientBallDrawer extends BallDrawer {
 
-    public static final float padding = dip2px(getApplication(), 2);
     private static final String TAG = "GradientBallDrawer";
     private GradientBallPaint gradientBallPaint;
 
