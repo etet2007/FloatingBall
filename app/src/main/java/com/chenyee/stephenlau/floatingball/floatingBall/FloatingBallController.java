@@ -93,16 +93,21 @@ public class FloatingBallController {
         params.width = LayoutParams.WRAP_CONTENT;
         params.height = LayoutParams.WRAP_CONTENT;
         params.gravity = Gravity.START | Gravity.TOP;
+        params.format = PixelFormat.RGBA_8888;//默认为不透明 会有黑色背景
+        //窗口类型
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
         } else {
             params.type = LayoutParams.TYPE_SYSTEM_ALERT;
         }
-        params.format = PixelFormat.RGBA_8888;//默认为不透明 会有黑色背景
         params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | LayoutParams.FLAG_NOT_FOCUSABLE
+//                | LayoutParams.FLAG_LAYOUT_NO_LIMITS;//没用
                 | LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
+        //FLAG_LAYOUT_NO_LIMITS 没有限制绘制的区域
+        //FLAG_LAYOUT_IN_SCREEN 将window放置在整个屏幕之内,无视其他的装饰(比如状态栏)window要在考虑到屏幕的其他装饰来定位其中的内容
+        //FLAG_LAYOUT_INSET_DECOR .当在屏幕中请求layout时,window可能在一些装饰物(如状态栏)之上或者之后当使用这个flag时,window manager会报告插入window的矩形大小,来确保你的内容不会被装饰物(如状态栏)掩盖..
         floatingBallView.setBallViewLayoutParams(params);
         windowManager.addView(floatingBallView, params);
 

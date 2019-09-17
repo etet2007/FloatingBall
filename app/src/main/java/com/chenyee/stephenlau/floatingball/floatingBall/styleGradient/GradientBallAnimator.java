@@ -8,6 +8,7 @@ import android.animation.ValueAnimator;
 import android.support.annotation.Keep;
 import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallAnimator;
@@ -38,8 +39,9 @@ public class GradientBallAnimator extends BallAnimator {
     @Override
     public void startUnTouchAnimator() {
         view.animate()
-                .scaleY(1).scaleX(1)
-                .setDuration(200)
+                .setInterpolator(new OvershootInterpolator())
+                .scaleY(0.7f).scaleX(0.7f).scaleX(1f).scaleY(1f)
+                .setDuration(500)
                 .start();
     }
     public void startMoveBackAnimator() {

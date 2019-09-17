@@ -7,7 +7,6 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.support.annotation.Keep;
 
@@ -18,8 +17,8 @@ import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 public class StickBallDrawer extends BallDrawer {
 
     public float maxLength;
-    private Path mPath;
-    private Paint mFillCirclePaint;
+    private Path path;
+    private Paint fillCirclePaint;
     private VPoint p2, p4;
     private HPoint p1, p3;
     private float blackMagic = 0.551915024494f;
@@ -28,15 +27,16 @@ public class StickBallDrawer extends BallDrawer {
     public StickBallDrawer(FloatingBallView view) {
         super(view);
 
-        mFillCirclePaint = new Paint();
-        mFillCirclePaint.setColor(0xFFF67280);
-        mFillCirclePaint.setStyle(Paint.Style.FILL);
-        mFillCirclePaint.setStrokeWidth(1);
-        mFillCirclePaint.setAntiAlias(true);
-        mFillCirclePaint.setShadowLayer(5,0,0,Color.BLACK);
-//        mFillCirclePaint.setMaskFilter(new BlurMaskFilter(5, BlurMaskFilter.Blur.SOLID));
+        fillCirclePaint = new Paint();
+        fillCirclePaint.setColor(0xFFF67280);
+        fillCirclePaint.setStyle(Paint.Style.FILL);
+        fillCirclePaint.setStrokeWidth(1);
+        fillCirclePaint.setAntiAlias(true);
+        //ShadowLayer对path貌似没效果 有也只是自身颜色的模糊 不能设置黑色阴影
+        //        fillCirclePaint.setShadowLayer(10,0,0,Color.BLACK);
+        fillCirclePaint.setMaskFilter(new BlurMaskFilter(8, BlurMaskFilter.Blur.SOLID));
 
-        mPath = new Path();
+        path = new Path();
 
         p2 = new VPoint();
         p4 = new VPoint();
@@ -93,7 +93,7 @@ public class StickBallDrawer extends BallDrawer {
 
     @Override
     public void setPaintAlpha(int userSetOpacity) {
-        mFillCirclePaint.setAlpha(userSetOpacity);
+        fillCirclePaint.setAlpha(userSetOpacity);
     }
 
     @Override
@@ -106,7 +106,10 @@ public class StickBallDrawer extends BallDrawer {
         if (ballRadius > 0) {
             Shader shader = new LinearGradient(0, -ballRadius, 0, ballRadius, Color.parseColor("#d9afd9"),
                     Color.parseColor("#97d9e1"), Shader.TileMode.CLAMP);
-            mFillCirclePaint.setShader(shader);
+            Shader shader1 = new LinearGradient(-ballRadius, -ballRadius, ballRadius, ballRadius,
+                    new int[]{Color.parseColor("#FF3CAC"), Color.parseColor("#562B7C"), Color.parseColor("#2B86C5")},
+                    new float[]{0, 0.52f, 1}, Shader.TileMode.CLAMP);
+            fillCirclePaint.setShader(shader1);
         }
     }
 
@@ -114,15 +117,15 @@ public class StickBallDrawer extends BallDrawer {
     public void drawBallWithThisModel(Canvas canvas) {
         super.drawBallWithThisModel(canvas);
 
-        mPath.reset();
-        mPath.moveTo(p1.x, p1.y);
+        path.reset();
+        path.moveTo(p1.x, p1.y);
         //四条曲线 起始默认位置 两个控制点 一个结束点，共四个点确定一条直线
-        mPath.cubicTo(p1.right.x, p1.right.y, p2.bottom.x, p2.bottom.y, p2.x, p2.y);
-        mPath.cubicTo(p2.top.x, p2.top.y, p3.right.x, p3.right.y, p3.x, p3.y);
-        mPath.cubicTo(p3.left.x, p3.left.y, p4.top.x, p4.top.y, p4.x, p4.y);
-        mPath.cubicTo(p4.bottom.x, p4.bottom.y, p1.left.x, p1.left.y, p1.x, p1.y);
+        path.cubicTo(p1.right.x, p1.right.y, p2.bottom.x, p2.bottom.y, p2.x, p2.y);
+        path.cubicTo(p2.top.x, p2.top.y, p3.right.x, p3.right.y, p3.x, p3.y);
+        path.cubicTo(p3.left.x, p3.left.y, p4.top.x, p4.top.y, p4.x, p4.y);
+        path.cubicTo(p4.bottom.x, p4.bottom.y, p1.left.x, p1.left.y, p1.x, p1.y);
 
-        canvas.drawPath(mPath, mFillCirclePaint);
+        canvas.drawPath(path, fillCirclePaint);
     }
 
     @Override

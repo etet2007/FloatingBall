@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.support.annotation.Keep;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -40,15 +41,16 @@ public class StickBallAnimator extends BallAnimator {
         objectAnimator1.addUpdateListener(animation -> view.invalidate());
 
         set = new AnimatorSet();
-        set.setInterpolator(new OvershootInterpolator());
+        set.setInterpolator(new AnticipateOvershootInterpolator());
         set.setDuration(500);
         set.playTogether(objectAnimator1, objectAnimator2, objectAnimator3, objectAnimator4);
 
         set.start();
 
         view.animate()
-                .scaleY(1).scaleX(1)
-                .setDuration(200)
+                .setInterpolator(new OvershootInterpolator())
+                .scaleY(0.7f).scaleX(0.7f).scaleX(1f).scaleY(1f)
+                .setDuration(500)
                 .start();
 
     }

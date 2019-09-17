@@ -18,16 +18,13 @@ public class FloatingBallPaint implements BallPaint {
 
     public FloatingBallPaint() {
         backgroundPaint.setColor(Color.GRAY);
-        backgroundPaint.setAlpha(80);
         backgroundPaint.setMaskFilter(new BlurMaskFilter(10, BlurMaskFilter.Blur.SOLID));
 
         ballPaint.setFilterBitmap(true);
         ballPaint.setColor(Color.WHITE);
-        ballPaint.setAlpha(150);
 
         ballEmptyPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         backgroundPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-
     }
 
     @Override

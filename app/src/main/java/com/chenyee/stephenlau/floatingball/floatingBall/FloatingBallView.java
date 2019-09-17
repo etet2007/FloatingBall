@@ -111,7 +111,7 @@ public class FloatingBallView extends View {
         if (ballDrawer instanceof FloatingBallDrawer) {
             ((FloatingBallDrawer) ballDrawer).setUseBackgroundImage(false); //无论何时都不显示
         }
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         setOpacity(100);
         changeFloatBallSizeWithRadius(dip2px(getApplication(), 15));
     }
