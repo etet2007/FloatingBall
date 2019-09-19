@@ -3,7 +3,6 @@ package com.chenyee.stephenlau.floatingball.ui.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -26,11 +25,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
@@ -43,8 +38,6 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,8 +47,8 @@ import butterknife.Unbinder;
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.FLYME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PLANTE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_LEFT_SWIPE_EVENT;
@@ -201,8 +194,10 @@ public class SettingFragment extends Fragment {
         isRotateHideSwitch.setChecked(BallSettingRepo.isRotateHideSetting());
         upDistanceSeekBar.setProgress(BallSettingRepo.moveUpDistance());
 
-        updateFunctionListView();
-        updateOpacityModeView();
+        refreshViewsRelateToTheme();
+
+        refreshFunctionListView();
+        refreshOpacityModeView();
 
         //        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
         //        //hasAddedBall代表两种状态
@@ -309,6 +304,21 @@ public class SettingFragment extends Fragment {
         });
     }
 
+    private void refreshViewsRelateToTheme() {
+        int themeMode = BallSettingRepo.themeMode();
+        settingBallView.setTheme(themeMode);
+
+        if (themeMode != FLYME) {
+            useGrayBackgroundSwitch.setVisibility(View.GONE);
+            backgroundSwitch.setVisibility(View.GONE);
+            choosePicButton.setVisibility(View.GONE);
+        } else {
+            useGrayBackgroundSwitch.setVisibility(View.VISIBLE);
+            backgroundSwitch.setVisibility(View.VISIBLE);
+            choosePicButton.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void refreshMinusButton() {
         int amountInit = BallSettingRepo.amount();
         if (amountInit == 1) {
@@ -318,7 +328,7 @@ public class SettingFragment extends Fragment {
         }
     }
 
-    private void updateFunctionListView() {
+    private void refreshFunctionListView() {
         String[] functionList = getResources().getStringArray(R.array.function_array);
 
         int singleTapEvent = BallSettingRepo.singleTapEvent();
@@ -340,7 +350,7 @@ public class SettingFragment extends Fragment {
         downSlideTextView.setText(functionList[downSlideEvent]);
     }
 
-    private void updateOpacityModeView() {
+    private void refreshOpacityModeView() {
         Resources res = getResources();
         String[] opacityModeList = res.getStringArray(R.array.opacity_mode);
 
@@ -434,7 +444,7 @@ public class SettingFragment extends Fragment {
         builder.setTitle(titleId)
                 .setItems(R.array.function_array, (dialog, which) -> {
                     SharedPrefsUtils.setIntegerPreference(prefKey, which);
-                    updateFunctionListView();
+                    refreshFunctionListView();
                 }).show();
     }
 
@@ -445,7 +455,7 @@ public class SettingFragment extends Fragment {
         builder.setTitle(R.string.opacity_mode)
                 .setItems(R.array.opacity_mode, (dialog, which) -> {
                     SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
-                    updateOpacityModeView();
+                    refreshOpacityModeView();
                 }).show();
     }
 
@@ -474,7 +484,8 @@ public class SettingFragment extends Fragment {
             int finalI = i;
             frameLayout.setOnClickListener(v ->{
                 BallSettingRepo.setThemeMode(finalI);
-                settingBallView.setTheme(finalI);
+                refreshViewsRelateToTheme();
+                settingBallView.requestLayout();
                 dialog.dismiss();
             } );
 

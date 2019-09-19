@@ -3,18 +3,14 @@ package com.chenyee.stephenlau.floatingball.floatingBall.styleGradient;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.Keep;
-import android.util.Log;
-
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
-
-import static com.chenyee.stephenlau.floatingball.App.getApplication;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_DOWN;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_LEFT;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_NONE;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_RIGHT;
 import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_UP;
-import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
+
 @Keep
 public class GradientBallDrawer extends BallDrawer {
 
@@ -44,7 +40,7 @@ public class GradientBallDrawer extends BallDrawer {
 
     @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
-        measuredSideLength = (int) (ballRadius * 2 * 1.25);
+        measuredSideLength = (int) (ballRadius * 1.2 + 5) * 2 ;
 
         gradientBallPaint.refreshPaint(ballRadius);
     }
@@ -53,6 +49,7 @@ public class GradientBallDrawer extends BallDrawer {
     public void drawBallWithThisModel(Canvas canvas) {
         super.drawBallWithThisModel(canvas);
         Paint grayBackgroundPaint = gradientBallPaint.getBackgroundPaint();
+
         canvas.drawCircle(0, 0, view.getBallRadius(), grayBackgroundPaint);
     }
 

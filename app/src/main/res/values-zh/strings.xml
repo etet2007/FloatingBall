@@ -89,6 +89,7 @@
   <string name="amount">数量：</string>
   <string name="donate">打赏</string>
   <string name="noAliPay">找不到支付宝</string>
+    <string name="theme">主题:</string>
 
 
 </resources>

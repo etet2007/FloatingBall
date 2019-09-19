@@ -84,6 +84,7 @@
   <string name="amount">Amount:</string>
   <string name="donate">Donate</string>
     <string name="noAliPay">Can\'t find AliPay</string>
+    <string name="theme">Theme:</string>
 
 
 </resources>

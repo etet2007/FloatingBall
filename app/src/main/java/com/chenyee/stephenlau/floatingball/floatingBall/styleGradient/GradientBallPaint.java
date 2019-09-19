@@ -6,13 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
-import android.util.Log;
-
-import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallPaint;
-
-import static com.chenyee.stephenlau.floatingball.App.getApplication;
-import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 
 public class GradientBallPaint implements BallPaint {
 
@@ -23,9 +17,8 @@ public class GradientBallPaint implements BallPaint {
 
     public GradientBallPaint() {
         backgroundPaint.setColor(Color.GRAY);
-//        backgroundPaint.setMaskFilter(new BlurMaskFilter(5, BlurMaskFilter.Blur.SOLID));
-        backgroundPaint.setShadowLayer(5,0,0,Color.BLACK);
-
+        backgroundPaint.setMaskFilter(new BlurMaskFilter(5, BlurMaskFilter.Blur.SOLID));
+//        backgroundPaint.setShadowLayer(5,0,0,Color.BLACK);
 
         matrix = new Matrix();
     }
@@ -48,8 +41,17 @@ public class GradientBallPaint implements BallPaint {
                             Color.parseColor("#355C7D"),
                             Color.parseColor("#F67280")
                     },
-                    new float[]{0.3f, 1f},
+                    new float[]{0f, 1f},
                     Shader.TileMode.CLAMP);
+//            radialGradient = new RadialGradient(
+//                    0, 0,
+//                    ballRadius,
+//                    new int[]{
+//                            Color.parseColor("#00FFA0"),
+//                            Color.parseColor("#40007E")
+//                    },
+//                    new float[]{0f, 1f},
+//                    Shader.TileMode.CLAMP);
 
             backgroundPaint.setShader(radialGradient);
         }

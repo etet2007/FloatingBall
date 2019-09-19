@@ -10,4 +10,10 @@
     <color name="very_light_gray">#f1f1f1</color>
     <color name="light_gray">#b7b7b7</color>
 
+
+    <color name="magicRay1">#FF3CAC</color>
+    <color name="magicRay2">#562B7C</color>
+    <color name="magicRay3">#2B86C5</color>
+
+
 </resources>

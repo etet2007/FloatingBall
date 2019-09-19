@@ -10,10 +10,8 @@ import android.view.WindowManager.LayoutParams;
 
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
-import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
-import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
@@ -96,13 +94,14 @@ public class FloatingBallController {
         params.format = PixelFormat.RGBA_8888;//默认为不透明 会有黑色背景
         //窗口类型
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //https://developer.android.com/about/versions/oreo/android-8.0-changes?hl=zh-cn#all-aw
             params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
         } else {
             params.type = LayoutParams.TYPE_SYSTEM_ALERT;
         }
         params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | LayoutParams.FLAG_NOT_FOCUSABLE
-//                | LayoutParams.FLAG_LAYOUT_NO_LIMITS;//没用
+                //                | LayoutParams.FLAG_LAYOUT_NO_LIMITS;//没用
                 | LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
         //FLAG_LAYOUT_NO_LIMITS 没有限制绘制的区域
