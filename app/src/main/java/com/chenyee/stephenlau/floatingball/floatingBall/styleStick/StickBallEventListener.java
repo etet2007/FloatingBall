@@ -38,11 +38,13 @@ public class StickBallEventListener extends BaseBallEventListener {
     @Override
     public void onTouching(MotionEvent event) {
         Log.d(TAG, "onTouching: " + event.getX() + " " + event.getY());
+
         StickBallDrawer stickBallDrawer = (StickBallDrawer) floatingBallView.ballDrawer;
         float halfMeasuredLength = stickBallDrawer.getMeasuredSideLength() / 2;
         float translateXAbs = Math.abs(event.getX() - halfMeasuredLength);
         float translateYAbs = Math.abs(event.getY() - halfMeasuredLength);
         float r = floatingBallView.getBallRadius();
+
         float maxLength = stickBallDrawer.maxLength;
 
         stickBallDrawer.initState();

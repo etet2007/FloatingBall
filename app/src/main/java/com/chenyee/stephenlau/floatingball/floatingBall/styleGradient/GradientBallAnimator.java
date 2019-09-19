@@ -44,8 +44,8 @@ public class GradientBallAnimator extends BallAnimator {
                 .setDuration(500)
                 .start();
     }
-    public void startMoveBackAnimator() {
 
+    public void startMoveBackAnimator() {
         PropertyValuesHolder pvh1 = PropertyValuesHolder.ofFloat("dy", gradientBallDrawer.getDy(),0);
         PropertyValuesHolder pvh2 = PropertyValuesHolder.ofFloat("dx", gradientBallDrawer.getDx(),0);
         ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(gradientBallDrawer, pvh1, pvh2);

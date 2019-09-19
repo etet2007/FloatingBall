@@ -1,24 +1,14 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.styleStick;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
-import android.support.annotation.Keep;
 import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallAnimator;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
-public class StickBallAnimator extends BallAnimator {
 
-    private AnimatorSet set;
-    private float oldBallRadius;
+public class StickBallAnimator extends BallAnimator {
 
     public StickBallAnimator(FloatingBallView floatingBallView, BallDrawer ballDrawer) {
         super(floatingBallView,ballDrawer);
@@ -26,7 +16,7 @@ public class StickBallAnimator extends BallAnimator {
 
     @Override
     public void setUpTouchAnimator(float ballRadius) {
-        oldBallRadius = view.getBallRadius();
+
     }
 
     @Override
@@ -34,18 +24,17 @@ public class StickBallAnimator extends BallAnimator {
         StickBallDrawer stickBallDrawer = (StickBallDrawer) ballDrawer;
 
         float ballRadius = view.getBallRadius();
-        ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(stickBallDrawer, "p1Y",stickBallDrawer.getP1().y,ballRadius);
-        ObjectAnimator objectAnimator2 = ObjectAnimator.ofFloat(stickBallDrawer, "p3Y",stickBallDrawer.getP3().y,-ballRadius);
-        ObjectAnimator objectAnimator3 = ObjectAnimator.ofFloat(stickBallDrawer, "p2X",stickBallDrawer.getP2().x,ballRadius);
-        ObjectAnimator objectAnimator4 = ObjectAnimator.ofFloat(stickBallDrawer, "p4X",stickBallDrawer.getP4().x,-ballRadius);
-        objectAnimator1.addUpdateListener(animation -> view.invalidate());
 
-        set = new AnimatorSet();
-        set.setInterpolator(new AnticipateOvershootInterpolator());
-        set.setDuration(500);
-        set.playTogether(objectAnimator1, objectAnimator2, objectAnimator3, objectAnimator4);
+        PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat("p1Y",stickBallDrawer.getP1().y,ballRadius);
+        PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat("p3Y",stickBallDrawer.getP3().y,-ballRadius);
+        PropertyValuesHolder holder3 = PropertyValuesHolder.ofFloat("p2X",stickBallDrawer.getP2().x,ballRadius);
+        PropertyValuesHolder holder4 = PropertyValuesHolder.ofFloat("p4X",stickBallDrawer.getP4().x,-ballRadius);
 
-        set.start();
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(stickBallDrawer, holder1, holder2, holder3, holder4);
+        animator.setDuration(500)
+                .setInterpolator(new AnticipateOvershootInterpolator());
+        animator.addUpdateListener(animation -> view.invalidate());
+        animator.start();
 
         view.animate()
                 .setInterpolator(new OvershootInterpolator())

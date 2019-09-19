@@ -9,8 +9,6 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Shader;
 import android.support.annotation.Keep;
-
-import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 
@@ -105,11 +103,12 @@ public class StickBallDrawer extends BallDrawer {
         initState();
 
         if (ballRadius > 0) {
-            Shader shader = new LinearGradient(0, -ballRadius, 0, ballRadius, Color.parseColor("#d9afd9"),
-                    Color.parseColor("#97d9e1"), Shader.TileMode.CLAMP);
             Shader magicRay = new LinearGradient(-ballRadius, -ballRadius, ballRadius, ballRadius,
                     new int[]{Color.parseColor("#FF3CAC"), Color.parseColor("#562B7C"), Color.parseColor("#2B86C5")},
                     new float[]{0, 0.52f, 1}, Shader.TileMode.CLAMP);
+            Shader gagarin = new LinearGradient(-ballRadius, -ballRadius, ballRadius, ballRadius,
+                    new int[]{Color.parseColor("#69EACB"), Color.parseColor("#EACCF8"), Color.parseColor("#6654F1")},
+                    new float[]{0, 0.48f, 1}, Shader.TileMode.CLAMP);
             Shader shyRainbow = new LinearGradient(-ballRadius, 0, ballRadius, 0,
                     new int[]{Color.parseColor("#eea2a2"), Color.parseColor("#bbc1bf"), Color.parseColor("#57c6e1"), Color.parseColor("#b49fda"), Color.parseColor("#7ac5d8")},
                     new float[]{0, 0.19f, 0.42f, 0.79f, 1}, Shader.TileMode.CLAMP);

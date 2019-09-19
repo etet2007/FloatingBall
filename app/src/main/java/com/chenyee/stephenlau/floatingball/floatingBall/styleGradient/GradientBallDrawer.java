@@ -15,6 +15,7 @@ import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GesturePr
 public class GradientBallDrawer extends BallDrawer {
 
     private static final String TAG = "GradientBallDrawer";
+
     private GradientBallPaint gradientBallPaint;
 
     public float getDx() {
