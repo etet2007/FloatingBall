@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"/>
+<!--    <com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_alignParentTop="true"/>-->
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/logo_image_view"
