@@ -20,11 +20,15 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.ui.activity.MainActivity;
@@ -40,7 +44,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import static com.chenyee.stephenlau.floatingball.App.getApplication;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.FLYME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
@@ -50,6 +57,7 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_RIG
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_SINGLE_TAP_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_UP_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE_BACKGROUND;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.STICK;
 
 
 public class SettingFragment extends Fragment {
@@ -78,6 +86,7 @@ public class SettingFragment extends Fragment {
     @BindView(R.id.vibrate_switch) SwitchCompat vibrateSwitch;
     @BindView(R.id.avoid_keyboard_switch) SwitchCompat avoidKeyboardSwitch;
     @BindView(R.id.upDistance_seekbar) DiscreteSeekBar upDistanceSeekBar;
+    @BindView(R.id.floating_ball_view) FloatingBallView settingBallView;
     private Unbinder butterKnifeUnBinder;
 
     public SettingFragment() {
@@ -185,8 +194,10 @@ public class SettingFragment extends Fragment {
         isRotateHideSwitch.setChecked(BallSettingRepo.isRotateHideSetting());
         upDistanceSeekBar.setProgress(BallSettingRepo.moveUpDistance());
 
-        updateFunctionListView();
-        updateOpacityModeView();
+        refreshViewsRelateToTheme();
+
+        refreshFunctionListView();
+        refreshOpacityModeView();
 
         //        boolean hasAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
         //        //hasAddedBall代表两种状态
@@ -225,6 +236,7 @@ public class SettingFragment extends Fragment {
         plusButton.setOnClickListener(v -> {
             BallSettingRepo.setAmount(BallSettingRepo.amount() + 1);
 
+            //动态变化的需要通过intent ShardPref无法区分是增还是减。
             Intent intent = new Intent(getActivity(), FloatingBallService.class);
             Bundle data = new Bundle();
             data.putInt(EXTRAS_COMMAND, FloatingBallService.TYPE_ADD);
@@ -292,6 +304,21 @@ public class SettingFragment extends Fragment {
         });
     }
 
+    private void refreshViewsRelateToTheme() {
+        int themeMode = BallSettingRepo.themeMode();
+        settingBallView.setTheme(themeMode);
+
+        if (themeMode != FLYME) {
+            useGrayBackgroundSwitch.setVisibility(View.GONE);
+            backgroundSwitch.setVisibility(View.GONE);
+            choosePicButton.setVisibility(View.GONE);
+        } else {
+            useGrayBackgroundSwitch.setVisibility(View.VISIBLE);
+            backgroundSwitch.setVisibility(View.VISIBLE);
+            choosePicButton.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void refreshMinusButton() {
         int amountInit = BallSettingRepo.amount();
         if (amountInit == 1) {
@@ -301,7 +328,7 @@ public class SettingFragment extends Fragment {
         }
     }
 
-    private void updateFunctionListView() {
+    private void refreshFunctionListView() {
         String[] functionList = getResources().getStringArray(R.array.function_array);
 
         int singleTapEvent = BallSettingRepo.singleTapEvent();
@@ -323,7 +350,7 @@ public class SettingFragment extends Fragment {
         downSlideTextView.setText(functionList[downSlideEvent]);
     }
 
-    private void updateOpacityModeView() {
+    private void refreshOpacityModeView() {
         Resources res = getResources();
         String[] opacityModeList = res.getStringArray(R.array.opacity_mode);
 
@@ -417,7 +444,7 @@ public class SettingFragment extends Fragment {
         builder.setTitle(titleId)
                 .setItems(R.array.function_array, (dialog, which) -> {
                     SharedPrefsUtils.setIntegerPreference(prefKey, which);
-                    updateFunctionListView();
+                    refreshFunctionListView();
                 }).show();
     }
 
@@ -428,7 +455,47 @@ public class SettingFragment extends Fragment {
         builder.setTitle(R.string.opacity_mode)
                 .setItems(R.array.opacity_mode, (dialog, which) -> {
                     SharedPrefsUtils.setIntegerPreference(PREF_OPACITY_MODE, which);
-                    updateOpacityModeView();
+                    refreshOpacityModeView();
                 }).show();
     }
+
+    @OnClick(R.id.theme_relativeLayout)
+    public void onStyleClicked(View view) {
+        View scrollView = getActivity().getLayoutInflater().inflate(R.layout.ball_theme_setting, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog dialog = builder.setView(scrollView)
+                .setTitle(R.string.ball_theme)
+                .show();
+
+        TypedValue outValue = new TypedValue();
+        getActivity().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = Gravity.CENTER;
+
+        LinearLayoutCompat ballThemeLl = scrollView.findViewById(R.id.ball_theme_ll);
+        for (int i = 0; i <= STICK; i++) {
+            FrameLayout frameLayout = new FrameLayout(getActivity());
+            frameLayout.setLayoutParams(layoutParams);
+            frameLayout.setClickable(true);
+            frameLayout.setFocusable(true);
+            frameLayout.setBackgroundResource(outValue.resourceId);
+            frameLayout.setPadding(0,15,0,15);
+            int finalI = i;
+            frameLayout.setOnClickListener(v ->{
+                BallSettingRepo.setThemeMode(finalI);
+                refreshViewsRelateToTheme();
+                settingBallView.requestLayout();
+                dialog.dismiss();
+            } );
+
+            FloatingBallView floatingBallView = new FloatingBallView(getActivity(),null);
+            floatingBallView.setTheme(i);
+            floatingBallView.changeFloatBallSizeWithRadius(dip2px(getApplication(), 25));
+            frameLayout.addView(floatingBallView,layoutParams);
+
+            ballThemeLl.addView(frameLayout);
+        }
+    }
+
 }

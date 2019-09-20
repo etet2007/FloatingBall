@@ -80,6 +80,8 @@
     <string name="reduce">渐变减少</string>
     <string name="breathing">呼吸</string>
 
+    <string name="ball_theme">主题:</string>
+
     <string name="no_support_screenshot">抱歉，你的系统不支持截屏</string>
     <string name="screenshot_fail">截图失败</string>
     <string name="screenshot_succeed">截图成功</string>
@@ -87,6 +89,7 @@
   <string name="amount">数量：</string>
   <string name="donate">打赏</string>
   <string name="noAliPay">找不到支付宝</string>
+    <string name="theme">主题:</string>
 
 
 </resources>

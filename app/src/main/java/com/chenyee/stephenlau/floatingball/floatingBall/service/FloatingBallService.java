@@ -41,16 +41,21 @@ public class FloatingBallService extends AccessibilityService {
     private String targetPackageName;
     private FloatingBallController floatingBallController = FloatingBallController.getInstance();
 
-    private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            Log.d(TAG, "onSharedPreferenceChanged: ");
-            floatingBallController.updateSpecificParameter(key);
-        }
+    private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener = (sharedPreferences, key) -> {
+        Log.d(TAG, "onSharedPreferenceChanged: ");
+        floatingBallController.updateSpecificParameter(key);
     };
 
     public String getTargetPackageName() {
         return targetPackageName;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(TAG, "onCreate: ");
+
+        BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
     }
 
     @Override
@@ -59,8 +64,6 @@ public class FloatingBallService extends AccessibilityService {
         Log.d(TAG, "onServiceConnected: ");
         
         floatingBallController.startBallView(FloatingBallService.this);
-
-        BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
     }
 
     @Override
@@ -119,7 +122,6 @@ public class FloatingBallService extends AccessibilityService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-
         if (intent != null) {
 
             Bundle data = intent.getExtras();
@@ -143,6 +145,7 @@ public class FloatingBallService extends AccessibilityService {
                     floatingBallController.recycleBitmapMemory();
                 }
 
+                //动态变化的需要通过intent ShardPref无法区分是增还是减。
                 if (type == TYPE_ADD) {
                     floatingBallController.addFloatingBallView(FloatingBallService.this, BallSettingRepo.amount() - 1);
                 }

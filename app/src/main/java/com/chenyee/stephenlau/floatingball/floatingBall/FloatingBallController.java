@@ -9,19 +9,18 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 import com.chenyee.stephenlau.floatingball.App;
-import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.BitmapUtils;
-import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import java.util.ArrayList;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_BALL_THEME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_VIBRATE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_LEFT_SWIPE_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_MOVE_UP_DISTANCE;
@@ -78,11 +77,8 @@ public class FloatingBallController {
         }
         updateViewsParameter();
 
-        // init FunctionInterfaceUtils 确保每一次都初始化成功，只有add才能保证每一次都执行成功
-        FunctionInterfaceUtils.sFloatingBallService = (FloatingBallService) context;
-
         //        辅助设置里打开，等于在设置中打开。
-        SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, true);
+        BallSettingRepo.setIsAddedBallInSetting(true);
     }
 
     public void addFloatingBallView(Context context, int id) {
@@ -95,16 +91,22 @@ public class FloatingBallController {
         params.width = LayoutParams.WRAP_CONTENT;
         params.height = LayoutParams.WRAP_CONTENT;
         params.gravity = Gravity.START | Gravity.TOP;
+        params.format = PixelFormat.RGBA_8888;//默认为不透明 会有黑色背景
+        //窗口类型
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //https://developer.android.com/about/versions/oreo/android-8.0-changes?hl=zh-cn#all-aw
             params.type = LayoutParams.TYPE_APPLICATION_OVERLAY; //适配Android 8.0
         } else {
             params.type = LayoutParams.TYPE_SYSTEM_ALERT;
         }
-        params.format = PixelFormat.RGBA_8888;//默认为不透明 会有黑色背景
         params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | LayoutParams.FLAG_NOT_FOCUSABLE
+                //                | LayoutParams.FLAG_LAYOUT_NO_LIMITS;//没用
                 | LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 | LayoutParams.FLAG_LAYOUT_INSET_DECOR;
+        //FLAG_LAYOUT_NO_LIMITS 没有限制绘制的区域
+        //FLAG_LAYOUT_IN_SCREEN 将window放置在整个屏幕之内,无视其他的装饰(比如状态栏)window要在考虑到屏幕的其他装饰来定位其中的内容
+        //FLAG_LAYOUT_INSET_DECOR .当在屏幕中请求layout时,window可能在一些装饰物(如状态栏)之上或者之后当使用这个flag时,window manager会报告插入window的矩形大小,来确保你的内容不会被装饰物(如状态栏)掩盖..
         floatingBallView.setBallViewLayoutParams(params);
         windowManager.addView(floatingBallView, params);
 
@@ -166,7 +168,7 @@ public class FloatingBallController {
     public void setBackgroundImage(String imagePath) {
         BitmapUtils.copyBackgroundImageToAppFolder(imagePath);
 
-        FloatingBallDrawer.BackgroundImageHelper.setBitmapRead();
+        FloatingBallDrawer.BackgroundImageHelper.setupBitmapRead();
         FloatingBallDrawer.BackgroundImageHelper.createBitmapCropFromBitmapRead();
 
         for (FloatingBallView floatingBallView : floatingBallViewList) {
@@ -176,7 +178,6 @@ public class FloatingBallController {
 
     public void updateSpecificParameter(String key) {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
-
             switch (key) {
                 case PREF_OPACITY:
                     floatingBallView.setOpacity(BallSettingRepo.opacity());
@@ -189,6 +190,10 @@ public class FloatingBallController {
                     break;
                 case PREF_USE_BACKGROUND:
                     floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
+                    break;
+                case PREF_BALL_THEME:
+                    floatingBallView.setTheme(BallSettingRepo.themeMode());
+                    updateSingleBallView(floatingBallView);
                     break;
                 case PREF_USE_GRAY_BACKGROUND:
                 case PREF_IS_VIBRATE:
@@ -229,26 +234,30 @@ public class FloatingBallController {
     private void updateViewsParameter() {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
 
-            floatingBallView.updateLayoutParamsWithOrientation();
-            /* View */
-            floatingBallView.setOpacity(BallSettingRepo.opacity());
-            floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
-            floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
-            floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
-
-            floatingBallView.updateModelData();
-
-            floatingBallView.requestLayout();
-            floatingBallView.invalidate();
-
-            /* Function */
-            floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
-            floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
-            floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
-            floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
-            floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
-            floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
+            updateSingleBallView(floatingBallView);
         }
+    }
+
+    private void updateSingleBallView(FloatingBallView floatingBallView) {
+        floatingBallView.updateLayoutParamsWithOrientation();
+        /* View */
+        floatingBallView.setOpacity(BallSettingRepo.opacity());
+        floatingBallView.setOpacityMode(SharedPrefsUtils.getIntegerPreference(PREF_OPACITY_MODE, OPACITY_NONE));
+        floatingBallView.changeFloatBallSizeWithRadius(BallSettingRepo.size());
+        floatingBallView.setUseBackgroundImage(BallSettingRepo.isUseBackground());
+
+        floatingBallView.updateModelData();
+
+        floatingBallView.requestLayout();
+        floatingBallView.invalidate();
+
+        /* Function */
+        floatingBallView.setDoubleClickEventType(BallSettingRepo.doubleClickEvent());
+        floatingBallView.setLeftFunctionListener(BallSettingRepo.leftSlideEvent());
+        floatingBallView.setRightFunctionListener(BallSettingRepo.rightSlideEvent());
+        floatingBallView.setUpFunctionListener(BallSettingRepo.upSlideEvent());
+        floatingBallView.setDownFunctionListener(BallSettingRepo.downSlideEvent());
+        floatingBallView.setSingleTapFunctionListener(BallSettingRepo.singleTapEvent());
     }
 
     /**
@@ -299,7 +308,7 @@ public class FloatingBallController {
     }
 
     public void recycleBitmapMemory() {
-        FloatingBallDrawer.BackgroundImageHelper.recycleBitmap();
+        FloatingBallDrawer.BackgroundImageHelper.recycleBitmapRead();
     }
 
     /**

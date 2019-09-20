@@ -1,5 +1,7 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.gesture;
 
+import android.view.MotionEvent;
+
 public interface OnGestureEventListener {
   void onActionDown();
   void onActionUp();
@@ -16,4 +18,8 @@ public interface OnGestureEventListener {
   void downGesture();
   void leftGesture();
   void rightGesture();
+
+  void onScrollStateChange(int currentGestureState);
+
+  void onTouching(MotionEvent event);
 }

@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.floatingBall;
+package com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,74 +11,72 @@ import android.support.annotation.Keep;
 
 import com.chenyee.stephenlau.floatingball.App;
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
+import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_DOWN;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_LEFT;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_NONE;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_RIGHT;
-import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor.STATE_UP;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_DOWN;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_LEFT;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_NONE;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_RIGHT;
+import static com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor.STATE_UP;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 
 @Keep
-public class FloatingBallDrawer {
+public class FloatingBallDrawer extends BallDrawer {
 
     //灰色背景长度
     public static final float greyBackgroundLength = dip2px(getApplication(), 4);
-    public static float ballRadius;
     public final float ballRadiusDeltaMaxInAnimation = dip2px(getApplication(), 2.5f);
     private final int scrollGestureMoveDistance = dip2px(getApplication(), 6.6f);//18
-    public int measuredSideLength;
     private float grayBackgroundRadius;
     private float ballCenterY = 0;
     private float ballCenterX = 0;
     private RectF ballRect = new RectF();
-    private FloatingBallView view;
-    private FloatingBallPaint floatingballPaint;
+    private FloatingBallPaint floatingballPaint = new FloatingBallPaint();
     private boolean useGrayBackground = true;
-
-    private BackgroundImageHelper backgroundImageHelper;
+    private boolean useBackgroundImage = false;
 
     public FloatingBallDrawer(FloatingBallView view) {
-        this.view = view;
-        this.floatingballPaint = new FloatingBallPaint();
-        backgroundImageHelper = new BackgroundImageHelper();
+        super(view);
+    }
+
+    @Override
+    public void setPaintAlpha(int userSetOpacity) {
+        floatingballPaint.setPaintAlpha(userSetOpacity);
     }
 
     public RectF getBallRect() {
-        ballRect.set(ballCenterX - ballRadius,
-                ballCenterY - ballRadius,
-                ballCenterX + ballRadius,
-                ballCenterY + ballRadius
+        ballRect.set(ballCenterX - view.getBallRadius(),
+                ballCenterY - view.getBallRadius(),
+                ballCenterX + view.getBallRadius(),
+                ballCenterY + view.getBallRadius()
         );
         return ballRect;
     }
 
     public void drawBallWithThisModel(Canvas canvas) {
-        canvas.translate(measuredSideLength / 2, measuredSideLength / 2);
-        Paint grayBackgroundPaint = floatingballPaint.getGrayBackgroundPaint();
+        super.drawBallWithThisModel(canvas);
 
+        Paint grayBackgroundPaint = floatingballPaint.getGrayBackgroundPaint();
         if (useGrayBackground) {
             //            canvas.drawCircle(0, 0, grayBackgroundRadius, floatingballPaint.getShadowPaint());
             canvas.drawCircle(0, 0, grayBackgroundRadius, grayBackgroundPaint);
         }
 
-        Paint ballEmptyPaint = floatingballPaint.getBallEmptyPaint();
+        canvas.drawCircle(ballCenterX, ballCenterY, view.getBallRadius(), floatingballPaint.getBallEmptyPaint());
+
         Paint ballPaint = floatingballPaint.getBallPaint();
+        canvas.drawCircle(ballCenterX, ballCenterY, view.getBallRadius(), ballPaint);
 
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballEmptyPaint);
-
-        canvas.drawCircle(ballCenterX, ballCenterY, ballRadius, ballPaint);
-
-        if (BackgroundImageHelper.isUseBackgroundImage()) {
+        if (useBackgroundImage && BackgroundImageHelper.bitmapScaledCrop != null) {
             canvas.drawBitmap(BackgroundImageHelper.bitmapScaledCrop, null, getBallRect(), ballPaint);
         }
     }
 
-    public void calculateBackgroundRadiusAndMeasureSideLength(int ballRadius) {
-        this.ballRadius = ballRadius;
-
+    @Override
+    public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
         grayBackgroundRadius = ballRadius + greyBackgroundLength;
 
         //r + moveDistance + r在动画变大的值 = r + greyBackgroundLength + gap
@@ -86,17 +84,9 @@ public class FloatingBallDrawer {
 
         measuredSideLength = (int) (grayBackgroundRadius + frameGap) * 2;
 
-        if (BackgroundImageHelper.isUseBackgroundImage()) {
+        if (useBackgroundImage) {
             BackgroundImageHelper.createBitmapCropFromBitmapRead();
         }
-    }
-
-    public float getBallRadius() {
-        return ballRadius;
-    }
-
-    public void setBallRadius(float ballRadius) {
-        this.ballRadius = ballRadius;
     }
 
     public float getBallCenterY() {
@@ -123,6 +113,7 @@ public class FloatingBallDrawer {
         useGrayBackground = BallSettingRepo.isUseGrayBackground();
     }
 
+    @Override
     public void moveBallViewWithCurrentGestureState(int currentGestureState) {
         switch (currentGestureState) {
             case STATE_UP:
@@ -149,45 +140,39 @@ public class FloatingBallDrawer {
         view.invalidate();
     }
 
-    public void setPaintAlpha(int userSetOpacity) {
-        floatingballPaint.setPaintAlpha(userSetOpacity);
+    public void setUseBackgroundImage(boolean useBackgroundImage) {
+        this.useBackgroundImage = useBackgroundImage;
     }
 
     public static class BackgroundImageHelper {
-        //background image
         private static Bitmap bitmapRead;
         private static Bitmap bitmapScaledCrop;
-        //标志位
-        private static boolean useBackgroundImage = false;
 
-        public static boolean isUseBackgroundImage() {
-            return useBackgroundImage;
-        }
 
         public static void setUseBackgroundImage(boolean useBackgroundImage) {
             if (useBackgroundImage) {
-                setBitmapRead();
+                setupBitmapRead();
                 createBitmapCropFromBitmapRead();
             } else {
-                recycleBitmap();
+                if (bitmapRead != null && !bitmapRead.isRecycled()) {
+                    bitmapRead.recycle();
+                }
+                if (bitmapScaledCrop != null && !bitmapScaledCrop.isRecycled()) {
+                    bitmapScaledCrop.recycle();
+                }
             }
-
-            BackgroundImageHelper.useBackgroundImage = useBackgroundImage;
         }
 
-        public static void recycleBitmap() {
+        public static void recycleBitmapRead() {
             if (bitmapRead != null && !bitmapRead.isRecycled()) {
                 bitmapRead.recycle();
-            }
-            if (!useBackgroundImage && bitmapScaledCrop != null && !bitmapScaledCrop.isRecycled()) {
-                bitmapScaledCrop.recycle();
             }
         }
 
         /**
          * 更新bitmapRead的值
          */
-        public static void setBitmapRead() {
+        public static void setupBitmapRead() {
             //path为app内部目录
             String path = App.getApplication().getFilesDir().toString();
             bitmapRead = BitmapFactory.decodeFile(path + "/ballBackground.png");
@@ -202,16 +187,17 @@ public class FloatingBallDrawer {
          * 每次大小改变时需要重新计算
          */
         public static void createBitmapCropFromBitmapRead() {
-            if (FloatingBallDrawer.ballRadius <= 0) {
+            float ballRadius = BallSettingRepo.size();
+            if (ballRadius <= 0) {
                 return;
             }
             //bitmapRead可能已被回收
             if (bitmapRead == null || bitmapRead.isRecycled()) {
-                setBitmapRead();
+                setupBitmapRead();
             }
 
             //边长
-            int edge = (int) FloatingBallDrawer.ballRadius * 2;
+            int edge = (int) ballRadius * 2;
 
             //缩放到edge的大小
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapRead, edge, edge, true);
@@ -224,7 +210,7 @@ public class FloatingBallDrawer {
             paint.setAntiAlias(true);
             paint.setFilterBitmap(true);
             //x y r
-            canvas.drawCircle(FloatingBallDrawer.ballRadius, FloatingBallDrawer.ballRadius, FloatingBallDrawer.ballRadius, paint);
+            canvas.drawCircle(ballRadius, ballRadius, ballRadius, paint);
 
             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 

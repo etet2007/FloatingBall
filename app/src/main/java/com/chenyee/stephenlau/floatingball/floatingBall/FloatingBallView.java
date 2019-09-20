@@ -11,62 +11,89 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 import com.chenyee.stephenlau.floatingball.App;
-import com.chenyee.stephenlau.floatingball.floatingBall.gesture.FloatingBallGestureProcessor;
-import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
+import com.chenyee.stephenlau.floatingball.floatingBall.base.BallAnimator;
+import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
+import com.chenyee.stephenlau.floatingball.floatingBall.gesture.GestureProcessor;
+import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallAnimator;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallDrawer;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleFlyme.FloatingBallEventListener;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallAnimator;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallDrawer;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleGradient.GradientBallEventListener;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallAnimator;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallDrawer;
+import com.chenyee.stephenlau.floatingball.floatingBall.styleStick.StickBallEventListener;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.FunctionInterfaceUtils;
 import com.chenyee.stephenlau.floatingball.util.InputMethodDetector;
 
+import static com.chenyee.stephenlau.floatingball.App.getApplication;
+import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.gScreenHeight;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.FLYME;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_BREATHING;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PLANTE;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.STICK;
 
 /**
  * Created by stephenlau on 2017/12/5.
  */
 @Keep
-public class FloatingBallView extends View implements OnGestureEventListener {
+public class FloatingBallView extends View {
     private static final String TAG = FloatingBallView.class.getSimpleName();
 
     //function list
-    private FunctionListener singleTapFunctionListener;
-    private FunctionListener doubleTapFunctionListener;
-    private FunctionListener downFunctionListener;
-    private FunctionListener upFunctionListener;
-    private FunctionListener leftFunctionListener;
-    private FunctionListener rightFunctionListener;
+    public FunctionListener singleTapFunctionListener = () -> {
+    };
+    public FunctionListener doubleTapFunctionListener = () -> {
+    };
+    public FunctionListener downFunctionListener = () -> {
+    };
+    public FunctionListener upFunctionListener = () -> {
+    };
+    public FunctionListener leftFunctionListener = () -> {
+    };
+    public FunctionListener rightFunctionListener = () -> {
+    };
 
     //Draw
-    private FloatingBallDrawer floatingBallDrawer;
-    private FloatingBallAnimator floatingBallAnimator;
+    public BallDrawer ballDrawer;
+    public BallAnimator ballAnimator;
+    public int userSetOpacity = 125;
+    public int opacityMode;
+    public int lastLayoutParamsY;
+    public int keyboardTopY;
+    public int moveUpDistance;
+    public boolean isBallMoveUp = false;
+    public boolean isKeyboardShow = false;
     //Interact
-    private FloatingBallGestureProcessor floatingBallGestureProcessor;
-
+    private GestureProcessor gestureProcessor;
     //ballView的Id
     private int idCode;
-
     private WindowManager windowManager;
-
-    private int userSetOpacity = 125;
-    private int opacityMode;
     private WindowManager.LayoutParams ballViewLayoutParams;
-    private int lastLayoutParamsY;
     private int layoutParamsY;//用于使用反射
-    private int keyboardTopY;
-    private int moveUpDistance;
-    private boolean isBallMoveUp = false;
-    private boolean isKeyboardShow = false;
+    private static FunctionInterfaceUtils functionInterfaceUtils;
 
     /**
      * 构造函数
      */
     public FloatingBallView(Context context, int idCode) {
         super(context);
+
         this.idCode = idCode;
 
-        init(context);
+        init();
+        setTheme(BallSettingRepo.themeMode());
+
+        if (functionInterfaceUtils == null) {
+            functionInterfaceUtils = new FunctionInterfaceUtils((FloatingBallService) context);
+        }
+
     }
 
     /**
@@ -78,29 +105,25 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     public FloatingBallView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        init(context);
+        init();
 
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setTheme(STICK);
+        if (ballDrawer instanceof FloatingBallDrawer) {
+            ((FloatingBallDrawer) ballDrawer).setUseBackgroundImage(false); //无论何时都不显示
+        }
+//        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         setOpacity(100);
-        setOpacityMode(NONE);
+        changeFloatBallSizeWithRadius(dip2px(getApplication(), 15));
     }
 
     public FloatingBallView(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs);
     }
 
-    private void init(Context context) {
-
-        floatingBallDrawer = new FloatingBallDrawer(this);
-
-        floatingBallAnimator = new FloatingBallAnimator(this, floatingBallDrawer);
-        floatingBallAnimator.performAddAnimator();
-
-        changeFloatBallSizeWithRadius(50);
-
+    private void init() {
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-
-        floatingBallGestureProcessor = new FloatingBallGestureProcessor(this, this);
+        gestureProcessor = new GestureProcessor(this);
+        ViewAnimator.performAddAnimator(this);
     }
 
     public int getIdCode() {
@@ -125,7 +148,12 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
 
     public void setUseBackgroundImage(boolean useBackgroundImage) {
-        FloatingBallDrawer.BackgroundImageHelper.setUseBackgroundImage(useBackgroundImage);
+        if (ballDrawer instanceof FloatingBallDrawer) {
+            ((FloatingBallDrawer) ballDrawer).setUseBackgroundImage(useBackgroundImage);
+            FloatingBallDrawer.BackgroundImageHelper.setUseBackgroundImage(useBackgroundImage);
+        } else {
+            FloatingBallDrawer.BackgroundImageHelper.setUseBackgroundImage(false);
+        }
     }
 
     /**
@@ -138,63 +166,59 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     private void refreshOpacityMode() {
         if (opacityMode == OPACITY_NONE) {
-            floatingBallDrawer.setPaintAlpha(userSetOpacity);
+            ballDrawer.setPaintAlpha(userSetOpacity);
         }
 
         if (opacityMode == OPACITY_REDUCE) {
-            floatingBallAnimator.setUpReduceAnimator(userSetOpacity);
-            floatingBallAnimator.startReduceOpacityAnimator();
+            ballAnimator.setUpReduceAnimator(userSetOpacity);
+            ballAnimator.startReduceOpacityAnimator();
         }
 
         if (opacityMode == OPACITY_BREATHING) {
-            floatingBallAnimator.setUpBreathingAnimator(userSetOpacity);
-            floatingBallAnimator.startBreathingAnimator();
+            ballAnimator.setUpBreathingAnimator(userSetOpacity);
+            ballAnimator.startBreathingAnimator();
         } else {
-            floatingBallAnimator.cancelBreathingAnimator();
+            ballAnimator.cancelBreathingAnimator();
         }
     }
 
     public void setOpacity(int opacity) {
-        floatingBallDrawer.setPaintAlpha(opacity);
+        ballDrawer.setPaintAlpha(opacity);
         userSetOpacity = opacity;
 
         refreshOpacityMode();
     }
 
     public void setDoubleClickEventType(int doubleClickEventType) {
-        doubleTapFunctionListener = FunctionInterfaceUtils.getListener(doubleClickEventType);
+        doubleTapFunctionListener = functionInterfaceUtils.getListener(doubleClickEventType);
 
-        boolean isUseDoubleClick = doubleTapFunctionListener != FunctionInterfaceUtils.getListener(NONE);
-        floatingBallGestureProcessor.setUseDoubleClick(isUseDoubleClick);
+        boolean isUseDoubleClick = doubleClickEventType != NONE;
+        gestureProcessor.setUseDoubleClick(isUseDoubleClick);
     }
 
     public void setDownFunctionListener(int downFunctionListenerType) {
-        this.downFunctionListener = FunctionInterfaceUtils.getListener(downFunctionListenerType);
+        downFunctionListener = functionInterfaceUtils.getListener(downFunctionListenerType);
     }
 
     public void setUpFunctionListener(int upFunctionListenerType) {
-        this.upFunctionListener = FunctionInterfaceUtils.getListener(upFunctionListenerType);
+        upFunctionListener = functionInterfaceUtils.getListener(upFunctionListenerType);
     }
 
     public void setLeftFunctionListener(int leftFunctionListenerType) {
-        this.leftFunctionListener = FunctionInterfaceUtils.getListener(leftFunctionListenerType);
+        leftFunctionListener = functionInterfaceUtils.getListener(leftFunctionListenerType);
     }
 
     public void setRightFunctionListener(int rightFunctionListenerType) {
-        this.rightFunctionListener = FunctionInterfaceUtils.getListener(rightFunctionListenerType);
+        rightFunctionListener = functionInterfaceUtils.getListener(rightFunctionListenerType);
     }
 
     public void setSingleTapFunctionListener(int singleTapFunctionListenerType) {
-        this.singleTapFunctionListener = FunctionInterfaceUtils.getListener(singleTapFunctionListenerType);
-    }
-
-    public FloatingBallDrawer getFloatingBallDrawer() {
-        return floatingBallDrawer;
+        singleTapFunctionListener = functionInterfaceUtils.getListener(singleTapFunctionListenerType);
     }
 
     public int getMeasureLength() {
-        if (floatingBallDrawer != null) {
-            return floatingBallDrawer.measuredSideLength;
+        if (ballDrawer != null) {
+            return ballDrawer.getMeasuredSideLength();
         } else {
             return 0;
         }
@@ -213,6 +237,9 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     }
 
     private void saveLayoutParams() {
+        if (idCode < 0) {
+            return;
+        }
         Configuration configuration = App.getApplication().getResources().getConfiguration(); //获取设置的配置信息
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             BallSettingRepo.setFloatingBallLandscapeX(ballViewLayoutParams.x, idCode);
@@ -227,6 +254,9 @@ public class FloatingBallView extends View implements OnGestureEventListener {
      * 取数据更新
      */
     public void updateLayoutParamsWithOrientation() {
+        if (idCode < 0) {
+            return;
+        }
         if (windowManager != null) {
 
             Configuration configuration = App.getApplication().getResources().getConfiguration();
@@ -248,18 +278,28 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         }
     }
 
+    public void setBallRadius(float ballRadius) {
+        this.ballRadius = ballRadius;
+    }
+
+    public float getBallRadius() {
+        return ballRadius;
+    }
+
+    private float ballRadius;
+
     /**
      * 改变悬浮球大小，需要改变所有与Size相关的东西
      */
-    public void changeFloatBallSizeWithRadius(int ballRadius) {
-        floatingBallDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
+    public void changeFloatBallSizeWithRadius(float ballRadius) {
+        this.ballRadius = ballRadius;
 
-        floatingBallAnimator.setUpTouchAnimator(ballRadius);
+        ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
+        ballAnimator.setUpTouchAnimator(ballRadius);
     }
 
-
     public void removeBallWithAnimation() {
-        floatingBallAnimator.performRemoveAnimatorWithEndAction(this::removeBallWithoutAnimation);
+        ViewAnimator.performRemoveAnimatorWithEndAction(this, this::removeBallWithoutAnimation);
     }
 
     private void removeBallWithoutAnimation() {
@@ -282,7 +322,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         if (ballBottomYPlusGap >= keyboardTopY) {//球在键盘下方
             lastLayoutParamsY = getLayoutParamsY();
 
-            floatingBallAnimator.startParamsYAnimationTo(keyboardTopY - getMeasureLength() - moveUpDistance);
+            ballAnimator.startParamsYAnimationTo(keyboardTopY - getMeasureLength() - moveUpDistance);
             isBallMoveUp = true;
         }
     }
@@ -293,7 +333,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
         if (isBallMoveUp) {
             isBallMoveUp = false;
 
-            floatingBallAnimator.startParamsYAnimationTo(lastLayoutParamsY);
+            ballAnimator.startParamsYAnimationTo(lastLayoutParamsY);
         }
     }
 
@@ -301,8 +341,7 @@ public class FloatingBallView extends View implements OnGestureEventListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        floatingBallDrawer.drawBallWithThisModel(canvas);
-
+        ballDrawer.drawBallWithThisModel(canvas);
     }
 
     /**
@@ -316,87 +355,39 @@ public class FloatingBallView extends View implements OnGestureEventListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        floatingBallGestureProcessor.onTouchEvent(event);
+        gestureProcessor.onTouchEvent(event);
         return true;
     }
 
-
     public void updateModelData() {
-        floatingBallDrawer.updateFieldBySingleDataManager();
-        floatingBallGestureProcessor.updateFieldBySingleDataManager();
+        ballDrawer.updateFieldBySingleDataManager();
+        gestureProcessor.updateFieldBySingleDataManager();
         moveUpDistance = BallSettingRepo.moveUpDistance();
     }
 
-    //手势处理的回调函数
-    @Override
-    public void onActionDown() {
-        floatingBallAnimator.startOnTouchAnimator();
-
-        if (opacityMode == OPACITY_REDUCE) {
-            floatingBallDrawer.setPaintAlpha(userSetOpacity);
+    /**
+     * 设置完主题后需要重新设置大小和透明度
+     * 整个类的替换导致父类共有的数据丢失
+     * @param themeMode
+     */
+    public void setTheme(int themeMode) {
+        if (themeMode == FLYME) {
+            ballDrawer = new FloatingBallDrawer(this);
+            ballAnimator = new FloatingBallAnimator(this, (FloatingBallDrawer) ballDrawer);
+            gestureProcessor.setOnGestureEventListener(new FloatingBallEventListener(this));
+        } else if (themeMode == PLANTE) {
+            ballDrawer = new GradientBallDrawer(this);
+            ballAnimator = new GradientBallAnimator(this, (GradientBallDrawer) ballDrawer);
+            gestureProcessor.setOnGestureEventListener(new GradientBallEventListener(this));
+        } else if (themeMode == STICK) {
+            ballDrawer = new StickBallDrawer(this);
+            ballAnimator = new StickBallAnimator(this, (StickBallDrawer) ballDrawer);
+            gestureProcessor.setOnGestureEventListener(new StickBallEventListener(this));
         }
-    }
 
-    @Override
-    public void onActionUp() {
-        floatingBallAnimator.startUnTouchAnimator();
-        if (opacityMode == OPACITY_REDUCE) {
-            floatingBallAnimator.startReduceOpacityAnimator();
-        }
-    }
+        ballDrawer.calculateBackgroundRadiusAndMeasureSideLength(ballRadius);
+        ballAnimator.setUpTouchAnimator(ballRadius);
 
-    @Override
-    public void onMove(int x, int y) {
-        setLayoutPositionParamsAndSave(x, y);
-    }
-
-    @Override
-    public void onSingeTap() {
-        singleTapFunctionListener.onFunction();
-    }
-
-    @Override
-    public void onDoubleTap() {
-        doubleTapFunctionListener.onFunction();
-    }
-
-    @Override
-    public void upGesture() {
-        upFunctionListener.onFunction();
-    }
-
-    @Override
-    public void downGesture() {
-        downFunctionListener.onFunction();
-    }
-
-    @Override
-    public void leftGesture() {
-        leftFunctionListener.onFunction();
-    }
-
-    @Override
-    public void rightGesture() {
-        rightFunctionListener.onFunction();
-    }
-
-    @Override
-    public void onScrollEnd() {
-        //球移动动画
-        floatingBallAnimator.moveFloatBallBack();
-    }
-
-    @Override
-    public void onLongPressEnd() {
-        if (isKeyboardShow) {
-
-            int ballBottomYPlusGap = getLayoutParamsY() + getMeasureLength() + moveUpDistance;
-            if (ballBottomYPlusGap >= keyboardTopY) { //球在键盘下方
-                lastLayoutParamsY = getLayoutParamsY();
-                floatingBallAnimator.startParamsYAnimationTo(keyboardTopY - getMeasureLength() - moveUpDistance);
-            } else {
-                isBallMoveUp = false;
-            }
-        }
+        invalidate();
     }
 }

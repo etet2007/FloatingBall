@@ -2,7 +2,6 @@ package com.chenyee.stephenlau.floatingball.floatingBall.gesture;
 
 import android.content.Context;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -13,7 +12,7 @@ import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 /**
  * 只暴露了FloatingBall需要的接口：OnGestureEventListener
  */
-public class FloatingBallGestureProcessor implements GestureDetector.OnGestureListener,
+public class GestureProcessor implements GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener {
 
     public static final int STATE_UP = 1;
@@ -21,7 +20,7 @@ public class FloatingBallGestureProcessor implements GestureDetector.OnGestureLi
     public static final int STATE_LEFT = 3;
     public static final int STATE_RIGHT = 4;
     public static final int STATE_NONE = 5;
-
+    private static final String TAG = "GestureProcessor";
     private int lastGestureState = STATE_NONE;
     private int currentGestureState;
     private boolean isLongPress = false;
@@ -44,12 +43,8 @@ public class FloatingBallGestureProcessor implements GestureDetector.OnGestureLi
 
     private int scrollGestureChangeCount;
 
-    public FloatingBallGestureProcessor(FloatingBallView floatingBallView,
-                                        @NonNull OnGestureEventListener onGestureEventListener) {
+    public GestureProcessor(FloatingBallView floatingBallView) {
         this.floatingBallView = floatingBallView;
-        this.onGestureEventListener = onGestureEventListener;
-
-        gestureDetector = new GestureDetector(floatingBallView.getContext(), this);
 
         vibrator = (Vibrator) App.getApplication().getSystemService(Context.VIBRATOR_SERVICE);
     }
@@ -107,7 +102,7 @@ public class FloatingBallGestureProcessor implements GestureDetector.OnGestureLi
         }
         if (currentGestureState != lastGestureState) {
             scrollGestureChangeCount++;
-            floatingBallView.getFloatingBallDrawer().moveBallViewWithCurrentGestureState(currentGestureState);
+            onGestureEventListener.onScrollStateChange(currentGestureState);
             lastGestureState = currentGestureState;
         }
         return false;
@@ -167,7 +162,11 @@ public class FloatingBallGestureProcessor implements GestureDetector.OnGestureLi
                     int y = (int) (event.getRawY() - lastTouchEventPositionY);
 
                     onGestureEventListener.onMove(x, y);
+                } else {
+                    //长按不触发
+                    onGestureEventListener.onTouching(event);
                 }
+
                 break;
             case MotionEvent.ACTION_UP:
                 onGestureEventListener.onActionUp();
@@ -197,19 +196,19 @@ public class FloatingBallGestureProcessor implements GestureDetector.OnGestureLi
 
     private void onFunctionWithCurrentGestureState(int currentGestureState) {
         switch (currentGestureState) {
-            case FloatingBallGestureProcessor.STATE_UP:
+            case GestureProcessor.STATE_UP:
                 onGestureEventListener.upGesture();
                 break;
-            case FloatingBallGestureProcessor.STATE_DOWN:
+            case GestureProcessor.STATE_DOWN:
                 onGestureEventListener.downGesture();
                 break;
-            case FloatingBallGestureProcessor.STATE_LEFT:
+            case GestureProcessor.STATE_LEFT:
                 onGestureEventListener.leftGesture();
                 break;
-            case FloatingBallGestureProcessor.STATE_RIGHT:
+            case GestureProcessor.STATE_RIGHT:
                 onGestureEventListener.rightGesture();
                 break;
-            case FloatingBallGestureProcessor.STATE_NONE:
+            case GestureProcessor.STATE_NONE:
                 break;
         }
     }
@@ -221,6 +220,13 @@ public class FloatingBallGestureProcessor implements GestureDetector.OnGestureLi
             gestureDetector.setOnDoubleTapListener(this);
         } else {
             gestureDetector.setOnDoubleTapListener(null);
+        }
+    }
+
+    public void setOnGestureEventListener(OnGestureEventListener onGestureEventListener) {
+        this.onGestureEventListener = onGestureEventListener;
+        if (onGestureEventListener != null) {
+            gestureDetector = new GestureDetector(floatingBallView.getContext(), this);
         }
     }
 }

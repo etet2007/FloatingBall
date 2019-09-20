@@ -39,29 +39,16 @@ public class PermissionActivity extends AppCompatActivity {
 
         logoImageView.animate().translationYBy(dip2px(getApplicationContext(), 100)).setDuration(3000).start();
 
-        drawOverlaysButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestDrawOverlaysPermission();
-            }
-        });
+        drawOverlaysButton.setOnClickListener(v -> requestDrawOverlaysPermission());
 
-        accessibilityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AccessibilityUtils.checkAccessibilitySetting(PermissionActivity.this);
-            }
-        });
-        lockScreenButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or  ContentProvider)
-                ComponentName componentName = new ComponentName(PermissionActivity.this, LockRequestReceiver.class);
-                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
-                intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, R.string.app_name);
-                startActivity(intent);
-            }
+        accessibilityButton.setOnClickListener(v -> AccessibilityUtils.checkAccessibilitySetting(PermissionActivity.this));
+        lockScreenButton.setOnClickListener(view -> {
+            // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or  ContentProvider)
+            ComponentName componentName = new ComponentName(PermissionActivity.this, LockRequestReceiver.class);
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, R.string.app_name);
+            startActivity(intent);
         });
     }
 

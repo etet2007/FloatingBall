@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
+import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
@@ -48,7 +49,7 @@ public class QuickSettingService extends TileService {
 
         tile = getQsTile();
 
-        isAddedBall = SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);
+        isAddedBall = BallSettingRepo.isAddedBallInSetting();
         Log.d(TAG, "onStartListening isAddedBall:" + isAddedBall);
 
         refreshTile();
@@ -62,7 +63,7 @@ public class QuickSettingService extends TileService {
             addFloatBall();
         }
         isAddedBall = !isAddedBall;
-        SharedPrefsUtils.setBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, isAddedBall);
+        BallSettingRepo.setIsAddedBallInSetting(isAddedBall);
 
         LocalBroadcastManager.getInstance(QuickSettingService.this).sendBroadcast(new Intent(QUICK_SETTING_REFRESH_MAIN_ACTIVITY_ACTION));
 
