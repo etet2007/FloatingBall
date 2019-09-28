@@ -225,7 +225,7 @@ public class FloatingBallView extends View {
     }
 
     public void setLayoutPositionParamsAndSave(int x, int y) {
-        if (windowManager != null) {
+        if (windowManager != null && ballViewLayoutParams != null) {
             ballViewLayoutParams.x = x;
             ballViewLayoutParams.y = y;
 
