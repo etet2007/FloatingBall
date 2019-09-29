@@ -470,13 +470,12 @@ public class SettingFragment extends Fragment {
 
         TypedValue outValue = new TypedValue();
         getActivity().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        layoutParams.gravity = Gravity.CENTER;
+        FrameLayout.LayoutParams floatingBallViewLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        floatingBallViewLayoutParams.gravity = Gravity.CENTER;
 
-        LinearLayoutCompat ballThemeLl = scrollView.findViewById(R.id.ball_theme_ll);
+        LinearLayoutCompat ballThemeLinearLayout = scrollView.findViewById(R.id.ball_theme_ll);
         for (int i = 0; i <= STICK; i++) {
             FrameLayout frameLayout = new FrameLayout(getActivity());
-            frameLayout.setLayoutParams(layoutParams);
             frameLayout.setClickable(true);
             frameLayout.setFocusable(true);
             frameLayout.setBackgroundResource(outValue.resourceId);
@@ -487,14 +486,14 @@ public class SettingFragment extends Fragment {
                 refreshViewsRelateToTheme();
                 settingBallView.requestLayout();
                 dialog.dismiss();
-            } );
+            });
 
             FloatingBallView floatingBallView = new FloatingBallView(getActivity(),null);
             floatingBallView.setTheme(i);
             floatingBallView.changeFloatBallSizeWithRadius(dip2px(getApplication(), 25));
-            frameLayout.addView(floatingBallView,layoutParams);
+            frameLayout.addView(floatingBallView,floatingBallViewLayoutParams);
 
-            ballThemeLl.addView(frameLayout);
+            ballThemeLinearLayout.addView(frameLayout);
         }
     }
 
