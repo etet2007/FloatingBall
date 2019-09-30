@@ -3,6 +3,7 @@ package com.chenyee.stephenlau.floatingball.floatingBall.base;
 import android.view.MotionEvent;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
+import com.chenyee.stephenlau.floatingball.floatingBall.FunctionListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.gesture.OnGestureEventListener;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_REDUCE;
@@ -42,32 +43,44 @@ abstract public class BaseBallEventListener implements OnGestureEventListener {
 
     @Override
     public void onSingeTap() {
-        floatingBallView.singleTapFunctionListener.onFunction();
+        FunctionListener functionListener = floatingBallView.getSingleTapFunctionListener();
+        invokeMethod(functionListener);
     }
 
     @Override
     public void onDoubleTap() {
-        floatingBallView.doubleTapFunctionListener.onFunction();
+        FunctionListener functionListener = floatingBallView.getDoubleTapFunctionListener();
+        invokeMethod(functionListener);
     }
 
     @Override
     public void upGesture() {
-        floatingBallView.upFunctionListener.onFunction();
+        FunctionListener functionListener = floatingBallView.getUpFunctionListener();
+        invokeMethod(functionListener);
     }
 
     @Override
     public void downGesture() {
-        floatingBallView.downFunctionListener.onFunction();
+        FunctionListener functionListener = floatingBallView.getDownFunctionListener();
+        invokeMethod(functionListener);
     }
 
     @Override
     public void leftGesture() {
-        floatingBallView.leftFunctionListener.onFunction();
+        FunctionListener functionListener = floatingBallView.getLeftFunctionListener();
+        invokeMethod(functionListener);
     }
 
     @Override
     public void rightGesture() {
-        floatingBallView.rightFunctionListener.onFunction();
+        FunctionListener functionListener = floatingBallView.getRightFunctionListener();
+        invokeMethod(functionListener);
+    }
+
+    private void invokeMethod(FunctionListener functionListener) {
+        if(functionListener != null){
+            functionListener.onFunction();
+        }
     }
 
     @Override

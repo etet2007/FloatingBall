@@ -1,8 +1,10 @@
 package com.chenyee.stephenlau.floatingball.floatingBall;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -37,7 +39,8 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_USE
  * 管理FloatingBall的单例
  */
 public class FloatingBallController {
-    private static final String TAG = FloatingBallController.class.getSimpleName();
+    private static final String TAG = "FloatingBallController";
+
     //Singleton
     private static FloatingBallController sFloatingBallController = new FloatingBallController();
 
@@ -56,6 +59,19 @@ public class FloatingBallController {
 
     public static FloatingBallController getInstance() {
         return sFloatingBallController;
+    }
+
+    private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener = (sharedPreferences, key) -> {
+        Log.d(TAG, "onSharedPreferenceChanged: ");
+        updateSpecificParameter(key);
+    };
+
+    public void registerOnDataChangeListener() {
+        SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
+    }
+
+    public void unregisterOnDataChangeListener() {
+        SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
     }
 
     public boolean isHideBecauseRotate() {
@@ -140,7 +156,7 @@ public class FloatingBallController {
     }
 
     //暂时与屏幕旋转隐藏冲突！
-    public void hideWhenKeyboardShow() {
+    private void hideWhenKeyboardShow() {
         removeAll();
     }
 
@@ -176,7 +192,7 @@ public class FloatingBallController {
         }
     }
 
-    public void updateSpecificParameter(String key) {
+    private void updateSpecificParameter(String key) {
         for (FloatingBallView floatingBallView : floatingBallViewList) {
             switch (key) {
                 case PREF_OPACITY:

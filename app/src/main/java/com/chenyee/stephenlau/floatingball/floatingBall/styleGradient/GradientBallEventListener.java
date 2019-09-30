@@ -1,7 +1,5 @@
 package com.chenyee.stephenlau.floatingball.floatingBall.styleGradient;
 
-import android.view.MotionEvent;
-
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.base.BaseBallEventListener;
 

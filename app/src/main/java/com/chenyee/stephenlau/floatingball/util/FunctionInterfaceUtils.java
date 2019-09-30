@@ -146,7 +146,9 @@ public class FunctionInterfaceUtils {
             floatingBallService.startActivity(intent);
         }
     }
+
     private class SystemScreenshotFunctionListener implements FunctionListener {
+        @RequiresApi(api = VERSION_CODES.P)
         @Override
         public void onFunction() {
             floatingBallService.hideBallTemporarily();

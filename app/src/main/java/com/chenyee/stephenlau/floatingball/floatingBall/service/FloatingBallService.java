@@ -14,13 +14,14 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.Toast;
 
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallController;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
+import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 
 /**
  * Accessibility services should only be used to assist users with disabilities in using Android devices and apps. Such
@@ -36,14 +37,18 @@ public class FloatingBallService extends AccessibilityService {
     public static final int TYPE_ADD = 5;
     public static final int TYPE_REMOVE_LAST = 6;
 
-    private static final String TAG = FloatingBallService.class.getSimpleName();
+    private static final String TAG = "FloatingBallService";
 
-    private String targetPackageName;
     private FloatingBallController floatingBallController = FloatingBallController.getInstance();
-
-    private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener = (sharedPreferences, key) -> {
-        Log.d(TAG, "onSharedPreferenceChanged: ");
-        floatingBallController.updateSpecificParameter(key);
+    private String targetPackageName;
+    private boolean isAddedBallInSetting;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(PREF_IS_ADDED_BALL_IN_SETTING)) {
+                isAddedBallInSetting = BallSettingRepo.isAddedBallInSetting();
+            }
+        }
     };
 
     public String getTargetPackageName() {
@@ -54,15 +59,15 @@ public class FloatingBallService extends AccessibilityService {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
+        floatingBallController.registerOnDataChangeListener();
 
-        BallSettingRepo.registerOnDataChangeListener(mOnSharedPreferenceChangeListener);
+        SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
     }
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected: ");
-        
         floatingBallController.startBallView(FloatingBallService.this);
     }
 
@@ -73,16 +78,16 @@ public class FloatingBallService extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        BallSettingRepo.unregisterOnDataChangeListener(mOnSharedPreferenceChangeListener);
+        floatingBallController.unregisterOnDataChangeListener();
+        SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(listener);
+
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
         //没有在设置中打开
-        boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
-        if (!isAddedBall) {
+        if (!isAddedBallInSetting) {
             return;
         }
 
@@ -100,18 +105,14 @@ public class FloatingBallService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        //没有打开
-        boolean isAddedBall = BallSettingRepo.isAddedBallInSetting();
-        if (!isAddedBall) {
+        //没有在设置中打开
+        if (!isAddedBallInSetting) {
             return;
         }
-
-        int type = event.getEventType();
-
-        if (type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        //保存targetPackageName
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             targetPackageName = event.getPackageName() == null ? "" : event.getPackageName().toString();
         }
-
         //触发输入法检测
         floatingBallController.inputMethodDetect(FloatingBallService.this);
     }
@@ -123,33 +124,23 @@ public class FloatingBallService extends AccessibilityService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
         if (intent != null) {
-
             Bundle data = intent.getExtras();
             if (data != null) {
-                int type = data.getInt(EXTRAS_COMMAND);
+                int command = data.getInt(EXTRAS_COMMAND);
 
-                if (type == TYPE_SWITCH_ON) {
+                if (command == TYPE_SWITCH_ON) {
                     floatingBallController.startBallView(FloatingBallService.this);
-                }
-                if (type == TYPE_REMOVE_ALL) {
+                } else if (command == TYPE_REMOVE_ALL) {
                     floatingBallController.removeBallView();
-                }
-                if (type == TYPE_HIDE_TEMPORARILY) {
+                } else if (command == TYPE_HIDE_TEMPORARILY) {
                     floatingBallController.setBallViewIsHide(data.getBoolean("isHide"));
-                }
-                //intent中传图片地址，也可以换为sharedPreference吧
-                if (type == TYPE_IMAGE_PATH) {
+                } else if (command == TYPE_IMAGE_PATH) {
                     floatingBallController.setBackgroundImage(data.getString("imagePath"));
-                }
-                if (type == TYPE_CLEAR) {
+                } else if (command == TYPE_CLEAR) {
                     floatingBallController.recycleBitmapMemory();
-                }
-
-                //动态变化的需要通过intent ShardPref无法区分是增还是减。
-                if (type == TYPE_ADD) {
+                } else if (command == TYPE_ADD) {//动态变化的需要通过intent ShardPref无法区分是增还是减。
                     floatingBallController.addFloatingBallView(FloatingBallService.this, BallSettingRepo.amount() - 1);
-                }
-                if (type == TYPE_REMOVE_LAST) {
+                } else if (command == TYPE_REMOVE_LAST) {
                     floatingBallController.removeLastFloatingBall();
                 }
 

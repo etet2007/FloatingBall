@@ -40,14 +40,6 @@ public class BallSettingRepo {
 
     }
 
-    public static void registerOnDataChangeListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
-        SharedPrefsUtils.getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
-    }
-
-    public static void unregisterOnDataChangeListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
-        SharedPrefsUtils.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(listener);
-    }
-
 
     public static boolean isAddedBallInSetting() {
         return SharedPrefsUtils.getBooleanPreference(PREF_IS_ADDED_BALL_IN_SETTING, false);

@@ -46,19 +46,37 @@ import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.STICK;
 public class FloatingBallView extends View {
     private static final String TAG = FloatingBallView.class.getSimpleName();
 
+    public FunctionListener getSingleTapFunctionListener() {
+        return singleTapFunctionListener;
+    }
+
+    public FunctionListener getDoubleTapFunctionListener() {
+        return doubleTapFunctionListener;
+    }
+
+    public FunctionListener getDownFunctionListener() {
+        return downFunctionListener;
+    }
+
+    public FunctionListener getUpFunctionListener() {
+        return upFunctionListener;
+    }
+
+    public FunctionListener getLeftFunctionListener() {
+        return leftFunctionListener;
+    }
+
+    public FunctionListener getRightFunctionListener() {
+        return rightFunctionListener;
+    }
+
     //function list
-    public FunctionListener singleTapFunctionListener = () -> {
-    };
-    public FunctionListener doubleTapFunctionListener = () -> {
-    };
-    public FunctionListener downFunctionListener = () -> {
-    };
-    public FunctionListener upFunctionListener = () -> {
-    };
-    public FunctionListener leftFunctionListener = () -> {
-    };
-    public FunctionListener rightFunctionListener = () -> {
-    };
+    private FunctionListener singleTapFunctionListener;
+    private FunctionListener doubleTapFunctionListener;
+    private FunctionListener downFunctionListener;
+    private FunctionListener upFunctionListener;
+    private FunctionListener leftFunctionListener;
+    private FunctionListener rightFunctionListener;
 
     //Draw
     public BallDrawer ballDrawer;
