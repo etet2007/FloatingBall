@@ -15,6 +15,9 @@ import com.chenyee.stephenlau.floatingball.floatingBall.base.BallDrawer;
 @Keep
 public class StickBallDrawer extends BallDrawer {
 
+    //球最大增加长度
+    public float maxIncreaseLength;
+    //球最大长度
     public float maxLength;
     private Path path;
     private Paint fillCirclePaint;
@@ -97,8 +100,10 @@ public class StickBallDrawer extends BallDrawer {
 
     @Override
     public void calculateBackgroundRadiusAndMeasureSideLength(float ballRadius) {
-        maxLength = (float) (ballRadius * 0.6);
-        measuredSideLength = (int) ((ballRadius + maxLength) * 2 * 1.2);
+
+        maxIncreaseLength = (float) (ballRadius * 0.6);
+        maxLength = ballRadius + maxIncreaseLength;
+        measuredSideLength = (int) (maxLength * 2 * 1.2);//1.2是因为阴影
         c = ballRadius * blackMagic;
         initState();
 
