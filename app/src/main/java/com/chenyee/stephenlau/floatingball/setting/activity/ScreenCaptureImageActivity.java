@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.ui.activity;
+package com.chenyee.stephenlau.floatingball.setting.activity;
 /*
  * Copyright (C) 2014 The Android Open Source Project
  *
