@@ -5,5 +5,5 @@ package com.chenyee.stephenlau.floatingball.floatingBall;
  */
 
 public interface FunctionListener {
-        void onFunction();
+    void onFunction();
 }

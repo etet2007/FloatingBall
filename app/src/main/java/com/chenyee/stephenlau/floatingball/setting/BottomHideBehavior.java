@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.ui;
+package com.chenyee.stephenlau.floatingball.setting;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;

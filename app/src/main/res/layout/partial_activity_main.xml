@@ -77,7 +77,7 @@
         android:clickable="true"
         android:elevation="8dp"
         android:focusable="true"
-        app:layout_behavior="com.chenyee.stephenlau.floatingball.ui.BottomHideBehavior"
+        app:layout_behavior="com.chenyee.stephenlau.floatingball.setting.BottomHideBehavior"
         android:src="@drawable/ic_floating_button" />
 
     <android.support.v7.widget.AppCompatImageView

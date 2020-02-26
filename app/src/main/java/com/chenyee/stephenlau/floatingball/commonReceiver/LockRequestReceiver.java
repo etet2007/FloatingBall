@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.common_receiver;
+package com.chenyee.stephenlau.floatingball.commonReceiver;
 
 import android.app.admin.DeviceAdminReceiver;
 

@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.ui.activity;
+package com.chenyee.stephenlau.floatingball.setting.activity;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.chenyee.stephenlau.floatingball.R;
-import com.chenyee.stephenlau.floatingball.common_receiver.LockRequestReceiver;
+import com.chenyee.stephenlau.floatingball.commonReceiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.util.AccessibilityUtils;
 import com.chenyee.stephenlau.floatingball.util.LockScreenUtils;
 
@@ -25,9 +25,8 @@ import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 public class PermissionActivity extends AppCompatActivity {
     private static final String TAG = PermissionActivity.class.getSimpleName();
 
-    @BindView(R.id.drawOverlays_button) Button drawOverlaysButton;
-    @BindView(R.id.accessibility_button) Button accessibilityButton;
-    @BindView(R.id.lockScreen_button) Button lockScreenButton;
+    @BindView(R.id.bt_drawOverlays) Button drawOverlaysButton;
+    @BindView(R.id.bt_accessibility) Button accessibilityButton;
     @BindView(R.id.logo_image_view) AppCompatImageView logoImageView;
 
     @Override
@@ -42,14 +41,6 @@ public class PermissionActivity extends AppCompatActivity {
         drawOverlaysButton.setOnClickListener(v -> requestDrawOverlaysPermission());
 
         accessibilityButton.setOnClickListener(v -> AccessibilityUtils.checkAccessibilitySetting(PermissionActivity.this));
-        lockScreenButton.setOnClickListener(view -> {
-            // Identifier for a specific application component (Activity, Service, BroadcastReceiver, or  ContentProvider)
-            ComponentName componentName = new ComponentName(PermissionActivity.this, LockRequestReceiver.class);
-            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
-            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, R.string.app_name);
-            startActivity(intent);
-        });
     }
 
     @Override
@@ -64,7 +55,7 @@ public class PermissionActivity extends AppCompatActivity {
 
         boolean hasDrawPermission = false;
         boolean hasAccessibilityPermission = false;
-        boolean hasLockScreenPermission = false;
+        boolean hasLockScreenPermission = true;
 
         //canDrawOverlays
         if (Build.VERSION.SDK_INT >= 23) {
@@ -80,11 +71,6 @@ public class PermissionActivity extends AppCompatActivity {
         if (AccessibilityUtils.isAccessibilitySettingsOn()) {
             accessibilityButton.setEnabled(false);
             hasAccessibilityPermission = true;
-        }
-        //LockScreen
-        if (LockScreenUtils.canLockScreen(PermissionActivity.this)) {
-            lockScreenButton.setEnabled(false);
-            hasLockScreenPermission = true;
         }
 
 //        if (true) {

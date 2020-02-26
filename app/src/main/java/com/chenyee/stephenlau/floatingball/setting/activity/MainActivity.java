@@ -36,18 +36,17 @@ import com.artitk.licensefragment.model.License;
 import com.artitk.licensefragment.model.LicenseType;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
-import com.chenyee.stephenlau.floatingball.common_receiver.LockRequestReceiver;
+import com.chenyee.stephenlau.floatingball.commonReceiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
 import com.chenyee.stephenlau.floatingball.ui.fragment.SettingFragment;
 import com.chenyee.stephenlau.floatingball.util.ActivityUtils;
-import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
+
 import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.chenyee.stephenlau.floatingball.quick_setting.QuickSettingService.QUICK_SETTING_REFRESH_MAIN_ACTIVITY_ACTION;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 
 public class MainActivity extends AppCompatActivity
         implements AppBarLayout.OnOffsetChangedListener {

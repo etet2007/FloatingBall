@@ -1,8 +1,10 @@
-package com.chenyee.stephenlau.floatingball.ui.fragment;
+package com.chenyee.stephenlau.floatingball.setting.fragment;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -28,10 +30,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.chenyee.stephenlau.floatingball.R;
+import com.chenyee.stephenlau.floatingball.commonReceiver.LockRequestReceiver;
 import com.chenyee.stephenlau.floatingball.floatingBall.FloatingBallView;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
-import com.chenyee.stephenlau.floatingball.ui.activity.MainActivity;
+import com.chenyee.stephenlau.floatingball.setting.activity.MainActivity;
+import com.chenyee.stephenlau.floatingball.setting.activity.PermissionActivity;
+import com.chenyee.stephenlau.floatingball.util.LockScreenUtils;
 import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -44,10 +49,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.chenyee.stephenlau.floatingball.App.getApplication;
 import static com.chenyee.stephenlau.floatingball.util.DimensionUtils.dip2px;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.FLYME;
+import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.LOCK_SCREEN;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.OPACITY_NONE;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOUBLE_CLICK_EVENT;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_DOWN_SWIPE_EVENT;
@@ -445,6 +452,11 @@ public class SettingFragment extends Fragment {
                 .setItems(R.array.function_array, (dialog, which) -> {
                     SharedPrefsUtils.setIntegerPreference(prefKey, which);
                     refreshFunctionListView();
+                    if (which == LOCK_SCREEN) {
+                        if (!LockScreenUtils.canLockScreen(getActivity())) {
+                            LockScreenUtils.openLockScreenInDevicePolicy(getActivity());
+                        }
+                    }
                 }).show();
     }
 
