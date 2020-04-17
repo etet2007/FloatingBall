@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.chenyee.stephenlau.floatingball.R;
 import com.chenyee.stephenlau.floatingball.floatingBall.FunctionListener;
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
-import com.chenyee.stephenlau.floatingball.ui.activity.ScreenCaptureImageActivity;
+import com.chenyee.stephenlau.floatingball.setting.activity.ScreenCaptureImageActivity;
 
 import static com.chenyee.stephenlau.floatingball.util.RootUtil.rootCommand;
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.*;

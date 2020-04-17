@@ -1,4 +1,4 @@
-package com.chenyee.stephenlau.floatingball.quick_setting;
+package com.chenyee.stephenlau.floatingball.quickSetting;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -11,10 +11,8 @@ import android.util.Log;
 
 import com.chenyee.stephenlau.floatingball.floatingBall.service.FloatingBallService;
 import com.chenyee.stephenlau.floatingball.repository.BallSettingRepo;
-import com.chenyee.stephenlau.floatingball.util.SharedPrefsUtils;
 
 import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.EXTRAS_COMMAND;
-import static com.chenyee.stephenlau.floatingball.util.StaticStringUtil.PREF_IS_ADDED_BALL_IN_SETTING;
 
 /**
  * Description: <p> Created by Liu Qitian on 18-5-3.

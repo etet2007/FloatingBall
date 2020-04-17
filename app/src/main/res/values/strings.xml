@@ -85,6 +85,7 @@
   <string name="donate">Donate</string>
     <string name="noAliPay">Can\'t find AliPay</string>
     <string name="theme">Theme:</string>
+    <string name="lock_screen_fail">Fail to lock screen</string>
 
 
 </resources>

@@ -27,26 +27,20 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/drawOverlays_button"
+            android:id="@+id/bt_drawOverlays"
             style="@style/ButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="@string/drawoverlays_permission" />
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/accessibility_button"
+            android:id="@+id/bt_accessibility"
             style="@style/ButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="@string/request_accessibility" />
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/lockScreen_button"
-            style="@style/ButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="@string/active_device_administrator" />
+
     </LinearLayout>
 
 </RelativeLayout>

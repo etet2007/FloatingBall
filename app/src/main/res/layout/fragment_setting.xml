@@ -21,7 +21,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:context=".ui.activity.MainActivity">
+            tools:context=".setting.activity.MainActivity">
 
             <RelativeLayout
                 android:id="@+id/theme_relativeLayout"
@@ -103,7 +103,7 @@
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/minusFloatingActionButton"
                         style="@style/ActionFloatingButtonStyle"
-                        app:srcCompat="@drawable/amount_minus" />
+                        app:srcCompat="@drawable/ic_amount_minus" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/amountTextView"
@@ -116,7 +116,7 @@
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/plusFloatingActionButton"
                         style="@style/ActionFloatingButtonStyle"
-                        app:srcCompat="@drawable/amount_plus" />
+                        app:srcCompat="@drawable/ic_amount_plus" />
                 </android.support.v7.widget.LinearLayoutCompat>
 
             </RelativeLayout>

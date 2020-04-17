@@ -85,11 +85,13 @@
     <string name="no_support_screenshot">抱歉，你的系统不支持截屏</string>
     <string name="screenshot_fail">截图失败</string>
     <string name="screenshot_succeed">截图成功</string>
-  <string name="avoid_keyboard">躲避键盘</string>
-  <string name="amount">数量：</string>
-  <string name="donate">打赏</string>
-  <string name="noAliPay">找不到支付宝</string>
+    <string name="avoid_keyboard">躲避键盘</string>
+    <string name="amount">数量：</string>
+    <string name="donate">打赏</string>
+    <string name="noAliPay">找不到支付宝</string>
     <string name="theme">主题:</string>
+
+    <string name="lock_screen_fail">锁屏失败，请查看是否打开设置</string>
 
 
 </resources>
